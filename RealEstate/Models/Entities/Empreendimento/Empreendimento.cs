@@ -11,7 +11,4 @@ public class Empreendimento : EntityBase
     public int BanheirosMin { get; set; }
     public int BanheirosMax { get; set; }
     public Endereco? Endereco { get; set; }
-    public List<Arquivos>? Arquivos { get; set; } = new List<Arquivos>();
-    public List<Imagem>? Imagens { get; set; } = new List<Imagem>();
-
 }

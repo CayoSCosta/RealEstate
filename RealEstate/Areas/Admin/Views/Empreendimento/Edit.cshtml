@@ -1,0 +1,95 @@
+﻿@model RealEstate.Models.Entities.Empreendimento.Empreendimento
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Empreendimento</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descricao" class="control-label"></label>
+                <input asp-for="Descricao" class="form-control" />
+                <span asp-validation-for="Descricao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AreaConstruidaMin" class="control-label"></label>
+                <input asp-for="AreaConstruidaMin" class="form-control" />
+                <span asp-validation-for="AreaConstruidaMin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AreaConstruidaMax" class="control-label"></label>
+                <input asp-for="AreaConstruidaMax" class="form-control" />
+                <span asp-validation-for="AreaConstruidaMax" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DormitoriosMin" class="control-label"></label>
+                <input asp-for="DormitoriosMin" class="form-control" />
+                <span asp-validation-for="DormitoriosMin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DormitoriosMax" class="control-label"></label>
+                <input asp-for="DormitoriosMax" class="form-control" />
+                <span asp-validation-for="DormitoriosMax" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BanheirosMin" class="control-label"></label>
+                <input asp-for="BanheirosMin" class="form-control" />
+                <span asp-validation-for="BanheirosMin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BanheirosMax" class="control-label"></label>
+                <input asp-for="BanheirosMax" class="form-control" />
+                <span asp-validation-for="BanheirosMax" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CriadoPor" class="control-label"></label>
+                <input asp-for="CriadoPor" class="form-control" />
+                <span asp-validation-for="CriadoPor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CriadoEm" class="control-label"></label>
+                <input asp-for="CriadoEm" class="form-control" />
+                <span asp-validation-for="CriadoEm" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AtualizadoPor" class="control-label"></label>
+                <input asp-for="AtualizadoPor" class="form-control" />
+                <span asp-validation-for="AtualizadoPor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AtualizadoEm" class="control-label"></label>
+                <input asp-for="AtualizadoEm" class="form-control" />
+                <span asp-validation-for="AtualizadoEm" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Ativo" /> @Html.DisplayNameFor(model => model.Ativo)
+                </label>
+            </div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

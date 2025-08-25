@@ -2,7 +2,7 @@
 
 public class Condominio : EntityId
 {
-    public List<string> Instalacoes { get; set; } = new List<string>();
+    public List<InstalacaoCondominio> Instalacoes { get; set; } = new();
     public Empreendimento? Empreendimento { get; set; }
     public Guid EmpreendimentoId { get; set; }
 }

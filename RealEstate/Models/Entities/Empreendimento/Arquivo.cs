@@ -1,12 +1,12 @@
 ﻿namespace RealEstate.Models.Entities.Empreendimento;
 
-public class Planta : EntityId
+public class Arquivo : EntityId
 {
-    public int? TipoDaPlanta { get; set; }
     public string? Nomedoarquivo { get; set; }
     public string? Caminho { get; set; }
     public string? Extensao { get; set; }
     public long TamanhoDoArquivo { get; set; }
-    public Guid UnidadeId { get; set; }
-    public Unidade? Unidade { get; set; }
+    public Guid EmpreendimentoId { get; set; }
+    public Empreendimento? Empreendimento { get; set; }
+
 }
