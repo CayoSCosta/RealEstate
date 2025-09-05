@@ -1,0 +1,32 @@
+﻿ Transição suave ao abrir/fechar 
+details[open] .card-body {
+    animation: expand 0.3s ease-in-out;
+}
+
+/*@keyframes expand {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}*/
+
+/*summary {
+    list-style: none;*/  /*remove seta padrão */
+/*}*/
+
+    /*summary::-webkit-details-marker {
+        display: none;*/  /*remove seta no Chrome/Safari */
+    /*}*/
+
+    summary h5 {
+        display: inline;
+    }
+
+summary {
+    cursor: pointer;
+}

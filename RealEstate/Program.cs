@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Config;
 using RealEstate.Models.Entities.User;
+using RealEstate.Services;
+using Serilog;
 
 namespace RealEstate;
 
@@ -40,8 +41,19 @@ public class Program
             options.Filters.Add(new AuthorizeFilter(policy));
         });
 
+
+        builder.Services.AddHttpClient<ViaCepService>();
+
         // Razor Pages (necessário para login/register padrão)
         builder.Services.AddRazorPages();
+        
+        // Configura Serilog para gravar logs em arquivo
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information() // nível mínimo
+            .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day) // novo arquivo a cada dia
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
 
         var app = builder.Build();
 

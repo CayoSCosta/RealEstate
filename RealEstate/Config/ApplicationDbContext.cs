@@ -18,7 +18,7 @@ namespace RealEstate.Config
         public DbSet<Empreendimento> Empreendimentos => Set<Empreendimento>();
         public DbSet<Endereco> Enderecos => Set<Endereco>();
         public DbSet<Imagem> Imagens => Set<Imagem>();
-        public DbSet<InstalacaoCondominio> InstalacoesCondominio => Set<InstalacaoCondominio>();
+        public DbSet<InstalacaoCondominio> InstalacaoCondominios => Set<InstalacaoCondominio>();
         public DbSet<Planta> Plantas => Set<Planta>();
         public DbSet<Unidade> Unidades => Set<Unidade>();
 
@@ -40,7 +40,7 @@ namespace RealEstate.Config
             modelBuilder.Entity<Arquivo>().ToTable("Arquivos", "empreendimento");
             modelBuilder.Entity<Condominio>().ToTable("Condominios", "empreendimento");
             modelBuilder.Entity<Empreendimento>().ToTable("Empreendimentos", "empreendimento");
-            modelBuilder.Entity<Endereco>().ToTable("Endereos", "empreendimento");
+            modelBuilder.Entity<Endereco>().ToTable("Enderecos", "empreendimento");
             modelBuilder.Entity<Imagem>().ToTable("Imagens", "empreendimento");
             modelBuilder.Entity<InstalacaoCondominio>().ToTable("InstalacaoCondominios", "empreendimento");
             modelBuilder.Entity<Planta>().ToTable("Plantas", "empreendimento");

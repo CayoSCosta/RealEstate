@@ -7,6 +7,7 @@ public class Unidade : EntityId
     public int Suites { get; set; }
     public int Banheiros { get; set; }
     public int Vagas { get; set; }
+    public int AreaConstruida { get; set; }
 
     public List<Planta>? Plantas { get; set; }
 }

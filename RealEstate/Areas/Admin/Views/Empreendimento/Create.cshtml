@@ -1,94 +1,207 @@
-﻿@model RealEstate.Models.Entities.Empreendimento.Empreendimento
+﻿@model RealEstate.Models.Dtos.EmpreendimentoViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Cadastrar Empreendimento";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h2 class="mb-4">Cadastrar Empreendimento</h2>
 
-<h4>Empreendimento</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Descricao" class="control-label"></label>
-                <input asp-for="Descricao" class="form-control" />
-                <span asp-validation-for="Descricao" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AreaConstruidaMin" class="control-label"></label>
-                <input asp-for="AreaConstruidaMin" class="form-control" />
-                <span asp-validation-for="AreaConstruidaMin" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AreaConstruidaMax" class="control-label"></label>
-                <input asp-for="AreaConstruidaMax" class="form-control" />
-                <span asp-validation-for="AreaConstruidaMax" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DormitoriosMin" class="control-label"></label>
-                <input asp-for="DormitoriosMin" class="form-control" />
-                <span asp-validation-for="DormitoriosMin" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DormitoriosMax" class="control-label"></label>
-                <input asp-for="DormitoriosMax" class="form-control" />
-                <span asp-validation-for="DormitoriosMax" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BanheirosMin" class="control-label"></label>
-                <input asp-for="BanheirosMin" class="form-control" />
-                <span asp-validation-for="BanheirosMin" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BanheirosMax" class="control-label"></label>
-                <input asp-for="BanheirosMax" class="form-control" />
-                <span asp-validation-for="BanheirosMax" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CriadoPor" class="control-label"></label>
-                <input asp-for="CriadoPor" class="form-control" />
-                <span asp-validation-for="CriadoPor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CriadoEm" class="control-label"></label>
-                <input asp-for="CriadoEm" class="form-control" />
-                <span asp-validation-for="CriadoEm" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AtualizadoPor" class="control-label"></label>
-                <input asp-for="AtualizadoPor" class="form-control" />
-                <span asp-validation-for="AtualizadoPor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AtualizadoEm" class="control-label"></label>
-                <input asp-for="AtualizadoEm" class="form-control" />
-                <span asp-validation-for="AtualizadoEm" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Ativo" /> @Html.DisplayNameFor(model => model.Ativo)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<form asp-action="Create" enctype="multipart/form-data" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+    <div class="row g-3">
+        <!-- Informações básicas -->
+        <div class="col-md-6">
+            <label asp-for="Nome" class="form-label"></label>
+            <input asp-for="Nome" class="form-control" />
+            <span asp-validation-for="Nome" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Status" class="form-label"></label>
+            <input asp-for="Status" class="form-control" />
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="Descricao" class="form-label"></label>
+            <textarea asp-for="Descricao" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Descricao" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Selecionar imagens do empreendimento</label>
+            <input asp-for="ArquivoImagens" type="file" class="form-control" multiple />
+            <span asp-validation-for="ArquivoImagens" class="text-danger"></span>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <hr />
+
+    <!-- Endereço -->
+    <h5>Endereço</h5>
+    <div class="row g-3 mb-6">
+        <div class="col-md-2">
+            <label asp-for="Endereco.Cep" class="form-label"></label>
+            <input asp-for="Endereco.Cep" class="form-control" />
+            <span asp-validation-for="Endereco.Cep" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Endereco.Bairro" class="form-label"></label>
+            <input asp-for="Endereco.Bairro" class="form-control" />
+            <span asp-validation-for="Endereco.Bairro" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Endereco.Cidade" class="form-label"></label>
+            <input asp-for="Endereco.Cidade" class="form-control" />
+            <span asp-validation-for="Endereco.Cidade" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Endereco.Uf" class="form-label"></label>
+            <input asp-for="Endereco.Uf" class="form-control" />
+            <span asp-validation-for="Endereco.Uf" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Endereco.Logradouro" class="form-label"></label>
+            <input asp-for="Endereco.Logradouro" class="form-control" />
+            <span asp-validation-for="Endereco.Logradouro" class="text-danger"></span>
+        </div>
+        <div class="col-md-2">
+            <label asp-for="Endereco.Numero" class="form-label"></label>
+            <input asp-for="Endereco.Numero" class="form-control" />
+            <span asp-validation-for="Endereco.Numero" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Endereco.Complemento" class="form-label"></label>
+            <input asp-for="Endereco.Complemento" class="form-control" />
+            <span asp-validation-for="Endereco.Complemento" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Selecionar arquivos diversos</label>
+        <input asp-for="Arquivos" type="file" class="form-control" multiple />
+        <span asp-validation-for="Arquivos" class="text-danger"></span>
+    </div>
+
+    <hr />
+
+    <!-- Unidades -->
+    <h5>
+        Unidades
+        <button type="button" class="btn btn-sm btn-success" id="addUnitBtn">+1 Unidade</button>
+    </h5>
+    <div id="unitsContainer"></div>
+
+    <hr />
+
+    <div class="d-flex justify-content-between mt-3">
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+        <button type="submit" class="btn btn-success">Salvar</button>
+    </div>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+<script>
+    let unitIndex = 0;
+
+    function createUnitCard(index) {
+        const details = document.createElement('details');
+        details.classList.add('card', 'mb-3', 'shadow-sm');
+        details.open = true;
+
+        const summary = document.createElement('summary');
+        summary.classList.add('card-header', 'bg-secondary', 'text-white');
+        summary.textContent = `Unidade ${index + 1}`;
+        details.appendChild(summary);
+
+        const body = document.createElement('div');
+        body.classList.add('card-body');
+
+        body.innerHTML = `
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label>Tipo</label>
+                    <input name="Unidades[${index}].Tipo" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label>Área</label>
+                    <input name="Unidades[${index}].Area" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label>Dormitórios</label>
+                    <input name="Unidades[${index}].Dormitorios" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label>Suítes</label>
+                    <input name="Unidades[${index}].Suites" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label>Banheiros</label>
+                    <input name="Unidades[${index}].Banheiros" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label>Garagem</label>
+                    <input name="Unidades[${index}].VagasDeGaragem" class="form-control" />
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger btn-sm removeUnitBtn">-</button>
+                </div>
+            </div>
+
+            <!-- Upload de imagens da planta -->
+            <div class="mb-3">
+                <label class="form-label">Plantas (imagens)</label>
+                <input type="file" name="Unidades[${index}].PlantImages" class="form-control" multiple />
+            </div>
+        `;
+
+        details.appendChild(body);
+
+        // Remover card
+        body.querySelector('.removeUnitBtn').addEventListener('click', function () {
+            details.remove();
+        });
+
+        return details;
+    }
+
+    document.getElementById('addUnitBtn').addEventListener('click', function () {
+        const container = document.getElementById('unitsContainer');
+        container.appendChild(createUnitCard(unitIndex));
+        unitIndex++;
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cepInput = document.getElementById('Endereco_Cep'); 
+
+        if (cepInput) {
+            cepInput.addEventListener('blur', function () {
+                const cep = this.value.replace(/\D/g, '');
+
+                if (cep.length !== 8) return;
+
+                fetch(`/Admin/Empreendimento/BuscarCep?cep=${cep}`)
+                    .then(res => {
+                        if (!res.ok) throw new Error("CEP inválido");
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log("Dados recebidos:", data); // <-- debug
+                        document.getElementById('Endereco_Logradouro').value = data.logradouro || data.Logradouro || '';
+                        document.getElementById('Endereco_Bairro').value = data.bairro || data.Bairro || '';
+                        document.getElementById('Endereco_Cidade').value = data.localidade || data.Cidade || '';
+                        document.getElementById('Endereco_Uf').value = data.uf || data.Uf || '';
+                    })
+                    .catch(err => console.warn('Erro ao buscar CEP:', err));
+            });
+        }
+    });
+
+</script>
+
+

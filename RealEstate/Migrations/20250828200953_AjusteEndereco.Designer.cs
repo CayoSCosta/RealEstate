@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RealEstate.Config;
@@ -11,9 +12,11 @@ using RealEstate.Config;
 namespace RealEstate.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250828200953_AjusteEndereco")]
+    partial class AjusteEndereco
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -401,40 +404,16 @@ namespace RealEstate.Migrations
                     b.Property<Guid>("EmpreendimentoId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("LargeCaminho")
+                    b.Property<string>("LargeUrl")
                         .HasColumnType("text");
 
-                    b.Property<string>("LargeExtensao")
+                    b.Property<string>("MediumUrl")
                         .HasColumnType("text");
 
-                    b.Property<string>("LargeTamanho")
+                    b.Property<string>("ThumbUrl")
                         .HasColumnType("text");
 
-                    b.Property<string>("MediumCaminho")
-                        .HasColumnType("text");
-
-                    b.Property<string>("MediumExtensao")
-                        .HasColumnType("text");
-
-                    b.Property<string>("MediumTamanho")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ThumbCaminho")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ThumbExtensao")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ThumbTamanho")
-                        .HasColumnType("text");
-
-                    b.Property<string>("XLargeCaminho")
-                        .HasColumnType("text");
-
-                    b.Property<string>("XLargeExtensao")
-                        .HasColumnType("text");
-
-                    b.Property<string>("XLargeTamanho")
+                    b.Property<string>("XLargeUrl")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -494,9 +473,6 @@ namespace RealEstate.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<int>("AreaConstruida")
-                        .HasColumnType("integer");
 
                     b.Property<int>("Banheiros")
                         .HasColumnType("integer");

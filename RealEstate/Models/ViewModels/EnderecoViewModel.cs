@@ -1,6 +1,6 @@
-﻿namespace RealEstate.Models.Entities.Empreendimento;
+namespace RealEstate.Models.Dtos;
 
-public class Endereco : EntityId
+public class EnderecoViewModel : ViewModelBaseId
 {
     public string? Cep { get; set; }
     public string? Logradouro { get; set; }
@@ -9,10 +9,4 @@ public class Endereco : EntityId
     public string? Bairro { get; set; }
     public string? Cidade { get; set; }
     public string? Uf { get; set; }
-
-    public double Latitude { get; set; }
-    public double Longitude { get; set; }
-
-    public Empreendimento? Empreendimento { get; set; }
-    public Guid EmpreendimentoId { get; set; }
 }
