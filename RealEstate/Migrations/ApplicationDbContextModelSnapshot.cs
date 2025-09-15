@@ -398,7 +398,7 @@ namespace RealEstate.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("EmpreendimentoId")
+                    b.Property<Guid?>("EmpreendimentoId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("LargeCaminho")
@@ -428,6 +428,12 @@ namespace RealEstate.Migrations
                     b.Property<string>("ThumbTamanho")
                         .HasColumnType("text");
 
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("UnidadeId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("XLargeCaminho")
                         .HasColumnType("text");
 
@@ -440,6 +446,8 @@ namespace RealEstate.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmpreendimentoId");
+
+                    b.HasIndex("UnidadeId");
 
                     b.ToTable("Imagens", "empreendimento");
                 });
@@ -458,37 +466,6 @@ namespace RealEstate.Migrations
                     b.ToTable("InstalacaoCondominios", "empreendimento");
                 });
 
-            modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Planta", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Caminho")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Extensao")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Nomedoarquivo")
-                        .HasColumnType("text");
-
-                    b.Property<long>("TamanhoDoArquivo")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("TipoDaPlanta")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UnidadeId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UnidadeId");
-
-                    b.ToTable("Plantas", "empreendimento");
-                });
-
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Unidade", b =>
                 {
                     b.Property<Guid>("Id")
@@ -498,11 +475,32 @@ namespace RealEstate.Migrations
                     b.Property<int>("AreaConstruida")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("AtualizadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("AtualizadoPor")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Banheiros")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CriadoPor")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Dormitorios")
                         .HasColumnType("integer");
+
+                    b.Property<Guid?>("EmpreendimentoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
 
                     b.Property<int>("Suites")
                         .HasColumnType("integer");
@@ -513,7 +511,12 @@ namespace RealEstate.Migrations
                     b.Property<int>("Vagas")
                         .HasColumnType("integer");
 
+                    b.Property<decimal?>("Valor")
+                        .HasColumnType("numeric");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpreendimentoId");
 
                     b.ToTable("Unidades", "empreendimento");
                 });
@@ -594,7 +597,7 @@ namespace RealEstate.Migrations
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Arquivo", b =>
                 {
                     b.HasOne("RealEstate.Models.Entities.Empreendimento.Empreendimento", "Empreendimento")
-                        .WithMany()
+                        .WithMany("Arquivos")
                         .HasForeignKey("EmpreendimentoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -627,23 +630,25 @@ namespace RealEstate.Migrations
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Imagem", b =>
                 {
                     b.HasOne("RealEstate.Models.Entities.Empreendimento.Empreendimento", "Empreendimento")
-                        .WithMany("imagens")
-                        .HasForeignKey("EmpreendimentoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Imagens")
+                        .HasForeignKey("EmpreendimentoId");
+
+                    b.HasOne("RealEstate.Models.Entities.Empreendimento.Unidade", "Unidade")
+                        .WithMany("Imagens")
+                        .HasForeignKey("UnidadeId");
 
                     b.Navigation("Empreendimento");
-                });
-
-            modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Planta", b =>
-                {
-                    b.HasOne("RealEstate.Models.Entities.Empreendimento.Unidade", "Unidade")
-                        .WithMany("Plantas")
-                        .HasForeignKey("UnidadeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Unidade");
+                });
+
+            modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Unidade", b =>
+                {
+                    b.HasOne("RealEstate.Models.Entities.Empreendimento.Empreendimento", "Empreendimento")
+                        .WithMany("Unidades")
+                        .HasForeignKey("EmpreendimentoId");
+
+                    b.Navigation("Empreendimento");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Entities.User.ApplicationUser", b =>
@@ -657,14 +662,18 @@ namespace RealEstate.Migrations
 
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Empreendimento", b =>
                 {
+                    b.Navigation("Arquivos");
+
                     b.Navigation("Endereco");
 
-                    b.Navigation("imagens");
+                    b.Navigation("Imagens");
+
+                    b.Navigation("Unidades");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Unidade", b =>
                 {
-                    b.Navigation("Plantas");
+                    b.Navigation("Imagens");
                 });
 #pragma warning restore 612, 618
         }

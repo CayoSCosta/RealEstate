@@ -1,0 +1,84 @@
+﻿@model RealEstate.Models.ViewModels.UnidadeViewModel
+
+@{
+    ViewData["Title"] = "Cadastrar Unidade";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="Tipo" class="form-label"></label>
+            <input asp-for="Tipo" class="form-control" />
+            <span asp-validation-for="Tipo" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Status" class="form-label"></label>
+            <input asp-for="Status" class="form-control" />
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label asp-for="Dormitorios" class="form-label"></label>
+            <input asp-for="Dormitorios" class="form-control" type="number" min="0" />
+            <span asp-validation-for="Dormitorios" class="text-danger"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Banheiros" class="form-label"></label>
+            <input asp-for="Banheiros" class="form-control" type="number" min="0" />
+            <span asp-validation-for="Banheiros" class="text-danger"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Suites" class="form-label"></label>
+            <input asp-for="Suites" class="form-control" type="number" min="0" />
+            <span asp-validation-for="Suites" class="text-danger"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="VagasDeGaragem" class="form-label"></label>
+            <input asp-for="VagasDeGaragem" class="form-control" type="number" min="0" />
+            <span asp-validation-for="VagasDeGaragem" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="AreaConstruida" class="form-label"></label>
+            <input asp-for="AreaConstruida" class="form-control" type="number" min="0" />
+            <span asp-validation-for="AreaConstruida" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Valor" class="form-label"></label>
+            <input asp-for="Valor" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="Valor" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- ComboBox para selecionar Empreendimento -->
+    <div class="mb-3">
+        <label asp-for="EmpreendimentoId" class="form-label">Empreendimento</label>
+        <select asp-for="EmpreendimentoId" class="form-select"
+                asp-items="ViewBag.Empreendimentos">
+            <option value="">Selecione um empreendimento</option>
+        </select>
+        <span asp-validation-for="EmpreendimentoId" class="text-danger"></span>
+    </div>
+
+    <!-- Upload de plantas -->
+    <div class="mb-3">
+        <label class="form-label">Plantas</label>
+        <input asp-for="Plantas" class="form-control" type="file" multiple />
+        <span asp-validation-for="Plantas" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

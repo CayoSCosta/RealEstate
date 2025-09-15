@@ -2,6 +2,7 @@
 
 public class Imagem : EntityId
 {
+    public TipoImagem Tipo { get; set; }
     public string? ThumbCaminho { get; set; }
     public string? MediumCaminho { get; set; }
     public string? LargeCaminho { get; set; }
@@ -17,6 +18,8 @@ public class Imagem : EntityId
     public string? LargeExtensao { get; set; }
     public string? XLargeExtensao { get; set; }
 
-    public Guid EmpreendimentoId { get; set; }
+    public Guid? EmpreendimentoId { get; set; }
+    public Guid? UnidadeId { get; set; }
     public Empreendimento? Empreendimento { get; set; }
+    public Unidade? Unidade { get; set; }
 }

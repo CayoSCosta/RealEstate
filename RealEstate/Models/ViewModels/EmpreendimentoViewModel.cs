@@ -1,14 +1,16 @@
-using RealEstate.Models.ViewModels;
 using System.ComponentModel;
 
-namespace RealEstate.Models.Dtos;
+namespace RealEstate.Models.ViewModels;
 public class EmpreendimentoViewModel : ViewModelBaseId
 {
+    [DisplayName("Empreendimento")]
     public string? Nome { get; set; }
     
     [DisplayName("Descrição")]
     public string? Descricao { get; set; }
-    
+
+    public bool Ativo { get; set; }
+
     public string? Status { get; set; }
 
     [DisplayName("Área min")]
@@ -41,14 +43,14 @@ public class EmpreendimentoViewModel : ViewModelBaseId
     [DisplayName("Vagas de garagem min max")]
     public int VagasDeGaragemMax { get; set; }
 
-    public List<UnidadeViewModel> Unidades { get; set; } = new List<UnidadeViewModel>();
+    public List<UnidadeViewModel>? Unidades { get; set; } = new List<UnidadeViewModel>();
 
     [DisplayName("Endereço")]
-    public EnderecoViewModel Endereco { get; set; } = new EnderecoViewModel();
-
+    public EnderecoViewModel? Endereco { get; set; } = new EnderecoViewModel();
     public List<ImagemViewModel>? Imagens { get; set; } = new List<ImagemViewModel>();
 
-    public List<IFormFile> ArquivoImagens { get; set; } = new List<IFormFile>();
-    public List<IFormFile> Arquivos{ get; set; } = new List<IFormFile>();
+    public List<IFormFile> ImagensDefachada { get; set; } = new List<IFormFile>();
+    public List<IFormFile> ImagensDiversas { get; set; } = new List<IFormFile>();
+    public List<IFormFile> Arquivos { get; set; } = new List<IFormFile>();
 
 }

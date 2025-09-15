@@ -1,44 +1,38 @@
-﻿@model IEnumerable<RealEstate.Models.ViewModels.EmpreendimentoViewModel>
+﻿@model IEnumerable<RealEstate.Models.ViewModels.UnidadeViewModel>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
-<h1>Empreendimentos</h1>
+<h1>Unidades</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table id="table-index" class="table">
+<table class="table">
     <thead>
         <tr>
             <th>
-                Empreendimento
+                @Html.DisplayNameFor(model => model.Empreendimento.Nome)
             </th>
             <th>
-                Status
+                @Html.DisplayNameFor(model => model.Tipo)
             </th>
             <th>
-               Bairro
+                @Html.DisplayNameFor(model => model.Dormitorios)
             </th>
             <th>
-                Área
+                @Html.DisplayNameFor(model => model.Suites)
             </th>
             <th>
-                Dormitórios
+                @Html.DisplayNameFor(model => model.Banheiros)
             </th>
             <th>
-                Banheiro
+                @Html.DisplayNameFor(model => model.VagasDeGaragem)
             </th>
             <th>
-                Suíte
-            </th>
-            <th>
-                Garagem
+                @Html.DisplayNameFor(model => model.AreaConstruida)
             </th>
             <th>
                 Ações
@@ -50,28 +44,25 @@
         {
             <tr>
                 <td>
-                    @item.Nome
+                    @Html.DisplayFor(modelItem => item.Empreendimento.Nome)
                 </td>
                 <td>
-                    @item.Status
+                    @Html.DisplayFor(modelItem => item.Tipo)
                 </td>
                 <td>
-                    @item.Endereco?.Bairro
+                    @Html.DisplayFor(modelItem => item.Dormitorios)
                 </td>
                 <td>
-                    @($"{item.AreaConstruidaMin}² - {item.AreaConstruidaMax}²")
+                    @Html.DisplayFor(modelItem => item.Suites)
                 </td>
                 <td>
-                    @($"{item.DormitoriosMin} - {item.DormitoriosMax}")
+                    @Html.DisplayFor(modelItem => item.Banheiros)
                 </td>
                 <td>
-                    @($"{item.BanheirosMin} - {item.BanheirosMax}")
+                    @Html.DisplayFor(modelItem => item.VagasDeGaragem)
                 </td>
                 <td>
-                    @($"{item.SuitesMin} - {item.SuitesMax}")
-                </td>
-                <td>
-                    @($"{item.VagasDeGaragemMin} - {item.VagasDeGaragemMax}")
+                    @Html.DisplayFor(modelItem => item.AreaConstruida)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1" title="Editar">
@@ -88,15 +79,3 @@
         }
     </tbody>
 </table>
-
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#table-index').DataTable();
-    });
-</script>

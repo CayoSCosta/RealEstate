@@ -12,8 +12,8 @@ using RealEstate.Config;
 namespace RealEstate.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250828170502_Ajuste")]
-    partial class Ajuste
+    [Migration("20250911192646_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -331,6 +331,21 @@ namespace RealEstate.Migrations
                     b.Property<string>("Nome")
                         .HasColumnType("text");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<int>("SuitesMax")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SuitesMin")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VagasDeGaragemMax")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VagasDeGaragemMin")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("Empreendimentos", "empreendimento");
@@ -366,6 +381,9 @@ namespace RealEstate.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("double precision");
 
+                    b.Property<string>("Numero")
+                        .HasColumnType("text");
+
                     b.Property<string>("Uf")
                         .HasColumnType("text");
 
@@ -374,7 +392,7 @@ namespace RealEstate.Migrations
                     b.HasIndex("EmpreendimentoId")
                         .IsUnique();
 
-                    b.ToTable("Endereos", "empreendimento");
+                    b.ToTable("Enderecos", "empreendimento");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Imagem", b =>
@@ -383,24 +401,56 @@ namespace RealEstate.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Caminho")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("EmpreendimentoId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Extensao")
+                    b.Property<string>("LargeCaminho")
                         .HasColumnType("text");
 
-                    b.Property<string>("Nomedoarquivo")
+                    b.Property<string>("LargeExtensao")
                         .HasColumnType("text");
 
-                    b.Property<long>("Tamanho")
-                        .HasColumnType("bigint");
+                    b.Property<string>("LargeTamanho")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MediumCaminho")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MediumExtensao")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MediumTamanho")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ThumbCaminho")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ThumbExtensao")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ThumbTamanho")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("UnidadeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("XLargeCaminho")
+                        .HasColumnType("text");
+
+                    b.Property<string>("XLargeExtensao")
+                        .HasColumnType("text");
+
+                    b.Property<string>("XLargeTamanho")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmpreendimentoId");
+
+                    b.HasIndex("UnidadeId");
 
                     b.ToTable("Imagens", "empreendimento");
                 });
@@ -419,48 +469,41 @@ namespace RealEstate.Migrations
                     b.ToTable("InstalacaoCondominios", "empreendimento");
                 });
 
-            modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Planta", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Caminho")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Extensao")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Nomedoarquivo")
-                        .HasColumnType("text");
-
-                    b.Property<long>("TamanhoDoArquivo")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("TipoDaPlanta")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UnidadeId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UnidadeId");
-
-                    b.ToTable("Plantas", "empreendimento");
-                });
-
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Unidade", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("AreaConstruida")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("AtualizadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("AtualizadoPor")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Banheiros")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CriadoPor")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Dormitorios")
                         .HasColumnType("integer");
+
+                    b.Property<Guid?>("EmpreendimentoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
 
                     b.Property<int>("Suites")
                         .HasColumnType("integer");
@@ -471,7 +514,12 @@ namespace RealEstate.Migrations
                     b.Property<int>("Vagas")
                         .HasColumnType("integer");
 
+                    b.Property<decimal?>("Valor")
+                        .HasColumnType("numeric");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpreendimentoId");
 
                     b.ToTable("Unidades", "empreendimento");
                 });
@@ -552,7 +600,7 @@ namespace RealEstate.Migrations
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Arquivo", b =>
                 {
                     b.HasOne("RealEstate.Models.Entities.Empreendimento.Empreendimento", "Empreendimento")
-                        .WithMany()
+                        .WithMany("Arquivos")
                         .HasForeignKey("EmpreendimentoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -585,23 +633,25 @@ namespace RealEstate.Migrations
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Imagem", b =>
                 {
                     b.HasOne("RealEstate.Models.Entities.Empreendimento.Empreendimento", "Empreendimento")
-                        .WithMany()
+                        .WithMany("Imagens")
                         .HasForeignKey("EmpreendimentoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("RealEstate.Models.Entities.Empreendimento.Unidade", null)
+                        .WithMany("Imagens")
+                        .HasForeignKey("UnidadeId");
+
                     b.Navigation("Empreendimento");
                 });
 
-            modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Planta", b =>
+            modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Unidade", b =>
                 {
-                    b.HasOne("RealEstate.Models.Entities.Empreendimento.Unidade", "Unidade")
-                        .WithMany("Plantas")
-                        .HasForeignKey("UnidadeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("RealEstate.Models.Entities.Empreendimento.Empreendimento", "Empreendimento")
+                        .WithMany("Unidades")
+                        .HasForeignKey("EmpreendimentoId");
 
-                    b.Navigation("Unidade");
+                    b.Navigation("Empreendimento");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Entities.User.ApplicationUser", b =>
@@ -615,12 +665,18 @@ namespace RealEstate.Migrations
 
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Empreendimento", b =>
                 {
+                    b.Navigation("Arquivos");
+
                     b.Navigation("Endereco");
+
+                    b.Navigation("Imagens");
+
+                    b.Navigation("Unidades");
                 });
 
             modelBuilder.Entity("RealEstate.Models.Entities.Empreendimento.Unidade", b =>
                 {
-                    b.Navigation("Plantas");
+                    b.Navigation("Imagens");
                 });
 #pragma warning restore 612, 618
         }

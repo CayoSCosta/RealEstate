@@ -65,3 +65,10 @@
     cursor: pointer;
     padding: 10px;
 }
+
+#sidebar .nav-link[aria-expanded="true"],
+#sidebar .nav-link.active {
+    color: #0d6efd; /* mesma cor dos links ativos do menu */
+    background-color: transparent;
+}
+

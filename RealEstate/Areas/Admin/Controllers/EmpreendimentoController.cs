@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Config;
-using RealEstate.Models.Dtos;
 using RealEstate.Models.Entities.Empreendimento;
+using RealEstate.Models.ViewModels;
 using RealEstate.Services;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 
 
 namespace RealEstate.Areas.Admin.Controllers;
@@ -20,14 +19,15 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
         {
             var listaDeEmpreendimento = await context.Empreendimentos
                 .Include(e => e.Endereco)
-                .Include(e => e.imagens)
+                .Include(e => e.Imagens)
+                .Include(e => e.Unidades)
                 .ToListAsync();
 
             List<EmpreendimentoViewModel> listaDeEmpreendimentoDto = new();
 
             foreach (var empreendimento in listaDeEmpreendimento)
             {
-                EmpreendimentoViewModel dto = new()
+                EmpreendimentoViewModel vm = new()
                 {
                     Id = empreendimento.Id,
                     Nome = empreendimento.Nome,
@@ -43,29 +43,48 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
                     VagasDeGaragemMin = empreendimento.VagasDeGaragemMin,
                     VagasDeGaragemMax = empreendimento.VagasDeGaragemMax,
                     Status = empreendimento.Status,
+                    Ativo = empreendimento.Ativo,
+
+                    Unidades = empreendimento.Unidades != null
+                        ? empreendimento.Unidades.Select(u => new UnidadeViewModel
+                        {
+                            Id = u.Id,
+                            Tipo = u.Tipo,
+                            Dormitorios = u.Dormitorios,
+                            Suites = u.Suites,
+                            Banheiros = u.Banheiros,
+                            VagasDeGaragem = u.Vagas,
+                            AreaConstruida = u.AreaConstruida,
+                            Valor = u.Valor ?? 0,
+                            Status = u.Status,
+                            EmpreendimentoId = u.EmpreendimentoId ?? Guid.Empty
+                        }).ToList()
+                        : null,
+
                     Endereco = empreendimento.Endereco != null
                         ? new()
                         {
-                            Bairro = empreendimento.Endereco.Bairro,
-                            Cidade = empreendimento.Endereco.Cidade,
-                            Cep = empreendimento.Endereco.Cep,
-                            Complemento = empreendimento.Endereco.Complemento,
-                            Uf = empreendimento.Endereco.Uf,
-                            Logradouro = empreendimento.Endereco.Logradouro
+                            Bairro = empreendimento.Endereco?.Bairro,
+                            Cidade = empreendimento.Endereco?.Cidade,
+                            Cep = empreendimento.Endereco?.Cep,
+                            Complemento = empreendimento.Endereco?.Complemento,
+                            Uf = empreendimento.Endereco?.Uf,
+                            Logradouro = empreendimento.Endereco?.Logradouro
                         } : null,
-                    Imagens = empreendimento.imagens != null
-                        ? empreendimento.imagens.Select(imagem => new ImagemViewModel
+
+                    Imagens = empreendimento.Imagens != null
+                        ? empreendimento.Imagens.Select(imagem => new ImagemViewModel
                         {
                             LargeCaminho = imagem.LargeCaminho,
                             ThumbCaminho = imagem.ThumbCaminho,
                             MediumCaminho = imagem.MediumCaminho,
                             XLargeCaminho = imagem.XLargeCaminho,
                         }).ToList()
-                        : null
+                        : null,
                 };
 
                 logger.LogInformation($"Empreendimento/Index chamado em {DateTime.Now}", DateTime.Now);
-                listaDeEmpreendimentoDto.Add(dto);
+                listaDeEmpreendimentoDto.Add(vm);
             }
 
             return View(listaDeEmpreendimentoDto);
@@ -115,47 +134,34 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
                 return View(vm);
             }
 
-            Empreendimento empreendimento = new()
+            Empreendimento empreendimento = new();
+            empreendimento.Nome = vm.Nome;
+            empreendimento.Status = vm.Status;
+            empreendimento.Descricao = vm.Descricao;
+
+            if (vm.Endereco != null)
             {
-                //AreaConstruidaMax = vm.AreaConstruidaMax,
-                //AreaConstruidaMin = vm.AreaConstruidaMin,
-                //BanheirosMax = vm.BanheirosMax,
-                //BanheirosMin = vm.BanheirosMin,
-                //Descricao = vm.Descricao,
-                //DormitoriosMax = vm.DormitoriosMax,
-                //DormitoriosMin = vm.DormitoriosMin,
-                Nome = vm.Nome,
-                Status = vm.Status,
-                //SuitesMax = vm.SuitesMax,
-                //SuitesMin = vm.SuitesMin,
-                //VagasDeGaragemMax = vm.VagasDeGaragemMax,
-                //VagasDeGaragemMin = vm.VagasDeGaragemMin,
-                CriadoEm = DateTime.UtcNow,
-                CriadoPor = Guid.NewGuid(),
-                Ativo = true,
-                AtualizadoEm = DateTime.UtcNow,
-                AtualizadoPor = Guid.NewGuid(),
+                empreendimento.Endereco = new Endereco
+                {
+                    Logradouro = vm.Endereco.Logradouro,
+                    Bairro = vm.Endereco.Bairro,
+                    Cidade = vm.Endereco.Cidade,
+                    Cep = vm.Endereco.Cep,
+                    Complemento = vm.Endereco.Complemento,
+                    Uf = vm.Endereco.Uf
+                };
+            }
+            else
+            {
+                empreendimento.Endereco = null;
+            }
 
-                Endereco = vm.Endereco != null
-                    ? new()
-                    {
-                        Bairro = vm.Endereco.Bairro,
-                        Cidade = vm.Endereco.Cidade,
-                        Cep = vm.Endereco.Cep,
-                        Complemento = vm.Endereco.Complemento,
-                        Uf = vm.Endereco.Uf,
-                        Logradouro = vm.Endereco.Logradouro,
-                    }
-                    : null,
-
-                imagens = null,
-            };
 
             context.Add(empreendimento);
             var teste = await context.SaveChangesAsync();
             ViewBag.Mensagem = "Empreendimento criado com sucesso!";
 
-            await SalvarImagensAsync(vm.ArquivoImagens, empreendimento.Nome ?? string.Empty, empreendimento.Id, "Fachada");
+            await SalvarImagensAsync(vm.ImagensDiversas, empreendimento.Nome ?? string.Empty, empreendimento.Id, "Fachada");
 
             return RedirectToAction(nameof(Index));
         }
@@ -166,20 +172,59 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
         }
     }
 
-    public async Task<IActionResult> Edit(Guid? id)
+    public async Task<IActionResult> Edit(Guid id)
     {
-        if (id == null)
+        var empreendimento = await context.Empreendimentos
+            .Include(e => e.Unidades)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        EmpreendimentoViewModel vm = new();
+        if (empreendimento != null)
         {
-            return NotFound();
+            vm.Status = empreendimento.Status;
+            vm.Nome = empreendimento.Nome;
+            vm.Descricao = empreendimento.Descricao;
+            vm.AreaConstruidaMin = empreendimento.AreaConstruidaMin;
+            vm.AreaConstruidaMax = empreendimento.AreaConstruidaMax;
+            vm.DormitoriosMin = empreendimento.DormitoriosMin;
+            vm.DormitoriosMax = empreendimento.DormitoriosMax;
+            vm.BanheirosMin = empreendimento.BanheirosMin;
+            vm.BanheirosMax = empreendimento.BanheirosMax;
+            vm.SuitesMin = empreendimento.SuitesMin;
+            vm.SuitesMax = empreendimento.SuitesMax;
+            vm.VagasDeGaragemMin = empreendimento.VagasDeGaragemMin;
+            vm.VagasDeGaragemMax = empreendimento.VagasDeGaragemMax;
+            vm.Id = empreendimento.Id;
+            vm.Endereco = new EnderecoViewModel
+            {
+                Bairro = empreendimento.Endereco?.Bairro,
+                Cidade = empreendimento.Endereco?.Cidade,
+                Cep = empreendimento.Endereco?.Cep,
+                Complemento = empreendimento.Endereco?.Complemento,
+                Uf = empreendimento.Endereco?.Uf,
+                Logradouro = empreendimento.Endereco?.Logradouro
+            };
+            vm.Unidades = empreendimento.Unidades != null
+                ? empreendimento.Unidades.Select(u => new UnidadeViewModel
+                {
+                    Id = u.Id,
+                    Tipo = u.Tipo,
+                    Dormitorios = u.Dormitorios,
+                    Suites = u.Suites,
+                    Banheiros = u.Banheiros,
+                    VagasDeGaragem = u.Vagas,
+                    AreaConstruida = u.AreaConstruida,
+                    Valor = u.Valor ?? 0,
+                    Status = u.Status,
+                    EmpreendimentoId = u.EmpreendimentoId ?? Guid.Empty
+                }).ToList()
+                : null;
         }
 
-        var empreendimento = await context.Empreendimentos.FindAsync(id);
         if (empreendimento == null)
-        {
             return NotFound();
-        }
 
-        return View(empreendimento);
+        return View(vm);
     }
 
     // POST: Admin/Empreendimento/Edit/5
@@ -187,12 +232,9 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id,
-        [Bind(
-            "Nome,Descricao,AreaConstruidaMin,AreaConstruidaMax,DormitoriosMin,DormitoriosMax,BanheirosMin,BanheirosMax,CriadoPor,CriadoEm,AtualizadoPor,AtualizadoEm,Ativo,Id")]
-        Empreendimento empreendimento)
+    public async Task<IActionResult> Edit(Guid id, EmpreendimentoViewModel empreendimentoVm)
     {
-        if (id != empreendimento.Id)
+        if (id != empreendimentoVm.Id)
         {
             return NotFound();
         }
@@ -201,12 +243,12 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
         {
             try
             {
-                context.Update(empreendimento);
+                context.Update(empreendimentoVm);
                 await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EmpreendimentoExists(empreendimento.Id))
+                if (!EmpreendimentoExists(empreendimentoVm.Id))
                 {
                     return NotFound();
                 }
@@ -219,7 +261,7 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
             return RedirectToAction(nameof(Index));
         }
 
-        return View(empreendimento);
+        return View(empreendimentoVm);
     }
 
     public async Task<IActionResult> Delete(Guid? id)
@@ -264,7 +306,7 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
             throw new ArgumentException("Nenhuma imagem enviada.");
 
         // 1. Pasta de destino
-        var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/imagens");
+        var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Imagens");
         if (!Directory.Exists(uploadDir))
             Directory.CreateDirectory(uploadDir);
 
@@ -283,7 +325,7 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
                 string extensao = Path.GetExtension(arquivo.FileName);
                 string fileName = $"{tipoImagem}_{nomeEmpreendimento.Trim()}{extensao}";
                 string filePath = Path.Combine(uploadDir, fileName);
-                string caminho = "/imagens/" + fileName;
+                string caminho = "/Imagens/" + fileName;
 
                 // Salva arquivo no disco
                 await using (var stream = new FileStream(filePath, FileMode.Create))
@@ -296,7 +338,7 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
         }
 
         if (imagensTemp.Count != 4)
-            throw new InvalidOperationException("Devem ser enviadas exatamente 4 imagens.");
+            throw new InvalidOperationException("Devem ser enviadas exatamente 4 Imagens.");
 
         // 4. Ordena do menor para o maior tamanho
         var ordenadas = imagensTemp.OrderBy(x => x.Area).ToList();

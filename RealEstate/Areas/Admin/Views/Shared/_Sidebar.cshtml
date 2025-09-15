@@ -7,9 +7,6 @@
 
 @if (isAuthenticated)
 {
-
-    <!-- Sidebar -->
-
     <nav id="sidebar">
         <ul class="nav flex-column">
             <li class="nav-item">
@@ -17,11 +14,32 @@
                     <i class="bi bi-house"></i><span> Início</span>
                 </a>
             </li>
+
+            <!-- Menu expansível de Imóveis -->
             <li class="nav-item">
-                <a class="nav-link" asp-controller="Empreendimento" asp-action="Index">
-                    <i class="bi bi-building"></i><span> Imóveis</span>
+                <a class="nav-link active d-flex justify-content-between align-items-center"
+                   data-bs-toggle="collapse" data-bs-target="#submenuImoveis"
+                   role="button" aria-expanded="false" aria-controls="submenuImoveis">
+                    <span><i class="bi bi-building"></i> Imóveis</span>
+                    <i class="bi bi-caret-down ms-auto"></i>
                 </a>
+
+                <div class="collapse" id="submenuImoveis">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Empreendimento" asp-action="Index">
+                                <i class="bi bi-box"></i> Empreendimentos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Unidade" asp-action="Index">
+                                <i class="bi bi-layers"></i> Unidades
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
+
             <li class="nav-item">
                 <a class="nav-link" asp-controller="Empreendimento" asp-action="Index">
                     <i class="bi bi-people"></i><span> Construtoras</span>
@@ -34,6 +52,7 @@
             </li>
         </ul>
     </nav>
+
 }
 
 <script>

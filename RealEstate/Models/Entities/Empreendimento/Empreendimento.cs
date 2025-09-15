@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace RealEstate.Models.Entities.Empreendimento;
+﻿namespace RealEstate.Models.Entities.Empreendimento;
 
 public class Empreendimento : EntityBase
 {
@@ -18,5 +16,8 @@ public class Empreendimento : EntityBase
     public int VagasDeGaragemMin { get; set; }
     public int VagasDeGaragemMax { get; set; }
     public Endereco? Endereco { get; set; }
-    public List<Imagem>? imagens { get; set; }
+    public List<Unidade>? Unidades { get; set; }
+    public List<Imagem>? Imagens { get; set; }
+    public List<Arquivo>? Arquivos { get; set; }
+
 }

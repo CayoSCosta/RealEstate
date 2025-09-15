@@ -1,4 +1,4 @@
-﻿@model RealEstate.Models.Dtos.EmpreendimentoViewModel
+﻿@model RealEstate.Models.ViewModels.EmpreendimentoViewModel
 
 @{
     ViewData["Title"] = "Cadastrar Empreendimento";
@@ -30,8 +30,8 @@
         </div>
         <div class="col-12">
             <label class="form-label">Selecionar imagens do empreendimento</label>
-            <input asp-for="ArquivoImagens" type="file" class="form-control" multiple />
-            <span asp-validation-for="ArquivoImagens" class="text-danger"></span>
+            <input asp-for="ImagensDiversas" type="file" class="form-control" multiple />
+            <span asp-validation-for="ImagensDiversas" class="text-danger"></span>
         </div>
     </div>
 
@@ -84,96 +84,11 @@
 
     <hr />
 
-    <!-- Unidades -->
-    <h5>
-        Unidades
-        <button type="button" class="btn btn-sm btn-success" id="addUnitBtn">+1 Unidade</button>
-    </h5>
-    <div id="unitsContainer"></div>
-
-    <hr />
-
     <div class="d-flex justify-content-between mt-3">
         <a asp-action="Index" class="btn btn-secondary">Voltar</a>
         <button type="submit" class="btn btn-success">Salvar</button>
     </div>
 </form>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
-<script>
-    let unitIndex = 0;
-
-    function createUnitCard(index) {
-        const details = document.createElement('details');
-        details.classList.add('card', 'mb-3', 'shadow-sm');
-        details.open = true;
-
-        const summary = document.createElement('summary');
-        summary.classList.add('card-header', 'bg-secondary', 'text-white');
-        summary.textContent = `Unidade ${index + 1}`;
-        details.appendChild(summary);
-
-        const body = document.createElement('div');
-        body.classList.add('card-body');
-
-        body.innerHTML = `
-            <div class="row g-3 mb-3">
-                <div class="col-md-3">
-                    <label>Tipo</label>
-                    <input name="Unidades[${index}].Tipo" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label>Área</label>
-                    <input name="Unidades[${index}].Area" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label>Dormitórios</label>
-                    <input name="Unidades[${index}].Dormitorios" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label>Suítes</label>
-                    <input name="Unidades[${index}].Suites" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label>Banheiros</label>
-                    <input name="Unidades[${index}].Banheiros" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label>Garagem</label>
-                    <input name="Unidades[${index}].VagasDeGaragem" class="form-control" />
-                </div>
-                <div class="col-md-1 d-flex align-items-end">
-                    <button type="button" class="btn btn-danger btn-sm removeUnitBtn">-</button>
-                </div>
-            </div>
-
-            <!-- Upload de imagens da planta -->
-            <div class="mb-3">
-                <label class="form-label">Plantas (imagens)</label>
-                <input type="file" name="Unidades[${index}].PlantImages" class="form-control" multiple />
-            </div>
-        `;
-
-        details.appendChild(body);
-
-        // Remover card
-        body.querySelector('.removeUnitBtn').addEventListener('click', function () {
-            details.remove();
-        });
-
-        return details;
-    }
-
-    document.getElementById('addUnitBtn').addEventListener('click', function () {
-        const container = document.getElementById('unitsContainer');
-        container.appendChild(createUnitCard(unitIndex));
-        unitIndex++;
-    });
-</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -191,7 +106,6 @@
                         return res.json();
                     })
                     .then(data => {
-                        console.log("Dados recebidos:", data); // <-- debug
                         document.getElementById('Endereco_Logradouro').value = data.logradouro || data.Logradouro || '';
                         document.getElementById('Endereco_Bairro').value = data.bairro || data.Bairro || '';
                         document.getElementById('Endereco_Cidade').value = data.localidade || data.Cidade || '';

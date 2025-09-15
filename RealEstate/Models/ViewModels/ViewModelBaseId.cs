@@ -1,4 +1,4 @@
-﻿namespace RealEstate.Models.Dtos;
+﻿namespace RealEstate.Models.ViewModels;
 
 public class ViewModelBaseId
 {
