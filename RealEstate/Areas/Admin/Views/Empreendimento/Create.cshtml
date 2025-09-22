@@ -1,11 +1,11 @@
 ﻿@model RealEstate.Models.ViewModels.EmpreendimentoViewModel
 
 @{
-    ViewData["Title"] = "Cadastrar Empreendimento";
+    ViewData["Title"] = "Cadastrar/Editar Empreendimento";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="mb-4">Cadastrar Empreendimento</h2>
+<h2 class="mb-4">@ViewData["Title"]</h2>
 
 <form asp-action="Create" enctype="multipart/form-data" method="post">
     @Html.AntiForgeryToken()
@@ -23,15 +23,54 @@
             <input asp-for="Status" class="form-control" />
             <span asp-validation-for="Status" class="text-danger"></span>
         </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" asp-for="Ativo" />
+            <label class="form-check-label" asp-for="Ativo"></label>
+        </div>
         <div class="col-12">
             <label asp-for="Descricao" class="form-label"></label>
             <textarea asp-for="Descricao" class="form-control" rows="3"></textarea>
             <span asp-validation-for="Descricao" class="text-danger"></span>
         </div>
-        <div class="col-12">
-            <label class="form-label">Selecionar imagens do empreendimento</label>
-            <input asp-for="ImagensDiversas" type="file" class="form-control" multiple />
-            <span asp-validation-for="ImagensDiversas" class="text-danger"></span>
+    </div>
+
+    <hr />
+
+    <!-- Upload e listagem de imagens -->
+    <h5>Imagens</h5>
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <label class="form-label">Fachada</label>
+            <input type="file" name="fachada" class="form-control" multiple />
+            <input type="hidden" name="Imagens[Fachada].Tipo" value="1" />
+            @if (Model.Imagens != null && Model.Imagens.Any(i => i.Tipo == TipoImagem.Fachada))
+            {
+                <div class="mt-2 d-flex flex-wrap gap-2">
+                    @foreach (var img in Model.Imagens.Where(i => i.Tipo == TipoImagem.Fachada))
+                    {
+                        <div class="card shadow-sm" style="width:120px;">
+                            <img src="@img.Versoes.FirstOrDefault()?.Caminho" class="card-img-top rounded" />
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Diversas</label>
+            <input type="file" name="Imagens[Diversa].Arquivo" class="form-control" multiple />
+            <input type="hidden" name="Imagens[Diversa].Tipo" value="1" />
+            @if (Model.Imagens != null && Model.Imagens.Any(i => i.Tipo == TipoImagem.Diversa))
+            {
+                <div class="mt-2 d-flex flex-wrap gap-2">
+                    @foreach (var img in Model.Imagens.Where(i => i.Tipo == TipoImagem.Diversa))
+                    {
+                        <div class="card shadow-sm" style="width:120px;">
+                            <img src="@img.Versoes.FirstOrDefault()?.Caminho" class="card-img-top rounded" />
+                        </div>
+                    }
+                </div>
+            }
         </div>
     </div>
 
@@ -42,27 +81,27 @@
     <div class="row g-3 mb-6">
         <div class="col-md-2">
             <label asp-for="Endereco.Cep" class="form-label"></label>
-            <input asp-for="Endereco.Cep" class="form-control" />
+            <input asp-for="Endereco.Cep" class="form-control" id="cep" />
             <span asp-validation-for="Endereco.Cep" class="text-danger"></span>
         </div>
         <div class="col-md-4">
             <label asp-for="Endereco.Bairro" class="form-label"></label>
-            <input asp-for="Endereco.Bairro" class="form-control" />
+            <input asp-for="Endereco.Bairro" class="form-control" id="bairro" />
             <span asp-validation-for="Endereco.Bairro" class="text-danger"></span>
         </div>
         <div class="col-md-4">
             <label asp-for="Endereco.Cidade" class="form-label"></label>
-            <input asp-for="Endereco.Cidade" class="form-control" />
+            <input asp-for="Endereco.Cidade" class="form-control" id="cidade" />
             <span asp-validation-for="Endereco.Cidade" class="text-danger"></span>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
             <label asp-for="Endereco.Uf" class="form-label"></label>
-            <input asp-for="Endereco.Uf" class="form-control" />
+            <input asp-for="Endereco.Uf" class="form-control" id="uf" />
             <span asp-validation-for="Endereco.Uf" class="text-danger"></span>
         </div>
         <div class="col-md-6">
             <label asp-for="Endereco.Logradouro" class="form-label"></label>
-            <input asp-for="Endereco.Logradouro" class="form-control" />
+            <input asp-for="Endereco.Logradouro" class="form-control" id="logradouro" />
             <span asp-validation-for="Endereco.Logradouro" class="text-danger"></span>
         </div>
         <div class="col-md-2">
@@ -76,11 +115,6 @@
             <span asp-validation-for="Endereco.Complemento" class="text-danger"></span>
         </div>
     </div>
-    <div class="col-md-4">
-        <label class="form-label">Selecionar arquivos diversos</label>
-        <input asp-for="Arquivos" type="file" class="form-control" multiple />
-        <span asp-validation-for="Arquivos" class="text-danger"></span>
-    </div>
 
     <hr />
 
@@ -90,32 +124,23 @@
     </div>
 </form>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const cepInput = document.getElementById('Endereco_Cep'); 
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 
-        if (cepInput) {
-            cepInput.addEventListener('blur', function () {
-                const cep = this.value.replace(/\D/g, '');
-
-                if (cep.length !== 8) return;
-
-                fetch(`/Admin/Empreendimento/BuscarCep?cep=${cep}`)
-                    .then(res => {
-                        if (!res.ok) throw new Error("CEP inválido");
-                        return res.json();
-                    })
-                    .then(data => {
-                        document.getElementById('Endereco_Logradouro').value = data.logradouro || data.Logradouro || '';
-                        document.getElementById('Endereco_Bairro').value = data.bairro || data.Bairro || '';
-                        document.getElementById('Endereco_Cidade').value = data.localidade || data.Cidade || '';
-                        document.getElementById('Endereco_Uf').value = data.uf || data.Uf || '';
-                    })
-                    .catch(err => console.warn('Erro ao buscar CEP:', err));
-            });
-        }
-    });
-
-</script>
-
-
+    <script>
+        // Script para buscar endereço pelo CEP
+        document.getElementById("cep")?.addEventListener("blur", async function () {
+            var cep = this.value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await res.json();
+                if (!data.erro) {
+                    document.getElementById("logradouro").value = data.logradouro || '';
+                    document.getElementById("bairro").value = data.bairro || '';
+                    document.getElementById("cidade").value = data.localidade || '';
+                    document.getElementById("uf").value = data.uf || '';
+                }
+            }
+        });
+    </script>
+}

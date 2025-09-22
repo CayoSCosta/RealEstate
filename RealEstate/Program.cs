@@ -14,7 +14,6 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Conexão PostgreSQL
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -32,7 +31,6 @@ public class Program
             options.Filters.Add(new AuthorizeFilter(policy));
         });
 
-        // MVC + filtro de autenticação global
         builder.Services.AddControllersWithViews(options =>
         {
             var policy = new AuthorizationPolicyBuilder()
@@ -41,16 +39,15 @@ public class Program
             options.Filters.Add(new AuthorizeFilter(policy));
         });
 
+        builder.Services.AddScoped<IImagemService, ImageService>();
 
         builder.Services.AddHttpClient<ViaCepService>();
 
-        // Razor Pages (necessário para login/register padrão)
         builder.Services.AddRazorPages();
         
-        // Configura Serilog para gravar logs em arquivo
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Information() // nível mínimo
-            .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day) // novo arquivo a cada dia
+            .MinimumLevel.Information() 
+            .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
         builder.Host.UseSerilog();

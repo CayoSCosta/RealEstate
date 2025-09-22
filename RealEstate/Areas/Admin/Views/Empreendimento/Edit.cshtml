@@ -11,77 +11,180 @@
             <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Editar Empreendimento</h4>
         </div>
         <div class="card-body">
-            <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <form asp-action="Edit" enctype="multipart/form-data" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                @Html.AntiForgeryToken()
 
                 <input type="hidden" asp-for="Id" />
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                <div class="row g-3">
+                    <!-- Informações básicas -->
+                    <div class="col-md-6">
                         <label asp-for="Nome" class="form-label"></label>
                         <input asp-for="Nome" class="form-control" />
                         <span asp-validation-for="Nome" class="text-danger"></span>
                     </div>
 
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Status" class="form-label"></label>
+                        <input asp-for="Status" class="form-control" />
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12">
                         <label asp-for="Descricao" class="form-label"></label>
-                        <input asp-for="Descricao" class="form-control" />
+                        <textarea asp-for="Descricao" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="Descricao" class="text-danger"></span>
                     </div>
 
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6">
                         <label asp-for="AreaConstruidaMin" class="form-label"></label>
                         <input asp-for="AreaConstruidaMin" class="form-control" />
                         <span asp-validation-for="AreaConstruidaMin" class="text-danger"></span>
                     </div>
 
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6">
                         <label asp-for="AreaConstruidaMax" class="form-label"></label>
                         <input asp-for="AreaConstruidaMax" class="form-control" />
                         <span asp-validation-for="AreaConstruidaMax" class="text-danger"></span>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="DormitoriosMin" class="form-label"></label>
-                        <input asp-for="DormitoriosMin" class="form-control" />
-                        <span asp-validation-for="DormitoriosMin" class="text-danger"></span>
+                </div>
+
+                <hr />
+
+                <!-- Mostrar imagens já cadastradas -->
+                <h5>Imagens</h5>
+                <div class="row g-3 mb-3">
+                    @if (Model.Imagens != null && Model.Imagens.Any())
+                    {
+                        @foreach (var imagem in Model.Imagens)
+                        {
+                            <div class="col-12 mb-3">
+                                <h6>@imagem.Tipo.ToString()</h6>
+                                <div class="row">
+                                    @foreach (var versao in imagem.Versoes)
+                                    {
+                                        <div class="col-md-3 col-sm-4 col-6 mb-2">
+                                            <div class="card shadow-sm">
+                                                <img src="@Url.Content(versao.Caminho)" class="card-img-top rounded" alt="@imagem.Tipo" />
+                                                <div class="card-body text-center">
+                                                    <small>@versao.Tamanho (@versao.Extensao)</small>
+                                                    <button type="button" class="btn btn-sm btn-danger mt-2">
+                                                        <i class="bi bi-trash"></i> Remover
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted">Não tem imagens disponíveis</div>
+                        <hr />
+                    }
+                </div>
+
+                <!-- Upload novas imagens -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Adicionar Imagem de Fachada</label>
+                        <input type="file" name="Imagens[0].Imagem" class="form-control" />
+                        <input type="hidden" name="Imagens[0].Tipo" value="1" />
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="DormitoriosMax" class="form-label"></label>
-                        <input asp-for="DormitoriosMax" class="form-control" />
-                        <span asp-validation-for="DormitoriosMax" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="BanheirosMin" class="form-label"></label>
-                        <input asp-for="BanheirosMin" class="form-control" />
-                        <span asp-validation-for="BanheirosMin" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="BanheirosMax" class="form-label"></label>
-                        <input asp-for="BanheirosMax" class="form-control" />
-                        <span asp-validation-for="BanheirosMax" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6 mb-3 form-check" style="margin-left: 10px;">
-                        <input class="form-check-input" asp-for="Ativo" />
-                        <label class="form-check-label" asp-for="Ativo"></label>
+                    <div class="col-md-6">
+                        <label class="form-label">Adicionar Demais Imagens</label>
+                        <input type="file" name="Imagens[1].Imagem" class="form-control" multiple />
+                        <input type="hidden" name="Imagens[1].Tipo" value="2" />
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
+
+                <hr />
+
+                <!-- Endereço -->
+                <h5>Endereço</h5>
+                <div class="row g-3 mb-6">
+                    <div class="col-md-2">
+                        <label asp-for="Endereco.Cep" class="form-label"></label>
+                        <input asp-for="Endereco.Cep" class="form-control" />
+                        <span asp-validation-for="Endereco.Cep" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Endereco.Bairro" class="form-label"></label>
+                        <input asp-for="Endereco.Bairro" class="form-control" />
+                        <span asp-validation-for="Endereco.Bairro" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Endereco.Cidade" class="form-label"></label>
+                        <input asp-for="Endereco.Cidade" class="form-control" />
+                        <span asp-validation-for="Endereco.Cidade" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Endereco.Uf" class="form-label"></label>
+                        <input asp-for="Endereco.Uf" class="form-control" />
+                        <span asp-validation-for="Endereco.Uf" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Endereco.Logradouro" class="form-label"></label>
+                        <input asp-for="Endereco.Logradouro" class="form-control" />
+                        <span asp-validation-for="Endereco.Logradouro" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="Endereco.Numero" class="form-label"></label>
+                        <input asp-for="Endereco.Numero" class="form-control" />
+                        <span asp-validation-for="Endereco.Numero" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Endereco.Complemento" class="form-label"></label>
+                        <input asp-for="Endereco.Complemento" class="form-control" />
+                        <span asp-validation-for="Endereco.Complemento" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <hr />
+
+                <!-- Arquivos -->
+                <h5>Arquivos Diversos</h5>
+                <div class="col-md-6 mb-3">
+                    <input asp-for="Arquivos" type="file" class="form-control" multiple />
+                    <span asp-validation-for="Arquivos" class="text-danger"></span>
+                </div>
+                @if (Model.Arquivos?.Any() == true)
+                {
+                    <ul class="list-group mb-3">
+                        @foreach (var arquivo in Model.Arquivos)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="@arquivo.FileName" target="_blank">@arquivo.FileName</a>
+                            </li>
+                        }
+                    </ul>
+                }
+
+                <hr />
+
+                <!-- Ativo -->
+                <div class="form-check mb-3">
+                    <input class="form-check-input" asp-for="Ativo" />
+                    <label class="form-check-label" asp-for="Ativo"></label>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
                     <a asp-action="Index" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> Voltar
                     </a>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-success">
                         <i class="bi bi-save"></i> Salvar
                     </button>
                 </div>
             </form>
 
-            <!-- TABELA DE UNIDADES -->
+            <!-- UNIDADES -->
             <hr class="my-4" />
             <h5 class="mb-3"><i class="bi bi-house-door"></i> Unidades</h5>
 
@@ -143,7 +246,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

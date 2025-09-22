@@ -64,35 +64,47 @@
                 </div>
 
                 <!-- Mostrar imagens já cadastradas -->
+                <h5>Imagens da Unidade</h5>
                 @if (Model.Imagens != null && Model.Imagens.Any())
                 {
-                    <div class="col-12">
-                        <div class="row">
-                            @foreach (var imagem in Model.Imagens)
-                            {
-                                <div class="col-md-3 col-sm-4 col-6 mb-3">
-                                    <div class="card shadow-sm">
-                                        <img src="@Url.Content(imagem.LargeCaminho)" class="card-img-top rounded" alt="Planta" />
-                                        <div class="card-body text-center">
-                                            <button type="button" class="btn btn-sm btn-danger">
-                                                <i class="bi bi-trash"></i> Remover
-                                            </button>
+                    <div class="row g-3 mb-3">
+                        @foreach (var imagem in Model.Imagens)
+                        {
+                            <div class="col-12 mb-3">
+                                <h6>@imagem.Tipo.ToString()</h6>
+                                <div class="row">
+                                    @foreach (var versao in imagem.Versoes)
+                                    {
+                                        <div class="col-md-3 col-sm-4 col-6 mb-2">
+                                            <div class="card shadow-sm">
+                                                <img src="@Url.Content(versao.Caminho)" class="card-img-top rounded" alt="@imagem.Tipo" />
+                                                <div class="card-body text-center">
+                                                    <small>@versao.Tamanho (@versao.Extensao)</small>
+                                                    <button type="button" class="btn btn-sm btn-danger mt-2">
+                                                        <i class="bi bi-trash"></i> Remover
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                 </div>
-                            }
-                        </div>
+                            </div>
+                        }
                     </div>
                 }
                 else
                 {
-
-                    <div class="col-12">
-                        <div class="row">
-                            <span>Não tem imagens disponíveis</span>
-                        </div>
-                    </div>
+                    <div class="text-muted">Não tem imagens disponíveis</div>
                 }
+
+                <!-- Upload novas imagens -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Adicionar imagens de plantas</label>
+                        <input type="file" name="Plantas" class="form-control" multiple />
+                    </div>
+                </div>
+
 
                 <div class="d-flex justify-content-between mt-4">
                     <a asp-action="Index" class="btn btn-outline-secondary">

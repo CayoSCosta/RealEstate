@@ -370,21 +370,12 @@ namespace RealEstate.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Tipo = table.Column<int>(type: "integer", nullable: false),
-                    ThumbCaminho = table.Column<string>(type: "text", nullable: true),
-                    MediumCaminho = table.Column<string>(type: "text", nullable: true),
-                    LargeCaminho = table.Column<string>(type: "text", nullable: true),
-                    XLargeCaminho = table.Column<string>(type: "text", nullable: true),
-                    ThumbTamanho = table.Column<string>(type: "text", nullable: true),
-                    MediumTamanho = table.Column<string>(type: "text", nullable: true),
-                    LargeTamanho = table.Column<string>(type: "text", nullable: true),
-                    XLargeTamanho = table.Column<string>(type: "text", nullable: true),
-                    ThumbExtensao = table.Column<string>(type: "text", nullable: true),
-                    MediumExtensao = table.Column<string>(type: "text", nullable: true),
-                    LargeExtensao = table.Column<string>(type: "text", nullable: true),
-                    XLargeExtensao = table.Column<string>(type: "text", nullable: true),
-                    EmpreendimentoId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UnidadeId = table.Column<Guid>(type: "uuid", nullable: true)
+                    EmpreendimentoId = table.Column<Guid>(type: "uuid", nullable: true),
+                    UnidadeId = table.Column<Guid>(type: "uuid", nullable: true),
+                    NomeArquivo = table.Column<string>(type: "text", nullable: false),
+                    Caminho = table.Column<string>(type: "text", nullable: false),
+                    Extensao = table.Column<string>(type: "text", nullable: false),
+                    Tipo = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -394,13 +385,34 @@ namespace RealEstate.Migrations
                         column: x => x.EmpreendimentoId,
                         principalSchema: "empreendimento",
                         principalTable: "Empreendimentos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Imagens_Unidades_UnidadeId",
                         column: x => x.UnidadeId,
                         principalSchema: "empreendimento",
                         principalTable: "Unidades",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ImagemVersao",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Nome = table.Column<string>(type: "text", nullable: false),
+                    Caminho = table.Column<string>(type: "text", nullable: false),
+                    Extensao = table.Column<string>(type: "text", nullable: false),
+                    Tamanho = table.Column<string>(type: "text", nullable: true),
+                    ImagemId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ImagemVersao", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ImagemVersao_Imagens_ImagemId",
+                        column: x => x.ImagemId,
+                        principalSchema: "empreendimento",
+                        principalTable: "Imagens",
                         principalColumn: "Id");
                 });
 
@@ -472,6 +484,11 @@ namespace RealEstate.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ImagemVersao_ImagemId",
+                table: "ImagemVersao",
+                column: "ImagemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Imagens_EmpreendimentoId",
                 schema: "empreendimento",
                 table: "Imagens",
@@ -530,8 +547,7 @@ namespace RealEstate.Migrations
                 schema: "empreendimento");
 
             migrationBuilder.DropTable(
-                name: "Imagens",
-                schema: "empreendimento");
+                name: "ImagemVersao");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles",
@@ -546,6 +562,10 @@ namespace RealEstate.Migrations
 
             migrationBuilder.DropTable(
                 name: "InstalacaoCondominios",
+                schema: "empreendimento");
+
+            migrationBuilder.DropTable(
+                name: "Imagens",
                 schema: "empreendimento");
 
             migrationBuilder.DropTable(

@@ -1,23 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Config;
+using RealEstate.Models;
 using RealEstate.Models.Entities.Empreendimento;
 using RealEstate.Models.ViewModels;
 using RealEstate.Services;
 using SixLabors.ImageSharp;
+using System.Data;
 
 
 namespace RealEstate.Areas.Admin.Controllers;
 
 [Area("Admin")]
-public class EmpreendimentoController(ApplicationDbContext context, ILogger<EmpreendimentoController> logger)
-    : Controller
+public class EmpreendimentoController : Controller
 {
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<EmpreendimentoController> _logger;
+    private readonly IImagemService _imagemService;
+
+    public EmpreendimentoController(ApplicationDbContext context, ILogger<EmpreendimentoController> logger, IImagemService imagemService)
+    {
+        _context = context;
+        _logger = logger;
+        _imagemService = imagemService;
+    }
+
     public async Task<IActionResult> Index()
     {
         try
         {
-            var listaDeEmpreendimento = await context.Empreendimentos
+            var listaDeEmpreendimento = await _context.Empreendimentos
                 .Include(e => e.Endereco)
                 .Include(e => e.Imagens)
                 .Include(e => e.Unidades)
@@ -71,19 +83,9 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
                             Uf = empreendimento.Endereco?.Uf,
                             Logradouro = empreendimento.Endereco?.Logradouro
                         } : null,
-
-                    Imagens = empreendimento.Imagens != null
-                        ? empreendimento.Imagens.Select(imagem => new ImagemViewModel
-                        {
-                            LargeCaminho = imagem.LargeCaminho,
-                            ThumbCaminho = imagem.ThumbCaminho,
-                            MediumCaminho = imagem.MediumCaminho,
-                            XLargeCaminho = imagem.XLargeCaminho,
-                        }).ToList()
-                        : null,
                 };
 
-                logger.LogInformation($"Empreendimento/Index chamado em {DateTime.Now}", DateTime.Now);
+                _logger.LogInformation($"Empreendimento/Index chamado em {DateTime.Now}", DateTime.Now);
                 listaDeEmpreendimentoDto.Add(vm);
             }
 
@@ -91,7 +93,7 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
         }
         catch (Exception e)
         {
-            logger.LogError($"Empreendimento/Index chamado em {DateTime.Now}", DateTime.Now,
+            _logger.LogError($"Empreendimento/Index chamado em {DateTime.Now}", DateTime.Now,
                 $"Erro: {e.Message}, \n InnerException: {e.InnerException?.Message}");
             throw;
         }
@@ -104,7 +106,7 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
             return NotFound();
         }
 
-        var empreendimento = await context.Empreendimentos
+        var empreendimento = await _context.Empreendimentos
             .FirstOrDefaultAsync(m => m.Id == id);
         if (empreendimento == null)
         {
@@ -116,7 +118,8 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
 
     public IActionResult Create()
     {
-        return View();
+        var vm = new EmpreendimentoViewModel();
+        return View(vm);
     }
 
     // POST: Admin/Empreendimento/Create
@@ -135,7 +138,7 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
             }
 
             Empreendimento empreendimento = new();
-            empreendimento.Nome = vm.Nome;
+            empreendimento.Nome = vm.Nome?.Trim();
             empreendimento.Status = vm.Status;
             empreendimento.Descricao = vm.Descricao;
 
@@ -152,16 +155,26 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
                 };
             }
             else
-            {
                 empreendimento.Endereco = null;
+
+            await _context.Empreendimentos.AddAsync(empreendimento);
+
+            if (vm.Imagens != null)
+            {
+                foreach (var fileImage in vm.Imagens)
+                {
+                    if(fileImage.Arquivo != null)
+                    {
+                        var imagem = await _imagemService.ProcessarImagemAsync(fileImage.Arquivo, fileImage.Tipo, empreendimento.Nome ?? "Sem nome", empreendimento.Id);
+                        await _context.Imagens.AddAsync(imagem);
+                    }
+                }
+
             }
 
+            await _context.SaveChangesAsync();
 
-            context.Add(empreendimento);
-            var teste = await context.SaveChangesAsync();
             ViewBag.Mensagem = "Empreendimento criado com sucesso!";
-
-            await SalvarImagensAsync(vm.ImagensDiversas, empreendimento.Nome ?? string.Empty, empreendimento.Id, "Fachada");
 
             return RedirectToAction(nameof(Index));
         }
@@ -174,8 +187,10 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
 
     public async Task<IActionResult> Edit(Guid id)
     {
-        var empreendimento = await context.Empreendimentos
+        var empreendimento = await _context.Empreendimentos
             .Include(e => e.Unidades)
+            .Include(e => e.Endereco)
+            .Include(e => e.Imagens)
             .FirstOrDefaultAsync(e => e.Id == id);
 
         EmpreendimentoViewModel vm = new();
@@ -195,6 +210,28 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
             vm.VagasDeGaragemMin = empreendimento.VagasDeGaragemMin;
             vm.VagasDeGaragemMax = empreendimento.VagasDeGaragemMax;
             vm.Id = empreendimento.Id;
+            vm.Imagens = empreendimento.Imagens != null
+                ? empreendimento.Imagens.Select(i => new ImagemViewModel
+                {
+                    Id = i.Id,
+                    NomeArquivo = i.NomeArquivo,
+                    Caminho = i.Caminho,
+                    Tipo = i.Tipo,
+                    EmpreendimentoId = i.EmpreendimentoId ?? Guid.Empty,
+                    Extensao = i.Extensao,
+                    Versoes = i.Versoes != null
+                        ? i.Versoes.Select(v => new ImagemVersaoViewModel
+                        {
+                            Nome = v.Nome,
+                            Caminho = v.Caminho,
+                            Extensao = v.Extensao,
+                            Tamanho = v.Tamanho
+                        }).ToList()
+                        : new List<ImagemVersaoViewModel>(),
+                    Arquivo = null,
+                    UnidadeId = i.UnidadeId
+                }).ToList()
+                : null;
             vm.Endereco = new EnderecoViewModel
             {
                 Bairro = empreendimento.Endereco?.Bairro,
@@ -219,10 +256,10 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
                     EmpreendimentoId = u.EmpreendimentoId ?? Guid.Empty
                 }).ToList()
                 : null;
-        }
 
-        if (empreendimento == null)
-            return NotFound();
+            if (empreendimento == null)
+                return NotFound();
+        }
 
         return View(vm);
     }
@@ -243,8 +280,8 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
         {
             try
             {
-                context.Update(empreendimentoVm);
-                await context.SaveChangesAsync();
+                _context.Update(empreendimentoVm);
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -271,7 +308,7 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
             return NotFound();
         }
 
-        var empreendimento = await context.Empreendimentos
+        var empreendimento = await _context.Empreendimentos
             .FirstOrDefaultAsync(m => m.Id == id);
         if (empreendimento == null)
         {
@@ -285,90 +322,19 @@ public class EmpreendimentoController(ApplicationDbContext context, ILogger<Empr
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var empreendimento = await context.Empreendimentos.FindAsync(id);
+        var empreendimento = await _context.Empreendimentos.FindAsync(id);
         if (empreendimento != null)
         {
-            context.Empreendimentos.Remove(empreendimento);
+            _context.Empreendimentos.Remove(empreendimento);
         }
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private bool EmpreendimentoExists(Guid id)
     {
-        return context.Empreendimentos.Any(e => e.Id == id);
-    }
-
-    private async Task<bool> SalvarImagensAsync(List<IFormFile> arquivos, string nomeEmpreendimento, Guid empreendimentoId, string tipoImagem)
-    {
-        if (arquivos == null || arquivos.Count == 0)
-            throw new ArgumentException("Nenhuma imagem enviada.");
-
-        // 1. Pasta de destino
-        var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Imagens");
-        if (!Directory.Exists(uploadDir))
-            Directory.CreateDirectory(uploadDir);
-
-        // 2. Lista para armazenar dados temporários (arquivo + tamanho)
-        var imagensTemp = new List<(int Area, string Caminho, string Extensao)>();
-
-        // 3. Processar cada arquivo
-        foreach (var arquivo in arquivos)
-        {
-            if (arquivo != null && arquivo.Length > 0)
-            {
-                using var imgStream = arquivo.OpenReadStream();
-                using var image = await Image.LoadAsync(imgStream);
-                int area = image.Width * image.Height;
-
-                string extensao = Path.GetExtension(arquivo.FileName);
-                string fileName = $"{tipoImagem}_{nomeEmpreendimento.Trim()}{extensao}";
-                string filePath = Path.Combine(uploadDir, fileName);
-                string caminho = "/Imagens/" + fileName;
-
-                // Salva arquivo no disco
-                await using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await arquivo.CopyToAsync(stream);
-                }
-
-                imagensTemp.Add((area, caminho, extensao));
-            }
-        }
-
-        if (imagensTemp.Count != 4)
-            throw new InvalidOperationException("Devem ser enviadas exatamente 4 Imagens.");
-
-        // 4. Ordena do menor para o maior tamanho
-        var ordenadas = imagensTemp.OrderBy(x => x.Area).ToList();
-
-        // 5. Preenche objeto Imagem
-        var imagem = new Imagem
-        {
-            ThumbCaminho = ordenadas[0].Caminho,
-            MediumCaminho = ordenadas[1].Caminho,
-            LargeCaminho = ordenadas[2].Caminho,
-            XLargeCaminho = ordenadas[3].Caminho,
-            
-            ThumbTamanho = ordenadas[0].Area.ToString(),
-            MediumTamanho = ordenadas[1].Area.ToString(),
-            LargeTamanho = ordenadas[2].Area.ToString(),
-            XLargeTamanho = ordenadas[3].Area.ToString(),
-            
-            ThumbExtensao = ordenadas[0].Area.ToString(),
-            MediumExtensao = ordenadas[1].Area.ToString(),
-            LargeExtensao = ordenadas[2].Area.ToString(),
-            XLargeExtensao = ordenadas[3].Area.ToString(),
-            
-            
-            EmpreendimentoId = empreendimentoId
-        };
-
-        context.Imagens.Add(imagem);
-        await context.SaveChangesAsync();
-
-        return true;
+        return _context.Empreendimentos.Any(e => e.Id == id);
     }
 
     [HttpGet]

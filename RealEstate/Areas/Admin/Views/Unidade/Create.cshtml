@@ -19,6 +19,10 @@
             <input asp-for="Status" class="form-control" />
             <span asp-validation-for="Status" class="text-danger"></span>
         </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" asp-for="Ativo" />
+            <label class="form-check-label" asp-for="Ativo"></label>
+        </div>
     </div>
 
     <div class="row mb-3">
@@ -70,9 +74,10 @@
     <!-- Upload de plantas -->
     <div class="mb-3">
         <label class="form-label">Plantas</label>
-        <input asp-for="Plantas" class="form-control" type="file" multiple />
-        <span asp-validation-for="Plantas" class="text-danger"></span>
+        <input name="Plantas" class="form-control" type="file" multiple />
+        <span asp-validation-for="Imagens" class="text-danger"></span>
     </div>
+
 
     <button type="submit" class="btn btn-primary">Salvar</button>
 </form>
