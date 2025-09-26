@@ -21,7 +21,7 @@ public class ImageService : IImagemService
             Directory.CreateDirectory(_uploadPath);
     }
 
-    public async Task<Imagem> ProcessarImagemAsync(IFormFile file, TipoImagem tipo, string nomeEmpreendimento, Guid? empreendimentoId = null, Guid? unidadeId = null)
+    public async Task<Arquivo> ProcessarImagemAsync(IFormFile file, string nomeEntidade, TipoArquivo tipoArquivo, TipoEntidade tipoEntidade, Guid? entidadeId = null)
     {
         if (file == null || file.Length == 0)
             throw new ArgumentException("Arquivo de imagem inválido.");
@@ -32,56 +32,37 @@ public class ImageService : IImagemService
 
         using var image = Image.Load(inputStream);
 
-        string extensao = formato?.FileExtensions?.FirstOrDefault() != null
-            ? $".{formato.FileExtensions.First()}"
-            : ".jpg";
+        string extensao = formato?.FileExtensions?.FirstOrDefault() != null ? $".{formato.FileExtensions.First()}" : "sem extensão";
 
-        var imagem = new Imagem
-        {
-            Tipo = tipo,
-            EmpreendimentoId = empreendimentoId,
-            UnidadeId = unidadeId,
-            Versoes = new List<ImagemVersao>()
-        };
+        Arquivo arquivo = new();
+        arquivo.Tipo = tipoArquivo;
+        arquivo.TipoEntidade = tipoEntidade;
+        arquivo.EntidadeId = entidadeId;
+        arquivo.NomeArquivo = file.FileName;
+        arquivo.Extensao = extensao;
+        arquivo.Caminho = await SalvarArquivoOriginalAsync(file, arquivo, nomeEntidade);
 
-        foreach (var largura in _tamanhos)
-        {
-            var (caminho, w, h) = await SalvarVersaoAsync(image, tipo, largura, extensao, nomeEmpreendimento);
-            imagem.Versoes.Add(new ImagemVersao
-            {
-                Nome = $"{Guid.NewGuid()}_{largura}",
-                Caminho = caminho,
-                Extensao = extensao,
-                Tamanho = $"{w}x{h}"
-            });
-        }
-
-        return imagem;
+        return arquivo;
     }
 
-    private async Task<(string caminho, int width, int height)> SalvarVersaoAsync(Image img, TipoImagem tipo, int largura, string extensao, string nomeEmpreendimento)
+    private async Task<string> SalvarArquivoOriginalAsync(IFormFile file, Arquivo arquivo, string nomeEntidade)
     {
-        using var clone = img.Clone(ctx => ctx.Resize(new ResizeOptions
-        {
-            Mode = ResizeMode.Max,
-            Size = new Size(largura, 0)
-        }));
-
-        string nomeSanitizado = SanitizeFileName(nomeEmpreendimento).Replace(" ", "-").ToLower();
-        string folderPath = Path.Combine(_uploadPath, nomeSanitizado, tipo.ToString());
+        string nomeSanitizado = SanitizeFileName(nomeEntidade).Replace(" ", "-").ToLower();
+        string folderPath = Path.Combine(_uploadPath, nomeSanitizado, arquivo.Tipo.ToString());
 
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
 
-        string fileName = $"{Guid.NewGuid()}_{largura}{extensao}";
+        string extensao = arquivo.Extensao ?? string.Empty;
+        string fileName = $"{arquivo.NomeArquivo}{extensao}";
         string filePath = Path.Combine(folderPath, fileName);
+        string tipoArquivo = arquivo.Tipo.ToString();
 
-        await using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-        {
-            await clone.SaveAsync(fs, new JpegEncoder { Quality = 90 });
-        }
+        using var stream = new FileStream(filePath, FileMode.Create);
 
-        return ($"/uploads/{nomeSanitizado}/{tipo}/{fileName}", clone.Width, clone.Height);
+        await file.CopyToAsync(stream);
+
+        return $"/uploads/{nomeEntidade}/{nomeSanitizado}/{tipoArquivo}/{fileName}";
     }
 
     public static string SanitizeFileName(string input)
@@ -95,4 +76,29 @@ public class ImageService : IImagemService
 
         return input.Trim();
     }
+
+    //private async Task<(string caminho, int width, int height)> SalvarVersaoAsync(Image img, TipoArquivo tipo, int largura, string extensao, string nomeEmpreendimento)
+    //{
+    //    using var clone = img.Clone(ctx => ctx.Resize(new ResizeOptions
+    //    {
+    //        Mode = ResizeMode.Max,
+    //        Size = new Size(largura, 0)
+    //    }));
+
+    //    string nomeSanitizado = SanitizeFileName(nomeEmpreendimento).Replace(" ", "-").ToLower();
+    //    string folderPath = Path.Combine(_uploadPath, nomeSanitizado, tipo.ToString());
+
+    //    if (!Directory.Exists(folderPath))
+    //        Directory.CreateDirectory(folderPath);
+
+    //    string fileName = $"{Guid.NewGuid()}_{largura}{extensao}";
+    //    string filePath = Path.Combine(folderPath, fileName);
+
+    //    await using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+    //    {
+    //        await clone.SaveAsync(fs, new JpegEncoder { Quality = 90 });
+    //    }
+
+    //    return ($"/uploads/{nomeSanitizado}/{tipo}/{fileName}", clone.Width, clone.Height);
+    //}
 }

@@ -5,5 +5,5 @@ namespace RealEstate.Services;
 
 public interface IImagemService
 {
-    Task<Imagem> ProcessarImagemAsync(IFormFile file, TipoImagem tipo, string nomeEmpreendimento, Guid? empreendimentoId = null, Guid? unidadeId = null);
+    Task<Arquivo> ProcessarImagemAsync(IFormFile file, string nomeEntidade, TipoArquivo tipoArquivo, TipoEntidade tipoEntidade, Guid? entidadeId = null);
 }

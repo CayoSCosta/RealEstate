@@ -50,7 +50,7 @@ public class EmpreendimentoViewModel : ViewModelBaseId
     public EnderecoViewModel? Endereco { get; set; } = new();
 
     // Novo modelo de imagem
-    public List<ImagemViewModel>? Imagens { get; set; } = new();
+    public List<ArquivoViewModel>? Imagens { get; set; } = new();
 
     // Upload de arquivos diversos (pdf, txt, etc.)
     public List<IFormFile>? Arquivos { get; set; } = new();

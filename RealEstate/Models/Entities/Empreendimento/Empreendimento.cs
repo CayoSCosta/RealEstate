@@ -17,7 +17,7 @@ public class Empreendimento : EntityBase
     public int VagasDeGaragemMax { get; set; }
     public Endereco? Endereco { get; set; }
     public List<Unidade>? Unidades { get; set; }
-    public List<Imagem>? Imagens { get; set; }
+    public List<Arquivo>? Imagens { get; set; }
     public List<Arquivo>? Arquivos { get; set; }
 
 }

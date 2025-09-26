@@ -28,7 +28,7 @@ public class UnidadeViewModel : ViewModelBaseId
     public EmpreendimentoViewModel? Empreendimento { get; set; }
 
     // Imagens associadas à unidade (fachada, planta, etc.)
-    public List<ImagemViewModel> Imagens { get; set; } = new();
+    public List<ArquivoViewModel> Imagens { get; set; } = new();
 
     // Upload de arquivos adicionais (pdfs, txts, docs, etc.)
     public List<IFormFile> Arquivos { get; set; } = new();

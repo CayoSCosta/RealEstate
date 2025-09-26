@@ -143,7 +143,7 @@ public class UnidadeController : Controller
                 {
                     var imagem = await _imagemService.ProcessarImagemAsync(
                         imgVm.Arquivo,
-                        imgVm.Tipo,
+                        TipoArquivo.Plantas,
                         $"unidade-{unidade.Id}",
                         unidadeId: unidade.Id
                     );
@@ -188,21 +188,21 @@ public class UnidadeController : Controller
                     Nome = unidade.Empreendimento.Nome
                 }
                 : null,
-            Imagens = unidade.Imagens != null
-                ? unidade.Imagens.Select(i => new ImagemViewModel
-                {
-                    Id = i.Id,
-                    UnidadeId = i.UnidadeId,
-                    EmpreendimentoId = i.EmpreendimentoId,
-                    Tipo = i.Tipo,
-                    Versoes = i.Versoes.Select(v => new ImagemVersaoViewModel
-                    {
-                        Caminho = v.Caminho,
-                        Tamanho = v.Tamanho,
-                        Extensao = v.Extensao
-                    }).ToList()
-                }).ToList()
-                : new List<ImagemViewModel>()
+            //Imagens = unidade.Imagens != null
+            //    ? unidade.Imagens.Select(i => new ArquivoViewModel
+            //    {
+            //        Id = i.Id,
+            //        UnidadeId = i.UnidadeId,
+            //        EmpreendimentoId = i.EmpreendimentoId,
+            //        Tipo = i.Tipo,
+            //        Versoes = i.Versoes.Select(v => new ImagemVersaoViewModel
+            //        {
+            //            Caminho = v.Caminho,
+            //            Tamanho = v.Tamanho,
+            //            Extensao = v.Extensao
+            //        }).ToList()
+            //    }).ToList()
+            //    : new List<ArquivoViewModel>()
         };
 
         ViewBag.Empreendimentos = new SelectList(
@@ -248,7 +248,7 @@ public class UnidadeController : Controller
             {
                 if (fileImage.Arquivo != null)
                 {
-                    var imagem = await _imagemService.ProcessarImagemAsync(fileImage.Arquivo, fileImage.Tipo, "unidade-" + unidade.Id, unidadeId: unidade.Id);
+                    var imagem = await _imagemService.ProcessarImagemAsync(fileImage.Arquivo, TipoArquivo.Plantas, "unidade-" + unidade.Id, unidadeId: unidade.Id);
                     await _context.Imagens.AddAsync(imagem);
                 }
             }

@@ -13,5 +13,5 @@ public class Unidade : EntityBase
 
     public Guid? EmpreendimentoId { get; set; }
     public Empreendimento? Empreendimento { get; set; }
-    public List<Imagem>? Imagens { get; set; }
+    public List<Arquivo>? Imagens { get; set; }
 }

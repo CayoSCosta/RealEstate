@@ -1,0 +1,30 @@
+docker run
+ --name postgres -e POSTGRES_PASSWORD=Mudar123 -d postgres
+
+docker run
+ --hostname=614da2fd625f
+ --mac-address=a2:a6:c8:32:36:e7
+ --env=POSTGRES_PASSWORD=Mudar123
+ --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin
+ --env=GOSU_VERSION=1.19
+ --env=LANG=en_US.utf8
+ --env=PG_MAJOR=17
+ --env=PG_VERSION=17.6-1.pgdg13+1
+ --env=PGDATA=/var/lib/postgresql/data
+ --volume=/var/lib/postgresql/data
+ --network=bridge
+ --restart=no
+ --runtime=runc -d postgres
+
+ docker run `
+  --name postgres `
+  --hostname postgres-host `
+  --mac-address a2:a6:c8:32:36:e7 `
+  --env POSTGRES_PASSWORD=Mudar123 `
+  --env LANG=en_US.utf8 `
+  --env PGDATA=/var/lib/postgresql/data `
+  --volume pgdata:/var/lib/postgresql/data `
+  --network bridge `
+  --restart unless-stopped `
+  --publish 5432:5432 `
+  -d postgres:17.6
