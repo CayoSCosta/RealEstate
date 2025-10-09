@@ -55,7 +55,7 @@
 
                 <!-- Mostrar imagens já cadastradas -->
                 <h5>Imagens</h5>
-@*                 <div class="row g-3 mb-3">
+                <div class="row g-3 mb-3">
                     @if (Model.Imagens != null && Model.Imagens.Any())
                     {
                         @foreach (var imagem in Model.Imagens)
@@ -63,20 +63,16 @@
                             <div class="col-12 mb-3">
                                 <h6>@imagem.Tipo.ToString()</h6>
                                 <div class="row">
-                                    @foreach (var versao in imagem.Versoes)
-                                    {
-                                        <div class="col-md-3 col-sm-4 col-6 mb-2">
-                                            <div class="card shadow-sm">
-                                                <img src="@Url.Content(versao.Caminho)" class="card-img-top rounded" alt="@imagem.Tipo" />
-                                                <div class="card-body text-center">
-                                                    <small>@versao.Tamanho (@versao.Extensao)</small>
-                                                    <button type="button" class="btn btn-sm btn-danger mt-2">
-                                                        <i class="bi bi-trash"></i> Remover
-                                                    </button>
-                                                </div>
+                                    <div class="col-md-3 col-sm-4 col-6 mb-2">
+                                        <div class="card shadow-sm">
+                                            <img src="@Url.Content(imagem.Caminho)" class="card-img-top rounded" alt="@imagem.Tipo" />
+                                            <div class="card-body text-center">
+                                                <button type="button" class="btn btn-sm btn-danger mt-2">
+                                                    <i class="bi bi-trash"></i> Remover
+                                                </button>
                                             </div>
                                         </div>
-                                    }
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -86,7 +82,7 @@
                         <div class="text-muted">Não tem imagens disponíveis</div>
                         <hr />
                     }
-                </div> *@
+                </div>
 
                 <!-- Upload novas imagens -->
                 <div class="row g-3 mb-3">

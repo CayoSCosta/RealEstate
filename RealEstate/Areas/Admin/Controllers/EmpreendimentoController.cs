@@ -150,8 +150,9 @@ public class EmpreendimentoController : Controller
                     Bairro = vm.Endereco.Bairro,
                     Cidade = vm.Endereco.Cidade,
                     Cep = vm.Endereco.Cep,
+                    Numero = vm.Endereco.Numero,
                     Complemento = vm.Endereco.Complemento,
-                    Uf = vm.Endereco.Uf
+                    Uf = vm.Endereco.Uf,
                 };
             }
             else
@@ -163,7 +164,7 @@ public class EmpreendimentoController : Controller
             {
                 foreach (var arquivo in vm.Arquivos)
                 {
-                    var imagem = await _imagemService.ProcessarImagemAsync(arquivo);
+                    var imagem = await _imagemService.ProcessarImagemAsync(arquivo, empreendimento.Nome, TipoArquivo.Imagens, TipoEntidade.Empreendimento, empreendimento.Id);
                     await _context.Imagens.AddAsync(imagem);
                 }
 
@@ -188,6 +189,7 @@ public class EmpreendimentoController : Controller
             .Include(e => e.Unidades)
             .Include(e => e.Endereco)
             .Include(e => e.Imagens)
+            .Include(e => e.Arquivos)
             .FirstOrDefaultAsync(e => e.Id == id);
 
         EmpreendimentoViewModel vm = new();
@@ -207,28 +209,6 @@ public class EmpreendimentoController : Controller
             vm.VagasDeGaragemMin = empreendimento.VagasDeGaragemMin;
             vm.VagasDeGaragemMax = empreendimento.VagasDeGaragemMax;
             vm.Id = empreendimento.Id;
-            // vm.Imagens = empreendimento.Imagens != null
-            //     ? empreendimento.Imagens.Select(i => new ArquivoViewModel
-            //     {
-            //         Id = i.Id,
-            //         NomeArquivo = i.NomeArquivo,
-            //         Caminho = i.Caminho,
-            //         Tipo = i.Tipo,
-            //         EmpreendimentoId = i.EmpreendimentoId ?? Guid.Empty,
-            //         Extensao = i.Extensao,
-            //         Versoes = i.Versoes != null
-            //             ? i.Versoes.Select(v => new ImagemVersaoViewModel
-            //             {
-            //                 Nome = v.Nome,
-            //                 Caminho = v.Caminho,
-            //                 Extensao = v.Extensao,
-            //                 Tamanho = v.Tamanho
-            //             }).ToList()
-            //             : new List<ImagemVersaoViewModel>(),
-            //         Arquivo = null,
-            //         UnidadeId = i.UnidadeId
-            //     }).ToList()
-            //     : null;
             vm.Endereco = new EnderecoViewModel
             {
                 Bairro = empreendimento.Endereco?.Bairro,
@@ -253,6 +233,12 @@ public class EmpreendimentoController : Controller
                     EmpreendimentoId = u.EmpreendimentoId ?? Guid.Empty
                 }).ToList()
                 : null;
+
+            vm.Imagens = empreendimento.Arquivos?.Select(i => new ArquivoViewModel
+                {
+                    NomeArquivo = i.NomeArquivo,
+                    Caminho = i.Caminho,
+                }).ToList();
 
             if (empreendimento == null)
                 return NotFound();

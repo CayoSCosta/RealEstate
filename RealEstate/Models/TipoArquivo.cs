@@ -3,11 +3,10 @@
 
 public enum TipoArquivo
 {
-    Fachada = 1,
-    Diversa = 2,
-    Plantas = 3,
-    Arquivo = 4,
-    semTipo = 5
+    Imagens = 1,
+    Plantas = 2,
+    Arquivo = 3,
+    semTipo = 4
 }
 
 public enum TipoEntidade

@@ -139,17 +139,17 @@ public class UnidadeController : Controller
         {
             foreach (var imgVm in vm.Imagens)
             {
-                if (imgVm.Arquivo != null && imgVm.Arquivo.Length > 0)
-                {
-                    var imagem = await _imagemService.ProcessarImagemAsync(
-                        imgVm.Arquivo,
-                        TipoArquivo.Plantas,
-                        $"unidade-{unidade.Id}",
-                        unidadeId: unidade.Id
-                    );
+                //if (imgVm.Arquivo != null && imgVm.Arquivo.Length > 0)
+                //{
+                //    var imagem = await _imagemService.ProcessarImagemAsync(
+                //        imgVm.Arquivo,
+                //        TipoArquivo.Plantas,
+                //        $"unidade-{unidade.Id}"
+                //        //unidadeId: unidade.Id
+                //    );
 
-                    await _context.Imagens.AddAsync(imagem);
-                }
+                //    await _context.Imagens.AddAsync(imagem);
+                //}
             }
             await _context.SaveChangesAsync();
         }
@@ -242,17 +242,17 @@ public class UnidadeController : Controller
         unidade.Ativo = vm.Ativo;
 
         // Salvar novas imagens, se houver upload
-        if (vm.Imagens != null && vm.Imagens.Any(f => f.Arquivo != null))
-        {
-            foreach (var fileImage in vm.Imagens.Where(f => f.Arquivo != null))
-            {
-                if (fileImage.Arquivo != null)
-                {
-                    var imagem = await _imagemService.ProcessarImagemAsync(fileImage.Arquivo, TipoArquivo.Plantas, "unidade-" + unidade.Id, unidadeId: unidade.Id);
-                    await _context.Imagens.AddAsync(imagem);
-                }
-            }
-        }
+        //if (vm.Imagens != null && vm.Imagens.Any(f => f.Arquivo != null))
+        //{
+        //    foreach (var fileImage in vm.Imagens.Where(f => f.Arquivo != null))
+        //    {
+        //        if (fileImage.Arquivo != null)
+        //        {
+        //            var imagem = await _imagemService.ProcessarImagemAsync(fileImage.Arquivo, TipoArquivo.Plantas, "unidade-" + unidade.Id, unidadeId: unidade.Id);
+        //            await _context.Imagens.AddAsync(imagem);
+        //        }
+        //    }
+        //}
 
         try
         {

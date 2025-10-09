@@ -1,4 +1,5 @@
-﻿using RealEstate.Models;
+﻿using RealEstate.Config;
+using RealEstate.Models;
 using RealEstate.Models.Entities.Empreendimento;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
@@ -11,12 +12,10 @@ public class ImageService : IImagemService
 {
     private readonly string _uploadPath;
 
-    // Defina aqui os tamanhos que você quer gerar dinamicamente
-    private readonly int[] _tamanhos = new[] { 150, 300, 600, 1200, 1920 };
-
     public ImageService(IWebHostEnvironment env)
     {
         _uploadPath = Path.Combine(env.WebRootPath, "uploads");
+
         if (!Directory.Exists(_uploadPath))
             Directory.CreateDirectory(_uploadPath);
     }
@@ -38,14 +37,15 @@ public class ImageService : IImagemService
         arquivo.Tipo = tipoArquivo;
         arquivo.TipoEntidade = tipoEntidade;
         arquivo.EntidadeId = entidadeId;
-        arquivo.NomeArquivo = file.FileName;
+        arquivo.NomeArquivo = Path.GetFileNameWithoutExtension(file.FileName);
         arquivo.Extensao = extensao;
-        arquivo.Caminho = await SalvarArquivoOriginalAsync(file, arquivo, nomeEntidade);
+        arquivo.Caminho = await SalvarArquivoAsync(file, arquivo, nomeEntidade);
+        arquivo.EntidadeId = entidadeId;
 
         return arquivo;
     }
 
-    private async Task<string> SalvarArquivoOriginalAsync(IFormFile file, Arquivo arquivo, string nomeEntidade)
+    private async Task<string> SalvarArquivoAsync(IFormFile file, Arquivo arquivo, string nomeEntidade)
     {
         string nomeSanitizado = SanitizeFileName(nomeEntidade).Replace(" ", "-").ToLower();
         string folderPath = Path.Combine(_uploadPath, nomeSanitizado, arquivo.Tipo.ToString());
@@ -62,7 +62,7 @@ public class ImageService : IImagemService
 
         await file.CopyToAsync(stream);
 
-        return $"/uploads/{nomeEntidade}/{nomeSanitizado}/{tipoArquivo}/{fileName}";
+        return $"/uploads/{nomeSanitizado}/{tipoArquivo}/{fileName}";
     }
 
     public static string SanitizeFileName(string input)
