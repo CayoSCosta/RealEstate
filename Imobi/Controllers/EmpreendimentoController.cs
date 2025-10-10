@@ -1,5 +1,6 @@
 ﻿using Imobi.Config;
 using Imobi.Models;
+using Imobi.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +54,7 @@ public class EmpreendimentoController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Status,Nome,Sobre,AreaConstruida,Estagio,BanheirosTotal,DormitoriosTotal,SuitesTotal,VagasTotal,UnidadeId,EnderecoId")] Empreendimento empreendimento)
+    public async Task<IActionResult> Create(Empreendimento empreendimento)
     {
         if (ModelState.IsValid)
         {
@@ -61,7 +62,7 @@ public class EmpreendimentoController : Controller
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id", empreendimento.EnderecoId);
+
         return View(empreendimento);
     }
 
@@ -155,5 +156,15 @@ public class EmpreendimentoController : Controller
     private bool EmpreendimentoExists(int id)
     {
         return _context.Empreendimentos.Any(e => e.Id == id);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BuscarCep(string cep, [FromServices] ViaCepService viaCepService)
+    {
+        var resultado = await viaCepService.BuscarEnderecoPorCep(cep);
+        if (resultado is null)
+            return NotFound("CEP não encontrado");
+
+        return Json(resultado);
     }
 }

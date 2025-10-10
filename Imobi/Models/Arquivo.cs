@@ -1,4 +1,6 @@
-﻿namespace Imobi.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Imobi.Models;
 
 #nullable disable
 public class Arquivo
@@ -12,4 +14,7 @@ public class Arquivo
     public string Extensao { get; set; } = default!;
 
     public TipoArquivo Tipo { get; set; }
+
+    [NotMapped]
+    public List<IFormFile> Arquivos { get; set; } = new();
 }

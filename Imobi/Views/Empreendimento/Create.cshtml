@@ -1,83 +1,137 @@
 ﻿@model Imobi.Models.Empreendimento
 
 @{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "Criar Empreendimento";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container py-4">
+	<h3 class="mb-4">Cadastrar Empreendimento</h3>
 
-<h4>Empreendimento</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Sobre" class="control-label"></label>
-                <input asp-for="Sobre" class="form-control" />
-                <span asp-validation-for="Sobre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AreaConstruida" class="control-label"></label>
-                <input asp-for="AreaConstruida" class="form-control" />
-                <span asp-validation-for="AreaConstruida" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estagio" class="control-label"></label>
-                <input asp-for="Estagio" class="form-control" />
-                <span asp-validation-for="Estagio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BanheirosTotal" class="control-label"></label>
-                <input asp-for="BanheirosTotal" class="form-control" />
-                <span asp-validation-for="BanheirosTotal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DormitoriosTotal" class="control-label"></label>
-                <input asp-for="DormitoriosTotal" class="form-control" />
-                <span asp-validation-for="DormitoriosTotal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SuitesTotal" class="control-label"></label>
-                <input asp-for="SuitesTotal" class="form-control" />
-                <span asp-validation-for="SuitesTotal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VagasTotal" class="control-label"></label>
-                <input asp-for="VagasTotal" class="form-control" />
-                <span asp-validation-for="VagasTotal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UnidadeId" class="control-label"></label>
-                <input asp-for="UnidadeId" class="form-control" />
-                <span asp-validation-for="UnidadeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EnderecoId" class="control-label"></label>
-                <select asp-for="EnderecoId" class ="form-control" asp-items="ViewBag.EnderecoId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+	<form asp-action="Create" enctype="multipart/form-data" class="needs-validation" novalidate>
+		<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+		<!-- SEÇÃO: DADOS GERAIS -->
+		<div class="card shadow-sm mb-4">
+			<div class="card-header bg-light">
+				<h5 class="mb-0">Sobre o Empreendimento</h5>
+			</div>
+			<div class="card-body row g-3">
+				<div class="col-md-12">
+					<div class="form-check">
+						<input class="form-check-input" asp-for="Status" />
+						<label class="form-check-label" asp-for="Status"></label>
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<label asp-for="Nome" class="form-label fw-semibold"></label>
+					<input asp-for="Nome" class="form-control" />
+					<span asp-validation-for="Nome" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-6">
+					<label asp-for="Sobre" class="form-label fw-semibold"></label>
+					<input asp-for="Sobre" class="form-control" />
+					<span asp-validation-for="Sobre" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-4">
+					<label asp-for="Estagio" class="form-label fw-semibold"></label>
+					<input asp-for="Estagio" class="form-control" />
+					<span asp-validation-for="Estagio" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-8">
+					<label class="form-label fw-semibold">Upload de imagens</label>
+					<input asp-for="Arquivos" type="file" class="form-control" multiple />
+					<span asp-validation-for="Arquivos" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex justify-content-end gap-2" style="margin-bottom: 25px;">
+			<a asp-controller="Unidade" asp-action="Index" asp-c class="btn btn-outline-secondary">Cadastrar unidade</a>
+		</div>
+
+		<!-- SEÇÃO: ENDEREÇO -->
+		<div class="card shadow-sm mb-4">
+			<div class="card-header bg-light">
+				<h5 class="mb-0">Endereço</h5>
+			</div>
+			<div class="card-body row g-3">
+				<div class="col-md-3">
+					<label asp-for="Endereco.Cep" class="form-label fw-semibold"></label>
+					<input asp-for="Endereco.Cep" class="form-control" placeholder="00000-000" />
+					<span asp-validation-for="Endereco.Cep" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-5">
+					<label asp-for="Endereco.Logradouro" class="form-label fw-semibold"></label>
+					<input asp-for="Endereco.Logradouro" class="form-control" />
+					<span asp-validation-for="Endereco.Logradouro" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-2">
+					<label asp-for="Endereco.Numero" class="form-label fw-semibold"></label>
+					<input asp-for="Endereco.Numero" class="form-control" />
+					<span asp-validation-for="Endereco.Numero" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-2">
+					<label asp-for="Endereco.Bairro" class="form-label fw-semibold"></label>
+					<input asp-for="Endereco.Bairro" class="form-control" />
+					<span asp-validation-for="Endereco.Bairro" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-4">
+					<label asp-for="Endereco.Complemento" class="form-label fw-semibold"></label>
+					<input asp-for="Endereco.Complemento" class="form-control" />
+					<span asp-validation-for="Endereco.Complemento" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-6">
+					<label asp-for="Endereco.Cidade" class="form-label fw-semibold"></label>
+					<input asp-for="Endereco.Cidade" class="form-control" />
+					<span asp-validation-for="Endereco.Cidade" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-2">
+					<label asp-for="Endereco.Uf" class="form-label fw-semibold"></label>
+					<input asp-for="Endereco.Uf" class="form-control text-uppercase" maxlength="2" />
+					<span asp-validation-for="Endereco.Uf" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+		<!-- BOTÕES -->
+		<div class="d-flex justify-content-end gap-2">
+			<a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+			<button type="submit" class="btn btn-primary">Salvar</button>
+		</div>
+	</form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	@await Html.PartialAsync("_ValidationScriptsPartial")
+
+	<script>
+		document.getElementById("Endereco_Cep")?.addEventListener("blur", async function () {
+			const cep = this.value.replace(/\D/g, '');
+			if (cep.length !== 8) return;
+
+			try {
+				const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+				const data = await res.json();
+				if (!data.erro) {
+					document.getElementById("Endereco_Logradouro").value = data.logradouro || '';
+					document.getElementById("Endereco_Bairro").value = data.bairro || '';
+					document.getElementById("Endereco_Cidade").value = data.localidade || '';
+					document.getElementById("Endereco_Uf").value = data.uf || '';
+				}
+			} catch (error) {
+				console.error("Erro ao buscar CEP:", error);
+			}
+		});
+	</script>
 }
