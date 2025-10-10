@@ -59,6 +59,15 @@ public class EmpreendimentoController : Controller
         if (ModelState.IsValid)
         {
             _context.Add(empreendimento);
+
+            Arquivo arquivo = new();
+            arquivo.NomeArquivo = "imagem-empreendimento";
+            arquivo.Extensao = ".jpg";
+            arquivo.Tipo = TipoArquivo.Imagem;
+            arquivo.Caminho = Path.Combine("uploads", "empreendimentos", empreendimento.Nome.ToLower().Replace(" ", "-"), arquivo.NomeArquivo + arquivo.Extensao);
+
+            _context.Arquivos.Add(arquivo);
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

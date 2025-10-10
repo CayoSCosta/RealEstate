@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Imobi.Models;
 
@@ -42,4 +43,7 @@ public class Empreendimento
 
     public List<Arquivo> Arquivos { get; set; }
     public int ArquivoId { get; set; }
+
+    [NotMapped]
+    public List<IFormFile> Imagens { get; set; }
 }
