@@ -5,90 +5,128 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-trash"></i> Excluir Empreendimento</h5>
-            <a asp-action="Index" class="btn btn-light btn-sm">
-                <i class="bi bi-arrow-left"></i> Voltar
-            </a>
+<div class="container py-4">
+    <h3 class="mb-4 text-danger">
+        <i class="bi bi-trash"></i> Excluir Empreendimento
+    </h3>
+
+    <div class="alert alert-warning shadow-sm">
+        <strong>Atenção!</strong> Esta ação é irreversível. Tem certeza de que deseja excluir este empreendimento?
+    </div>
+
+    <!-- CARD: Sobre o Empreendimento -->
+    <div class="card shadow-sm mb-4 border-danger">
+        <div class="card-header bg-light">
+            <h5 class="mb-0 text-danger">Sobre o Empreendimento</h5>
         </div>
-
-        <div class="card-body">
-            <div class="alert alert-warning" role="alert">
-                <strong>Atenção!</strong> Esta ação é irreversível. Tem certeza de que deseja excluir este empreendimento?
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <strong>Nome:</strong>
+                <p class="form-control-plaintext">@Model.Nome</p>
             </div>
-
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Nome</label>
-                    <p class="form-control-plaintext">@Model.Nome</p>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Status</label>
-                    <p class="form-control-plaintext">
-                        @(Model.Status ? "Ativo" : "Inativo")
-                    </p>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Área Construída (m²)</label>
-                    <p class="form-control-plaintext">@Model.AreaConstruida</p>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Estágio</label>
-                    <p class="form-control-plaintext">@Model.Estagio</p>
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Banheiros</label>
-                    <p class="form-control-plaintext">@Model.BanheirosTotal</p>
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Dormitórios</label>
-                    <p class="form-control-plaintext">@Model.DormitoriosTotal</p>
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Suítes</label>
-                    <p class="form-control-plaintext">@Model.SuitesTotal</p>
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Vagas</label>
-                    <p class="form-control-plaintext">@Model.VagasTotal</p>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="form-label fw-semibold">Descrição</label>
-                    <p class="form-control-plaintext">@Model.Sobre</p>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="form-label fw-semibold">Endereço</label>
-                    <p class="form-control-plaintext">
-                        @Model.Endereco?.Logradouro, @Model.Endereco?.Numero -
-                        @Model.Endereco?.Bairro - @Model.Endereco?.Cidade / @Model.Endereco?.Uf
-                    </p>
+            <div class="col-md-6">
+                <strong>Status:</strong>
+                <div class="form-check mt-1">
+                    <input class="form-check-input" type="checkbox" disabled @(Model.Status ? "checked" : "") />
+                    <label class="form-check-label">Ativo</label>
                 </div>
             </div>
-
-            <hr class="my-4" />
-
-            <form asp-action="Delete">
-                <input type="hidden" asp-for="Id" />
-                <div class="d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-danger px-4">
-                        <i class="bi bi-trash"></i> Excluir
-                    </button>
-                    <a asp-action="Index" class="btn btn-secondary px-4">
-                        <i class="bi bi-x-circle"></i> Cancelar
-                    </a>
-                </div>
-            </form>
+            <div class="col-md-4">
+                <strong>Estágio:</strong>
+                <p class="form-control-plaintext">@Model.Estagio</p>
+            </div>
+            <div class="col-md-4">
+                <strong>Área Construída:</strong>
+                <p class="form-control-plaintext">@Model.AreaConstruida m²</p>
+            </div>
+            <div class="col-md-4">
+                <strong>Vagas:</strong>
+                <p class="form-control-plaintext">@Model.VagasTotal</p>
+            </div>
+            <div class="col-md-4">
+                <strong>Banheiros:</strong>
+                <p class="form-control-plaintext">@Model.BanheirosTotal</p>
+            </div>
+            <div class="col-md-4">
+                <strong>Dormitórios:</strong>
+                <p class="form-control-plaintext">@Model.DormitoriosTotal</p>
+            </div>
+            <div class="col-md-4">
+                <strong>Suítes:</strong>
+                <p class="form-control-plaintext">@Model.SuitesTotal</p>
+            </div>
+            <div class="col-12">
+                <strong>Descrição:</strong>
+                <p class="form-control-plaintext">@Model.Sobre</p>
+            </div>
         </div>
     </div>
+
+    <!-- CARD: Endereço -->
+    <div class="card shadow-sm mb-4 border-danger">
+        <div class="card-header bg-light">
+            <h5 class="mb-0 text-danger">Endereço</h5>
+        </div>
+        <div class="card-body row g-3">
+            <div class="col-md-3">
+                <strong>CEP:</strong>
+                <p class="form-control-plaintext">@Model.Endereco?.Cep</p>
+            </div>
+            <div class="col-md-5">
+                <strong>Logradouro:</strong>
+                <p class="form-control-plaintext">@Model.Endereco?.Logradouro</p>
+            </div>
+            <div class="col-md-2">
+                <strong>Número:</strong>
+                <p class="form-control-plaintext">@Model.Endereco?.Numero</p>
+            </div>
+            <div class="col-md-2">
+                <strong>Bairro:</strong>
+                <p class="form-control-plaintext">@Model.Endereco?.Bairro</p>
+            </div>
+            <div class="col-md-6">
+                <strong>Cidade:</strong>
+                <p class="form-control-plaintext">@Model.Endereco?.Cidade</p>
+            </div>
+            <div class="col-md-2">
+                <strong>UF:</strong>
+                <p class="form-control-plaintext">@Model.Endereco?.Uf</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD: Imagens (se houver) -->
+    @if (Model.Arquivos != null && Model.Arquivos.Any())
+    {
+        <div class="card shadow-sm mb-4 border-danger">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-danger">Imagens</h5>
+            </div>
+            <div class="card-body">
+                <div class="horizontal-carousel d-flex overflow-auto py-2">
+                    @foreach (var arquivo in Model.Arquivos)
+                    {
+                        <div class="card shadow-sm me-3" style="min-width: 180px;">
+                            <div class="card-img-wrapper" style="height: 120px; overflow: hidden;">
+                                <img src="@Url.Content("~/" + arquivo.Caminho)" class="card-img-top" alt="@arquivo.Tipo" style="object-fit: cover; height: 100%; width: 100%;" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- BOTÕES -->
+    <form asp-action="Delete" class="mt-4">
+        <input type="hidden" asp-for="Id" />
+        <div class="d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-danger px-4">
+                <i class="bi bi-trash"></i> Excluir
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                <i class="bi bi-x-circle"></i> Cancelar
+            </a>
+        </div>
+    </form>
 </div>

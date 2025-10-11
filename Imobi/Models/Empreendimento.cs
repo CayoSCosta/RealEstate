@@ -31,7 +31,7 @@ public class Empreendimento
     [Display(Name = "Suítes")]
     public int? SuitesTotal { get; set; }
 
-    [Display(Name = "Vagas de Garagem")]
+    [Display(Name = "Vagas")]
     public int? VagasTotal { get; set; }
 
 

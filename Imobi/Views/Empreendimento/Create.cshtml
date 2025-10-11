@@ -17,12 +17,6 @@
 				<h5 class="mb-0">Sobre o Empreendimento</h5>
 			</div>
 			<div class="card-body row g-3">
-				<div class="col-md-12">
-					<div class="form-check">
-						<input class="form-check-input" asp-for="Status" />
-						<label class="form-check-label" asp-for="Status"></label>
-					</div>
-				</div>
 				<div class="col-md-6">
 					<label asp-for="Nome" class="form-label fw-semibold"></label>
 					<input asp-for="Nome" class="form-control" />
@@ -41,17 +35,35 @@
 					<span asp-validation-for="Estagio" class="text-danger"></span>
 				</div>
 
-				<div class="col-md-8">
-					<label class="form-label fw-semibold">Upload de imagens</label>
-					<input asp-for="Imagens" type="file" class="form-control" multiple />
-					<span asp-validation-for="Imagens" class="text-danger"></span>
+				<div class="col-md-2">
+					<div class="form-check">
+						<div class="form-check form-switch">
+							<input asp-for="Status" class="form-check-input" type="checkbox" />
+							<label class="form-check-label" asp-for="Status">Ativo</label>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 
-@* 		<div class="d-flex justify-content-end gap-2" style="margin-bottom: 25px;">
-			<a asp-controller="Unidade" asp-action="Index" asp-c class="btn btn-outline-secondary">Cadastrar unidade</a>
-		</div> *@
+		<!-- SEÇÃO: IMAGENS -->
+		<div class="card shadow-sm mb-4">
+			<div class="card-header bg-light d-flex justify-content-between align-items-center">
+				<h5 class="mb-0">IMAGENS</h5>
+
+				<label for="imagensUpload" class="btn btn-outline-secondary mb-0">
+					<i class="bi bi-plus"></i> + Imagens
+				</label>
+			</div>
+
+			<div class="card-body row g-3">
+				<input type="file" id="imagensUpload" name="Imagens" class="d-none" multiple accept="image/*" />
+
+				<div id="previewContainer" class="mt-4">
+					<p class="text-muted">Nenhuma imagem selecionada</p>
+				</div>
+			</div>
+		</div>
 
 		<!-- SEÇÃO: ENDEREÇO -->
 		<div class="card shadow-sm mb-4">
@@ -133,4 +145,68 @@
 			}
 		});
 	</script>
+
+	<script>
+		const input = document.getElementById('imagensUpload');
+		const previewContainer = document.getElementById('previewContainer');
+
+		input.addEventListener('change', () => {
+			const files = Array.from(input.files);
+			previewContainer.innerHTML = ''; // limpa tudo
+
+			if (files.length === 0) {
+				previewContainer.innerHTML = '<p class="text-muted">Nenhuma imagem selecionada</p>';
+				return;
+			}
+
+			const carousel = document.createElement('div');
+			carousel.classList.add('horizontal-carousel', 'd-flex', 'overflow-auto', 'py-2');
+
+			files.forEach((file, index) => {
+				if (!file.type.startsWith('image/')) return;
+
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const card = document.createElement('div');
+					card.classList.add('card', 'shadow-sm', 'me-3');
+					card.style.minWidth = '200px';
+
+					card.innerHTML = `
+						<div class="card-img-wrapper">
+							<img src="${e.target.result}" class="card-img-top rounded" style="height: 150px; object-fit: cover;" alt="preview" />
+						</div>
+						<div class="card-body text-center">
+							<button type="button" class="btn btn-sm btn-danger mt-2 remove-btn" data-index="${index}">
+								<i class="bi bi-trash"></i> Remover
+							</button>
+						</div>
+					`;
+
+					carousel.appendChild(card);
+				};
+				reader.readAsDataURL(file);
+			});
+
+			previewContainer.appendChild(carousel);
+
+			// remover imagem em tempo real
+			previewContainer.addEventListener('click', (e) => {
+				if (e.target.closest('.remove-btn')) {
+					const index = e.target.closest('.remove-btn').dataset.index;
+					removeFile(index);
+				}
+			});
+
+			// função para remover imagem da lista antes de enviar
+			function removeFile(index) {
+				const dt = new DataTransfer();
+				const currentFiles = Array.from(input.files);
+				currentFiles.splice(index, 1); // remove pelo índice
+				currentFiles.forEach(f => dt.items.add(f));
+				input.files = dt.files; // atualiza o input
+				input.dispatchEvent(new Event('change')); // recarrega preview
+			}
+		});
+	</script>
 }
+

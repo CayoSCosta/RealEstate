@@ -14,9 +14,11 @@
             <h5 class="mb-0">Sobre o Empreendimento</h5>
         </div>
         <div class="card-body row g-3">
-            <div class="col-md-6">
-                <strong>Status:</strong>
-                <p>@Html.DisplayFor(model => model.Status)</p>
+            <div class="form-check">
+                <div class="form-check form-switch">
+                    <input asp-for="Status" class="form-check-input" disabled type="checkbox" />
+                    <label class="form-check-label" asp-for="Status">Ativo</label>
+                </div>
             </div>
 
             <div class="col-md-6">
@@ -98,7 +100,7 @@
         </div>
     </div>
 
-    <!-- CARD: Unidades (apenas se houver) -->
+    <!-- CARD: Unidades -->
     @if (Model.Unidades != null && Model.Unidades.Any())
     {
         <div class="card shadow-sm mb-4">
@@ -127,7 +129,10 @@
                     {
                         <div class="card shadow-sm me-3" style="min-width: 200px;">
                             <div class="card-img-wrapper">
-                                <img src="@Url.Content("~/" + arquivo.Caminho)" class="card-img-top rounded" alt="@arquivo.Tipo" />
+                                <img src="@Url.Content("~/" + arquivo.Caminho)"
+                                     class="card-img-top rounded"
+                                     alt="@arquivo.Tipo"
+                                     style="object-fit: cover; height: 150px;" />
                             </div>
                         </div>
                     }

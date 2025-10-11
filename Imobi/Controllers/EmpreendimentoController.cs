@@ -33,11 +33,8 @@ public class EmpreendimentoController : Controller
             return NotFound();
         }
 
-        var empreendimento = await _context.Empreendimentos
-            .Include(e => e.Endereco)
-            .Include(e => e.Arquivos)
-            .Include(e => e.Unidades)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        Empreendimento? empreendimento = await ObterEmpreendimento(id);
+
         if (empreendimento == null)
         {
             return NotFound();
@@ -69,7 +66,7 @@ public class EmpreendimentoController : Controller
                 await SalvarImagens(empreendimento);
                 return RedirectToAction(nameof(Index));
             }
-
+            
             return View(empreendimento);
         }
         catch (Exception ex)
@@ -146,12 +143,10 @@ public class EmpreendimentoController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Status,Nome,Sobre,AreaConstruida,Estagio,BanheirosTotal,DormitoriosTotal,SuitesTotal,VagasTotal,UnidadeId,EnderecoId")] Empreendimento empreendimento)
+    public async Task<IActionResult> Edit(int id, Empreendimento empreendimento)
     {
         if (id != empreendimento.Id)
-        {
             return NotFound();
-        }
 
         if (ModelState.IsValid)
         {
@@ -163,17 +158,14 @@ public class EmpreendimentoController : Controller
             catch (DbUpdateConcurrencyException)
             {
                 if (!EmpreendimentoExists(empreendimento.Id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
             return RedirectToAction(nameof(Index));
         }
-        ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id", empreendimento.EnderecoId);
+
+        //ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id", empreendimento.EnderecoId);
         return View(empreendimento);
     }
 
@@ -181,17 +173,12 @@ public class EmpreendimentoController : Controller
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
 
-        var empreendimento = await _context.Empreendimentos
-            .Include(e => e.Endereco)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var empreendimento = await ObterEmpreendimento(id);
+
         if (empreendimento == null)
-        {
             return NotFound();
-        }
 
         return View(empreendimento);
     }
@@ -201,11 +188,9 @@ public class EmpreendimentoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var empreendimento = await _context.Empreendimentos.FindAsync(id);
+        var empreendimento = await ObterEmpreendimento(id);
         if (empreendimento != null)
-        {
             _context.Empreendimentos.Remove(empreendimento);
-        }
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
@@ -216,13 +201,12 @@ public class EmpreendimentoController : Controller
         return _context.Empreendimentos.Any(e => e.Id == id);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> BuscarCep(string cep, [FromServices] ViaCepService viaCepService)
+    private async Task<Empreendimento?> ObterEmpreendimento(int? id)
     {
-        var resultado = await viaCepService.BuscarEnderecoPorCep(cep);
-        if (resultado is null)
-            return NotFound("CEP não encontrado");
-
-        return Json(resultado);
+        return await _context.Empreendimentos
+            .Include(e => e.Endereco)
+            .Include(e => e.Arquivos)
+            .Include(e => e.Unidades)
+            .FirstOrDefaultAsync(m => m.Id == id);
     }
 }
