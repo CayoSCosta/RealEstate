@@ -61,64 +61,6 @@
         </div>
     </div>
 
-    <!-- CARD: Unidades (apenas se houver) -->
-    @if (Model.Unidades != null && Model.Unidades.Any())
-    {
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Unidades do Empreendimento</h5>
-                <a asp-controller="Unidade" asp-action="Create" asp-route-empreendimentoId="@Model.Id" class="btn btn-sm btn-primary">
-                    + Nova Unidade
-                </a>
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Dormitórios</th>
-                            <th>Suítes</th>
-                            <th>Banheiros</th>
-                            <th>Vagas</th>
-                            <th>Área (m²)</th>
-                            <th>Valor (R$)</th>
-                            <th>Status</th>
-                            <th style="width: 150px;">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var unidade in Model.Unidades)
-                        {
-                            <tr>
-                                <td>@unidade.Tipo</td>
-                                <td>@unidade.Dormitorios</td>
-                                <td>@unidade.Suites</td>
-                                <td>@unidade.Banheiros</td>
-                                <td>@unidade.Vagas</td>
-                                <td>@unidade.AreaConstruida</td>
-                                <td>@(unidade.Valor.HasValue ? $"R$ {unidade.Valor.Value:N2}" : "-")</td>
-                                <td>
-                                    @if (unidade.Status)
-                                    {
-                                        <span class="badge bg-success">Ativa</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">Inativa</span>
-                                    }
-                                </td>
-                                <td>
-                                    <a asp-controller="Unidade" asp-action="Edit" asp-route-id="@unidade.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                                    <a asp-controller="Unidade" asp-action="Delete" asp-route-id="@unidade.Id" class="btn btn-sm btn-outline-danger">Excluir</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    }
-
     <!-- CARD: Endereço -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light">
@@ -155,6 +97,44 @@
             </div>
         </div>
     </div>
+
+    <!-- CARD: Unidades (apenas se houver) -->
+    @if (Model.Unidades != null && Model.Unidades.Any())
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Unidades do Empreendimento</h5>
+                <a asp-controller="Unidade" asp-action="Create" asp-route-empreendimentoId="@Model.Id" class="btn btn-sm btn-primary">
+                    + Nova Unidade
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @await Html.PartialAsync("_tabelaUnidade", Model.Unidades)
+            </div>
+        </div>
+    }
+
+    <!-- CARD: Imagens -->
+    @if (Model.Arquivos != null && Model.Arquivos.Any())
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Imagens</h5>
+            </div>
+            <div class="card-body">
+                <div class="horizontal-carousel d-flex overflow-auto py-2">
+                    @foreach (var arquivo in Model.Arquivos)
+                    {
+                        <div class="card shadow-sm me-3" style="min-width: 200px;">
+                            <div class="card-img-wrapper">
+                                <img src="@Url.Content("~/" + arquivo.Caminho)" class="card-img-top rounded" alt="@arquivo.Tipo" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
 
     <!-- BOTÕES -->
     <div class="d-flex justify-content-end gap-2">

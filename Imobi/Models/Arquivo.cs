@@ -15,6 +15,8 @@ public class Arquivo
 
     public TipoArquivo Tipo { get; set; }
 
+    public int EmpreendimentoId { get; set; }
+
     [NotMapped]
     public List<IFormFile> Arquivos { get; set; } = new();
 }

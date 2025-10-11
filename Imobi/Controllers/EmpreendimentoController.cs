@@ -10,10 +10,12 @@ namespace Imobi.Controllers;
 public class EmpreendimentoController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public EmpreendimentoController(ApplicationDbContext context)
+    public EmpreendimentoController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
     {
         _context = context;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     // GET: Empreendimento
@@ -33,6 +35,8 @@ public class EmpreendimentoController : Controller
 
         var empreendimento = await _context.Empreendimentos
             .Include(e => e.Endereco)
+            .Include(e => e.Arquivos)
+            .Include(e => e.Unidades)
             .FirstOrDefaultAsync(m => m.Id == id);
         if (empreendimento == null)
         {
@@ -56,38 +60,83 @@ public class EmpreendimentoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Empreendimento empreendimento)
     {
-        if (ModelState.IsValid)
+        try
         {
-            _context.Add(empreendimento);
+            if (ModelState.IsValid)
+            {
+                _context.Add(empreendimento);
+                await _context.SaveChangesAsync();
+                await SalvarImagens(empreendimento);
+                return RedirectToAction(nameof(Index));
+            }
 
-            Arquivo arquivo = new();
-            arquivo.NomeArquivo = "imagem-empreendimento";
-            arquivo.Extensao = ".jpg";
-            arquivo.Tipo = TipoArquivo.Imagem;
-            arquivo.Caminho = Path.Combine("uploads", "empreendimentos", empreendimento.Nome.ToLower().Replace(" ", "-"), arquivo.NomeArquivo + arquivo.Extensao);
+            return View(empreendimento);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Erro ao criar empreendimento: " + ex.Message);
+            return View(empreendimento);
+        }
+    }
 
-            _context.Arquivos.Add(arquivo);
+    private async Task SalvarImagens(Empreendimento empreendimento)
+    {
+        if (empreendimento.Imagens != null && empreendimento.Imagens.Any())
+        {
+            foreach (var imagem in empreendimento.Imagens)
+            {
+                if (imagem.Length > 0)
+                {
+                    var caminhoPasta = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", "Empreendimentos", empreendimento.Id.ToString());
+
+                    if (!Directory.Exists(caminhoPasta))
+                        Directory.CreateDirectory(caminhoPasta);
+
+                    var nomeArquivo = Path.GetFileNameWithoutExtension(imagem.FileName);
+                    var extensao = Path.GetExtension(imagem.FileName);
+                    var nomeFinal = $"{Guid.NewGuid()}{extensao}";
+                    var caminhoArquivo = Path.Combine(caminhoPasta, nomeFinal);
+
+                    using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
+                        await imagem.CopyToAsync(stream);
+
+                    var caminhoRelativo = Path.Combine("Imagens", "Empreendimentos", empreendimento.Id.ToString(), nomeFinal).Replace("\\", "/");
+
+                    Arquivo arquivo = new()
+                    {
+                        NomeArquivo = nomeArquivo,
+                        Extensao = extensao,
+                        Tipo = TipoArquivo.Imagem,
+                        Caminho = caminhoRelativo,
+                        EmpreendimentoId = empreendimento.Id
+                    };
+
+                    _context.Arquivos.Add(arquivo);
+                }
+            }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
-
-        return View(empreendimento);
     }
 
     // GET: Empreendimento/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
 
-        var empreendimento = await _context.Empreendimentos.FindAsync(id);
+        var empreendimento = await _context.Empreendimentos
+        .Include(e => e.Unidades)
+        .Include(e => e.Endereco)
+        .Include(e => e.Arquivos)
+        .FirstOrDefaultAsync(e => e.Id == id);
+
+
+
         if (empreendimento == null)
-        {
             return NotFound();
-        }
+
+
         ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id", empreendimento.EnderecoId);
         return View(empreendimento);
     }
