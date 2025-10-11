@@ -271,14 +271,20 @@
 		const inputImagens = document.getElementById('imagensUpload');
 		const novasImagensContainer = document.getElementById('novasImagensContainer');
 
+		// Ao selecionar novas imagens
 		inputImagens.addEventListener('change', (event) => {
-			const files = event.target.files;
+			const files = Array.from(event.target.files);
+			novasImagensContainer.innerHTML = ''; // limpa o preview anterior
 
-			for (const file of files) {
+			if (files.length === 0) {
+				novasImagensContainer.innerHTML = '<p class="text-muted">Nenhuma imagem selecionada</p>';
+				return;
+			}
+
+			files.forEach((file, index) => {
 				const reader = new FileReader();
 
 				reader.onload = (e) => {
-					// Cria o card de preview
 					const card = document.createElement('div');
 					card.classList.add('card', 'shadow-sm', 'me-3');
 					card.style.minWidth = '200px';
@@ -288,21 +294,31 @@
 							<img src="${e.target.result}" class="card-img-top rounded" alt="Nova imagem" style="object-fit: cover; height: 150px;" />
 						</div>
 						<div class="card-body text-center">
-							<button type="button" class="btn btn-sm btn-danger mt-2">
+							<button type="button" class="btn btn-sm btn-danger mt-2 remove-btn" data-index="${index}">
 								<i class="bi bi-trash"></i> Remover
 							</button>
 						</div>
 					`;
 
-					// Permitir remover o preview antes de salvar
-					card.querySelector('button').addEventListener('click', () => {
-						card.remove();
-					});
-
 					novasImagensContainer.appendChild(card);
 				};
 
 				reader.readAsDataURL(file);
+			});
+		});
+
+		// Remoção de imagem antes de enviar
+		novasImagensContainer.addEventListener('click', (e) => {
+			if (e.target.closest('.remove-btn')) {
+				const index = parseInt(e.target.closest('.remove-btn').dataset.index);
+				const dt = new DataTransfer();
+
+				const currentFiles = Array.from(inputImagens.files);
+				currentFiles.splice(index, 1); // remove a imagem clicada
+				currentFiles.forEach(f => dt.items.add(f));
+
+				inputImagens.files = dt.files; // atualiza o input real
+				inputImagens.dispatchEvent(new Event('change')); // recarrega preview
 			}
 		});
 	</script>

@@ -153,6 +153,7 @@ public class EmpreendimentoController : Controller
             try
             {
                 _context.Update(empreendimento);
+                await SalvarImagens(empreendimento);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -165,7 +166,7 @@ public class EmpreendimentoController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        //ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id", empreendimento.EnderecoId);
+
         return View(empreendimento);
     }
 
