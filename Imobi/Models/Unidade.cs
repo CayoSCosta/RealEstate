@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Imobi.Models;
 
@@ -28,7 +29,10 @@ public class Unidade
     [Display(Name = "Valor (R$)")]
     public decimal? Valor { get; set; }
 
-    public Empreendimento Empreendimento { get; set; } = new Empreendimento();
+    public Empreendimento? Empreendimento { get; set; }
     public int EmpreendimentoId { get; set; }
+
+    [NotMapped]
+    public List<IFormFile>? Imagens { get; set; }
 
 }

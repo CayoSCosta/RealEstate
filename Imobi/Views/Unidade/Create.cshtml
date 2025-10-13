@@ -1,73 +1,177 @@
 ﻿@model Imobi.Models.Unidade
 
 @{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "Criar Unidade";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container py-4">
+	<h3 class="mb-4">Cadastrar Unidade</h3>
 
-<h4>Unidade</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
-                <input asp-for="Tipo" class="form-control" />
-                <span asp-validation-for="Tipo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Dormitorios" class="control-label"></label>
-                <input asp-for="Dormitorios" class="form-control" />
-                <span asp-validation-for="Dormitorios" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Suites" class="control-label"></label>
-                <input asp-for="Suites" class="form-control" />
-                <span asp-validation-for="Suites" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Banheiros" class="control-label"></label>
-                <input asp-for="Banheiros" class="form-control" />
-                <span asp-validation-for="Banheiros" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Vagas" class="control-label"></label>
-                <input asp-for="Vagas" class="form-control" />
-                <span asp-validation-for="Vagas" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AreaConstruida" class="control-label"></label>
-                <input asp-for="AreaConstruida" class="form-control" />
-                <span asp-validation-for="AreaConstruida" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Valor" class="control-label"></label>
-                <input asp-for="Valor" class="form-control" />
-                <span asp-validation-for="Valor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmpreendimentoId" class="control-label"></label>
-                <select asp-for="EmpreendimentoId" class ="form-control" asp-items="ViewBag.EmpreendimentoId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+	<form asp-action="Create" enctype="multipart/form-data" class="needs-validation" novalidate>
+		<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+		<!-- SEÇÃO: DADOS GERAIS -->
+		<div class="card shadow-sm mb-4">
+			<div class="card-header bg-light">
+				<h5 class="mb-0">Dados da Unidade</h5>
+			</div>
+			<div class="card-body row g-3">
+
+				<div class="col-md-4">
+					<label asp-for="EmpreendimentoId" class="form-label fw-semibold"></label>
+					<select asp-for="EmpreendimentoId" class="form-select" asp-items="ViewBag.EmpreendimentoId">
+						<option value="">Selecione...</option>
+					</select>
+					<span asp-validation-for="EmpreendimentoId" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-4">
+					<label asp-for="Tipo" class="form-label fw-semibold"></label>
+					<input asp-for="Tipo" class="form-control" placeholder="Ex: Apartamento" />
+					<span asp-validation-for="Tipo" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-2">
+					<label asp-for="Dormitorios" class="form-label fw-semibold"></label>
+					<input asp-for="Dormitorios" type="number" class="form-control" min="0" />
+					<span asp-validation-for="Dormitorios" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-2">
+					<label asp-for="Suites" class="form-label fw-semibold"></label>
+					<input asp-for="Suites" type="number" class="form-control" min="0" />
+					<span asp-validation-for="Suites" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-2">
+					<label asp-for="Banheiros" class="form-label fw-semibold"></label>
+					<input asp-for="Banheiros" type="number" class="form-control" min="0" />
+					<span asp-validation-for="Banheiros" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-2">
+					<label asp-for="Vagas" class="form-label fw-semibold"></label>
+					<input asp-for="Vagas" type="number" class="form-control" min="0" />
+					<span asp-validation-for="Vagas" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-3">
+					<label asp-for="AreaConstruida" class="form-label fw-semibold"></label>
+					<div class="input-group">
+						<input asp-for="AreaConstruida" type="number" class="form-control" step="0.01" />
+						<span class="input-group-text">m²</span>
+					</div>
+					<span asp-validation-for="AreaConstruida" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-3">
+					<label asp-for="Valor" class="form-label fw-semibold"></label>
+					<div class="input-group">
+						<span class="input-group-text">R$</span>
+						<input asp-for="Valor" type="number" class="form-control" step="0.01" />
+					</div>
+					<span asp-validation-for="Valor" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-2 d-flex align-items-center">
+					<div class="form-check form-switch">
+						<input asp-for="Status" class="form-check-input" type="checkbox" />
+						<label class="form-check-label" asp-for="Status">Ativo</label>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- SEÇÃO: IMAGENS -->
+		<div class="card shadow-sm mb-4">
+			<div class="card-header bg-light d-flex justify-content-between align-items-center">
+				<h5 class="mb-0">Imagens da Unidade</h5>
+
+				<label for="imagensUpload" class="btn btn-outline-secondary mb-0">
+					<i class="bi bi-plus"></i> + Imagens
+				</label>
+			</div>
+
+			<div class="card-body row g-3">
+				<input type="file" id="imagensUpload" name="Imagens" class="d-none" multiple accept="image/*" />
+
+				<div id="previewContainer" class="mt-4">
+					<p class="text-muted">Nenhuma imagem selecionada</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- BOTÕES -->
+		<div class="d-flex justify-content-end gap-2">
+			<a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+			<button type="submit" class="btn btn-primary">Salvar</button>
+		</div>
+	</form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	@await Html.PartialAsync("_ValidationScriptsPartial")
+
+	<script>
+		const input = document.getElementById('imagensUpload');
+		const previewContainer = document.getElementById('previewContainer');
+
+		input.addEventListener('change', () => {
+			const files = Array.from(input.files);
+			previewContainer.innerHTML = '';
+
+			if (files.length === 0) {
+				previewContainer.innerHTML = '<p class="text-muted">Nenhuma imagem selecionada</p>';
+				return;
+			}
+
+			const carousel = document.createElement('div');
+			carousel.classList.add('horizontal-carousel', 'd-flex', 'overflow-auto', 'py-2');
+
+			files.forEach((file, index) => {
+				if (!file.type.startsWith('image/')) return;
+
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const card = document.createElement('div');
+					card.classList.add('card', 'shadow-sm', 'me-3');
+					card.style.minWidth = '200px';
+
+					card.innerHTML = `
+						<div class="card-img-wrapper">
+							<img src="${e.target.result}" class="card-img-top rounded" style="height: 150px; object-fit: cover;" alt="preview" />
+						</div>
+						<div class="card-body text-center">
+							<button type="button" class="btn btn-sm btn-danger mt-2 remove-btn" data-index="${index}">
+								<i class="bi bi-trash"></i> Remover
+							</button>
+						</div>
+					`;
+
+					carousel.appendChild(card);
+				};
+				reader.readAsDataURL(file);
+			});
+
+			previewContainer.appendChild(carousel);
+
+			previewContainer.addEventListener('click', (e) => {
+				if (e.target.closest('.remove-btn')) {
+					const index = e.target.closest('.remove-btn').dataset.index;
+					removeFile(index);
+				}
+			});
+
+			function removeFile(index) {
+				const dt = new DataTransfer();
+				const currentFiles = Array.from(input.files);
+				currentFiles.splice(index, 1);
+				currentFiles.forEach(f => dt.items.add(f));
+				input.files = dt.files;
+				input.dispatchEvent(new Event('change'));
+			}
+		});
+	</script>
 }
