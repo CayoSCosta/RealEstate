@@ -29,17 +29,14 @@ namespace Imobi.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var unidade = await _context.Unidades
                 .Include(u => u.Empreendimento)
+                .Include(u => u.Arquivos)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (unidade == null)
-            {
                 return NotFound();
-            }
 
             return View(unidade);
         }
@@ -115,7 +112,8 @@ namespace Imobi.Controllers
                             Extensao = extensao,
                             Tipo = TipoArquivo.Imagem,
                             Caminho = caminhoRelativo,
-                            EmpreendimentoId = unidade.Id
+                            EmpreendimentoId = int.Parse(empreendimentoId),
+                            UnidadeId = int.Parse(unidadeId)
                         };
 
                         _context.Arquivos.Add(arquivo);
@@ -130,15 +128,15 @@ namespace Imobi.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var unidade = await _context.Unidades.FindAsync(id);
+            var unidade = await _context.Unidades
+                .Include(u => u.Arquivos)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (unidade == null)
-            {
                 return NotFound();
-            }
+
             ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Id", unidade.EmpreendimentoId);
             return View(unidade);
         }
@@ -148,30 +146,35 @@ namespace Imobi.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Status,Tipo,Dormitorios,Suites,Banheiros,Vagas,AreaConstruida,Valor,EmpreendimentoId")] Unidade unidade)
+        public async Task<IActionResult> Edit(int id, Unidade unidade)
         {
             if (id != unidade.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
+                //foreach (var entry in ModelState)
+                //{
+                //    var key = entry.Key;
+                //    var errors = entry.Value.Errors;
+                //    foreach (var error in errors)
+                //    {
+                //        Console.WriteLine($"Erro no campo {key}: {error.ErrorMessage}");
+                //    }
+                //}
+
                 try
                 {
                     _context.Update(unidade);
+                    await SalvarImagens(unidade);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!UnidadeExists(unidade.Id))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -217,5 +220,12 @@ namespace Imobi.Controllers
         {
             return _context.Unidades.Any(e => e.Id == id);
         }
+
+        //private async Task<Empreendimento?> ObterUnidade(int? id)
+        //{
+        //    return await _context.Unidades
+        //        .Include(e => e.Arquivos)
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //}
     }
 }

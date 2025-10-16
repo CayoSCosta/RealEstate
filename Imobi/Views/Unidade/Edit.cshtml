@@ -1,75 +1,221 @@
 ﻿@model Imobi.Models.Unidade
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Unidade";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container py-4">
+    <h3 class="mb-4">Editar Unidade</h3>
 
-<h4>Unidade</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
+    <form asp-action="Edit" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- SEÇÃO: DADOS DA UNIDADE -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Informações da Unidade</h5>
+            </div>
+            <div class="card-body row g-3">
+
+                <div class="col-md-4">
+                    <label asp-for="Tipo" class="form-label fw-semibold"></label>
+                    <input asp-for="Tipo" class="form-control" />
+                    <span asp-validation-for="Tipo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Dormitorios" class="form-label fw-semibold"></label>
+                    <input asp-for="Dormitorios" class="form-control" />
+                    <span asp-validation-for="Dormitorios" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Suites" class="form-label fw-semibold"></label>
+                    <input asp-for="Suites" class="form-control" />
+                    <span asp-validation-for="Suites" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Banheiros" class="form-label fw-semibold"></label>
+                    <input asp-for="Banheiros" class="form-control" />
+                    <span asp-validation-for="Banheiros" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Vagas" class="form-label fw-semibold"></label>
+                    <input asp-for="Vagas" class="form-control" />
+                    <span asp-validation-for="Vagas" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="AreaConstruida" class="form-label fw-semibold"></label>
+                    <input asp-for="AreaConstruida" class="form-control" />
+                    <span asp-validation-for="AreaConstruida" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Valor" class="form-label fw-semibold"></label>
+                    <input asp-for="Valor" class="form-control" />
+                    <span asp-validation-for="Valor" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="EmpreendimentoId" class="form-label fw-semibold">Empreendimento</label>
+                    <select asp-for="EmpreendimentoId" class="form-select" asp-items="ViewBag.EmpreendimentoId"></select>
+                    <span asp-validation-for="EmpreendimentoId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-center">
+                    <div class="form-check form-switch">
+                        <input asp-for="Status" class="form-check-input" type="checkbox" />
+                        <label class="form-check-label" asp-for="Status">Ativa</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO: IMAGENS -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Imagens</h5>
+                <label for="imagensUpload" class="btn btn-outline-secondary mb-0">
+                    <i class="bi bi-plus"></i> + Imagens
                 </label>
             </div>
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
-                <input asp-for="Tipo" class="form-control" />
-                <span asp-validation-for="Tipo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Dormitorios" class="control-label"></label>
-                <input asp-for="Dormitorios" class="form-control" />
-                <span asp-validation-for="Dormitorios" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Suites" class="control-label"></label>
-                <input asp-for="Suites" class="form-control" />
-                <span asp-validation-for="Suites" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Banheiros" class="control-label"></label>
-                <input asp-for="Banheiros" class="form-control" />
-                <span asp-validation-for="Banheiros" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Vagas" class="control-label"></label>
-                <input asp-for="Vagas" class="form-control" />
-                <span asp-validation-for="Vagas" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AreaConstruida" class="control-label"></label>
-                <input asp-for="AreaConstruida" class="form-control" />
-                <span asp-validation-for="AreaConstruida" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Valor" class="control-label"></label>
-                <input asp-for="Valor" class="form-control" />
-                <span asp-validation-for="Valor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmpreendimentoId" class="control-label"></label>
-                <select asp-for="EmpreendimentoId" class="form-control" asp-items="ViewBag.EmpreendimentoId"></select>
-                <span asp-validation-for="EmpreendimentoId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+            <div class="card-body">
+                <input type="file" id="imagensUpload" name="Imagens" class="d-none" multiple accept="image/*" />
+
+                <!-- IMAGENS EXISTENTES -->
+                <div class="mb-4 position-relative">
+                    <div class="position-absolute top-50 start-50 translate-middle text-secondary opacity-25 fw-bold user-select-none"
+                         style="font-size: 2rem; pointer-events: none;">
+                        Imagens já cadastradas
+                    </div>
+
+                    @if (Model.Arquivos != null && Model.Arquivos.Any())
+                    {
+                        <div class="horizontal-carousel d-flex overflow-auto py-2" id="imagensExistentesContainer">
+                            @foreach (var arquivo in Model.Arquivos)
+                            {
+                                <div class="card shadow-sm me-3" style="min-width: 200px;">
+                                    <div class="card-img-wrapper">
+                                        <img src="@Url.Content("~/" + arquivo.Caminho)"
+                                             class="card-img-top rounded"
+                                             alt="@arquivo.Tipo"
+                                             style="object-fit: cover; height: 150px;" />
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <button type="button" class="btn btn-sm btn-danger mt-2" data-id="@arquivo.Id">
+                                            <i class="bi bi-trash"></i> Remover
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p>Não há imagens cadastradas</p>
+                    }
+                </div>
+
+                <hr />
+
+                <!-- NOVAS IMAGENS -->
+                <div class="position-relative mt-4">
+                    <div class="position-absolute top-50 start-50 translate-middle text-secondary opacity-25 fw-bold user-select-none"
+                         style="font-size: 2rem; pointer-events: none;">
+                        Novas imagens
+                    </div>
+
+                    <div id="novasImagensContainer" class="d-flex overflow-auto py-2">
+                        <!-- As novas imagens aparecerão aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÕES -->
+        <div class="d-flex justify-content-end gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        // Remover imagem existente
+        document.querySelectorAll('.btn-danger[data-id]').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const id = this.dataset.id;
+                if (!confirm('Deseja realmente remover esta imagem?')) return;
+
+                try {
+                    const res = await fetch(`/Imagem/Remover/${id}`, { method: 'POST' });
+                    if (res.ok) {
+                        this.closest('.card').remove();
+                    } else {
+                        alert('Erro ao remover a imagem.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Erro ao remover a imagem.');
+                }
+            });
+        });
+
+        // Preview de novas imagens
+        const inputImagens = document.getElementById('imagensUpload');
+        const novasImagensContainer = document.getElementById('novasImagensContainer');
+
+        inputImagens.addEventListener('change', (event) => {
+            const files = Array.from(event.target.files);
+            novasImagensContainer.innerHTML = '';
+
+            if (files.length === 0) {
+                novasImagensContainer.innerHTML = '<p class="text-muted">Nenhuma imagem selecionada</p>';
+                return;
+            }
+
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const card = document.createElement('div');
+                    card.classList.add('card', 'shadow-sm', 'me-3');
+                    card.style.minWidth = '200px';
+                    card.innerHTML = `
+                        <div class="card-img-wrapper">
+                            <img src="${e.target.result}" class="card-img-top rounded" style="object-fit: cover; height: 150px;" />
+                        </div>
+                        <div class="card-body text-center">
+                            <button type="button" class="btn btn-sm btn-danger mt-2 remove-btn" data-index="${index}">
+                                <i class="bi bi-trash"></i> Remover
+                            </button>
+                        </div>
+                    `;
+                    novasImagensContainer.appendChild(card);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Remover imagem antes do envio
+        novasImagensContainer.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-btn')) {
+                const index = parseInt(e.target.closest('.remove-btn').dataset.index);
+                const dt = new DataTransfer();
+                const currentFiles = Array.from(inputImagens.files);
+                currentFiles.splice(index, 1);
+                currentFiles.forEach(f => dt.items.add(f));
+                inputImagens.files = dt.files;
+                inputImagens.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
 }

@@ -17,6 +17,8 @@ public class Arquivo
 
     public int EmpreendimentoId { get; set; }
 
+    public int UnidadeId { get; set; }
+
     [NotMapped]
     public List<IFormFile> Arquivos { get; set; } = new();
 }

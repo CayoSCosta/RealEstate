@@ -32,6 +32,9 @@ public class Unidade
     public Empreendimento? Empreendimento { get; set; }
     public int EmpreendimentoId { get; set; }
 
+    public List<Arquivo>? Arquivos { get; set; }
+    public int ArquivoId { get; set; }
+
     [NotMapped]
     public List<IFormFile>? Imagens { get; set; }
 
