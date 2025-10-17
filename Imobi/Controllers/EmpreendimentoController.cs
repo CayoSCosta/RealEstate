@@ -21,24 +21,23 @@ public class EmpreendimentoController : Controller
     // GET: Empreendimento
     public async Task<IActionResult> Index()
     {
-        var applicationDbContext = _context.Empreendimentos.Include(e => e.Endereco);
-        return View(await applicationDbContext.ToListAsync());
+        var applicationDbContext = await _context.Empreendimentos
+            .Include(e => e.Endereco)
+            .ToListAsync();
+
+        return View(applicationDbContext);
     }
 
     // GET: Empreendimento/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
 
         Empreendimento? empreendimento = await ObterEmpreendimento(id);
 
         if (empreendimento == null)
-        {
             return NotFound();
-        }
 
         return View(empreendimento);
     }
@@ -204,10 +203,12 @@ public class EmpreendimentoController : Controller
 
     private async Task<Empreendimento?> ObterEmpreendimento(int? id)
     {
-        return await _context.Empreendimentos
+        var empreendimento =  await _context.Empreendimentos
             .Include(e => e.Endereco)
             .Include(e => e.Arquivos)
             .Include(e => e.Unidades)
             .FirstOrDefaultAsync(m => m.Id == id);
+
+        return empreendimento;
     }
 }

@@ -1,80 +1,87 @@
-﻿@page
-@model IEnumerable<Imobi.Models.Unidade>
+﻿@model IEnumerable<Imobi.Models.Unidade>
 @{
 }
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tipo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Dormitorios)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Suites)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Banheiros)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Vagas)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AreaConstruida)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Valor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Empreendimento)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @if(Model.Any() || Model != null)
-        {
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Status)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Tipo)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Dormitorios)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Suites)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Banheiros)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Vagas)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AreaConstruida)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Valor)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Empreendimento.Id)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    </td>
-                </tr>
-            }
-        }
-    </tbody>
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.Status)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Tipo)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Dormitorios)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Suites)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Banheiros)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Vagas)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.AreaConstruida)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Valor)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Empreendimento)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@if (Model != null && Model.Any())
+		{
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@Html.DisplayFor(modelItem => item.Status)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Tipo)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Dormitorios)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Suites)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Banheiros)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Vagas)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.AreaConstruida)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Valor)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Empreendimento.Id)
+					</td>
+					<td>
+						<div class="d-flex gap-1">
+							<a asp-controller="Unidade" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Editar">
+								<i class="bi bi-pencil-square"></i>
+							</a>
+							<a asp-controller="Unidade" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Detalhes">
+								<i class="bi bi-eye"></i>
+							</a>
+							<a asp-controller="Unidade" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Excluir">
+								<i class="bi bi-trash"></i>
+							</a>
+						</div>
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
 </table>

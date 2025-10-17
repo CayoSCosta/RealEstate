@@ -23,16 +23,16 @@ public class Empreendimento
     public string Estagio { get; set; }
 
     [Display(Name = "Banheiros")]
-    public int? BanheirosTotal { get; set; }
+    public string BanheirosTotal { get; set; }
 
     [Display(Name = "Dormitórios")]
-    public int? DormitoriosTotal { get; set; }
+    public string DormitoriosTotal { get; set; }
 
     [Display(Name = "Suítes")]
-    public int? SuitesTotal { get; set; }
+    public string SuitesTotal { get; set; }
 
     [Display(Name = "Vagas")]
-    public int? VagasTotal { get; set; }
+    public string VagasTotal { get; set; }
 
 
     public List<Unidade> Unidades { get; set; } = new List<Unidade>();

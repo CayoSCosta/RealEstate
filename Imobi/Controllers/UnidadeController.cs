@@ -22,6 +22,11 @@ namespace Imobi.Controllers
         public async Task<IActionResult> Index()
         {
             var unidades = _context.Unidades.Include(u => u.Empreendimento);
+
+            foreach (var unidadesItem in unidades)
+            {
+                await AtualizarCaracteristicasDeUnidadesAsync(unidadesItem.EmpreendimentoId);
+            }
             return View(unidades);
         }
 
@@ -62,6 +67,7 @@ namespace Imobi.Controllers
                     _context.Add(unidade);
                     await _context.SaveChangesAsync();
                     await SalvarImagens(unidade);
+                    await AtualizarCaracteristicasDeUnidadesAsync(unidade.EmpreendimentoId);
                     return RedirectToAction(nameof(Index));
                 }
                 ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Id", unidade.EmpreendimentoId);
@@ -166,6 +172,7 @@ namespace Imobi.Controllers
                 try
                 {
                     _context.Update(unidade);
+                    await AtualizarCaracteristicasDeUnidadesAsync(unidade.EmpreendimentoId);
                     await SalvarImagens(unidade);
                     await _context.SaveChangesAsync();
                 }
@@ -227,5 +234,68 @@ namespace Imobi.Controllers
         //        .Include(e => e.Arquivos)
         //        .FirstOrDefaultAsync(m => m.Id == id);
         //}
+        //}
+
+        private async Task<Empreendimento> AtualizarCaracteristicasDeUnidadesAsync(int empreendimentoId)
+        {
+            try
+            {
+                var emp = await _context.Empreendimentos
+                                .Include(e => e.Unidades)
+                                .FirstOrDefaultAsync(m => m.Id == empreendimentoId);
+
+                //var emp = await _context.Empreendimentos
+                //    .Include(e => e.Unidades)
+                //    .FirstOrDefaultAsync(e => e.Id == unidade.EmpreendimentoId);
+
+                if (emp == null)
+                    return emp;
+
+                if (emp == null || emp.Unidades == null || !emp.Unidades.Any())
+                {
+                    if (emp != null)
+                    {
+                        emp.AreaConstruida = "0 m²";
+                        emp.BanheirosTotal = "0";
+                        emp.DormitoriosTotal = "0";
+                        emp.SuitesTotal = "0";
+                        emp.VagasTotal = "0";
+                        _context.Update(emp);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    return emp;
+                }
+
+                var areaConstruidaMin = emp.Unidades.Min(u => u.AreaConstruida);
+                var areaConstruidaMax = emp.Unidades.Max(u => u.AreaConstruida);
+
+                var banheirosMin = emp.Unidades.Min(u => u.Banheiros);
+                var banheirosMax = emp.Unidades.Max(u => u.Banheiros);
+
+                var dormitoriosMin = emp.Unidades.Min(u => u.Dormitorios);
+                var dormitoriosMax = emp.Unidades.Max(u => u.Dormitorios);
+
+                var suitesMin = emp.Unidades.Min(u => u.Suites);
+                var suitesMax = emp.Unidades.Max(u => u.Suites);
+
+                var vagasMin = emp.Unidades.Min(u => u.Vagas);
+                var vagasMax = emp.Unidades.Max(u => u.Vagas);
+
+                emp.BanheirosTotal = banheirosMin == banheirosMax ? $"{banheirosMin}" : $"{banheirosMin} - {banheirosMax}";
+                emp.DormitoriosTotal = dormitoriosMin == dormitoriosMax ? $"{dormitoriosMin}" : $"{dormitoriosMin} - {dormitoriosMax}";
+                emp.SuitesTotal = suitesMin == suitesMax ? $"{suitesMin}" : $"{suitesMin} - {suitesMax}";
+                emp.VagasTotal = vagasMin == vagasMax ? $"{vagasMin}" : $"{vagasMin} - {vagasMax}";
+                emp.AreaConstruida = areaConstruidaMin == areaConstruidaMax ? $"{areaConstruidaMin} m²" : $"{areaConstruidaMin} - {areaConstruidaMax} m²";
+
+                _context.Update(emp);
+                _context.SaveChanges();
+                return emp;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
