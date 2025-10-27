@@ -34,7 +34,10 @@ namespace Imobi.Migrations
                     b.Property<string>("Caminho")
                         .HasColumnType("text");
 
-                    b.Property<int>("EmpreendimentoId")
+                    b.Property<string>("Descricao")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("EmpreendimentoId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Extensao")
@@ -46,7 +49,7 @@ namespace Imobi.Migrations
                     b.Property<int>("Tipo")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UnidadeId")
+                    b.Property<int?>("UnidadeId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -245,15 +248,11 @@ namespace Imobi.Migrations
                 {
                     b.HasOne("Imobi.Models.Empreendimento", null)
                         .WithMany("Arquivos")
-                        .HasForeignKey("EmpreendimentoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmpreendimentoId");
 
                     b.HasOne("Imobi.Models.Unidade", null)
                         .WithMany("Arquivos")
-                        .HasForeignKey("UnidadeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UnidadeId");
                 });
 
             modelBuilder.Entity("Imobi.Models.Condominio", b =>

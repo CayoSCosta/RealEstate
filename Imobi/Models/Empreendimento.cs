@@ -34,7 +34,6 @@ public class Empreendimento
     [Display(Name = "Vagas")]
     public string VagasTotal { get; set; }
 
-
     public List<Unidade> Unidades { get; set; } = new List<Unidade>();
     public int UnidadeId { get; set; }
 

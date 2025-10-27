@@ -14,22 +14,6 @@ namespace Imobi.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Arquivos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    NomeArquivo = table.Column<string>(type: "text", nullable: true),
-                    Caminho = table.Column<string>(type: "text", nullable: true),
-                    Extensao = table.Column<string>(type: "text", nullable: true),
-                    Tipo = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Arquivos", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Enderecos",
                 columns: table => new
                 {
@@ -74,12 +58,13 @@ namespace Imobi.Migrations
                     Sobre = table.Column<string>(type: "text", nullable: true),
                     AreaConstruida = table.Column<string>(type: "text", nullable: true),
                     Estagio = table.Column<string>(type: "text", nullable: true),
-                    BanheirosTotal = table.Column<int>(type: "integer", nullable: true),
-                    DormitoriosTotal = table.Column<int>(type: "integer", nullable: true),
-                    SuitesTotal = table.Column<int>(type: "integer", nullable: true),
-                    VagasTotal = table.Column<int>(type: "integer", nullable: true),
+                    BanheirosTotal = table.Column<string>(type: "text", nullable: true),
+                    DormitoriosTotal = table.Column<string>(type: "text", nullable: true),
+                    SuitesTotal = table.Column<string>(type: "text", nullable: true),
+                    VagasTotal = table.Column<string>(type: "text", nullable: true),
                     UnidadeId = table.Column<int>(type: "integer", nullable: false),
-                    EnderecoId = table.Column<int>(type: "integer", nullable: false)
+                    EnderecoId = table.Column<int>(type: "integer", nullable: false),
+                    ArquivoId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,6 +75,63 @@ namespace Imobi.Migrations
                         principalTable: "Enderecos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Unidades",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Status = table.Column<bool>(type: "boolean", nullable: false),
+                    Tipo = table.Column<string>(type: "text", nullable: true),
+                    Dormitorios = table.Column<int>(type: "integer", nullable: false),
+                    Suites = table.Column<int>(type: "integer", nullable: false),
+                    Banheiros = table.Column<int>(type: "integer", nullable: false),
+                    Vagas = table.Column<int>(type: "integer", nullable: false),
+                    AreaConstruida = table.Column<int>(type: "integer", nullable: false),
+                    Valor = table.Column<decimal>(type: "numeric", nullable: true),
+                    EmpreendimentoId = table.Column<int>(type: "integer", nullable: false),
+                    ArquivoId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Unidades", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Unidades_Empreendimentos_EmpreendimentoId",
+                        column: x => x.EmpreendimentoId,
+                        principalTable: "Empreendimentos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Arquivos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    NomeArquivo = table.Column<string>(type: "text", nullable: true),
+                    Caminho = table.Column<string>(type: "text", nullable: true),
+                    Extensao = table.Column<string>(type: "text", nullable: true),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
+                    Descricao = table.Column<string>(type: "text", nullable: true),
+                    EmpreendimentoId = table.Column<int>(type: "integer", nullable: true),
+                    UnidadeId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Arquivos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Arquivos_Empreendimentos_EmpreendimentoId",
+                        column: x => x.EmpreendimentoId,
+                        principalTable: "Empreendimentos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Arquivos_Unidades_UnidadeId",
+                        column: x => x.UnidadeId,
+                        principalTable: "Unidades",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -124,32 +166,15 @@ namespace Imobi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Unidades",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Status = table.Column<bool>(type: "boolean", nullable: false),
-                    Tipo = table.Column<string>(type: "text", nullable: true),
-                    Dormitorios = table.Column<int>(type: "integer", nullable: false),
-                    Suites = table.Column<int>(type: "integer", nullable: false),
-                    Banheiros = table.Column<int>(type: "integer", nullable: false),
-                    Vagas = table.Column<int>(type: "integer", nullable: false),
-                    AreaConstruida = table.Column<int>(type: "integer", nullable: false),
-                    Valor = table.Column<decimal>(type: "numeric", nullable: true),
-                    EmpreendimentoId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Unidades", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Unidades_Empreendimentos_EmpreendimentoId",
-                        column: x => x.EmpreendimentoId,
-                        principalTable: "Empreendimentos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_Arquivos_EmpreendimentoId",
+                table: "Arquivos",
+                column: "EmpreendimentoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Arquivos_UnidadeId",
+                table: "Arquivos",
+                column: "UnidadeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Condominios_ArquivoId",
@@ -184,13 +209,13 @@ namespace Imobi.Migrations
                 name: "Condominios");
 
             migrationBuilder.DropTable(
-                name: "Unidades");
-
-            migrationBuilder.DropTable(
                 name: "Arquivos");
 
             migrationBuilder.DropTable(
                 name: "InstalacaoCondominios");
+
+            migrationBuilder.DropTable(
+                name: "Unidades");
 
             migrationBuilder.DropTable(
                 name: "Empreendimentos");

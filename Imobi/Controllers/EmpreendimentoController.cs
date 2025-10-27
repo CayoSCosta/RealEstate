@@ -77,41 +77,51 @@ public class EmpreendimentoController : Controller
 
     private async Task SalvarImagens(Empreendimento empreendimento)
     {
-        if (empreendimento.Imagens != null && empreendimento.Imagens.Any())
+        try
         {
-            foreach (var imagem in empreendimento.Imagens)
+            if (empreendimento.Imagens != null && empreendimento.Imagens.Any())
             {
-                if (imagem.Length > 0)
+                foreach (var imagem in empreendimento.Imagens)
                 {
-                    var caminhoPasta = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", "Empreendimentos", empreendimento.Id.ToString());
-
-                    if (!Directory.Exists(caminhoPasta))
-                        Directory.CreateDirectory(caminhoPasta);
-
-                    var nomeArquivo = Path.GetFileNameWithoutExtension(imagem.FileName);
-                    var extensao = Path.GetExtension(imagem.FileName);
-                    var nomeFinal = $"{Guid.NewGuid()}{extensao}";
-                    var caminhoArquivo = Path.Combine(caminhoPasta, nomeFinal);
-
-                    using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
-                        await imagem.CopyToAsync(stream);
-
-                    var caminhoRelativo = Path.Combine("Imagens", "Empreendimentos", empreendimento.Id.ToString(), nomeFinal).Replace("\\", "/");
-
-                    Arquivo arquivo = new()
+                    if (imagem.Length > 0)
                     {
-                        NomeArquivo = nomeArquivo,
-                        Extensao = extensao,
-                        Tipo = TipoArquivo.Imagem,
-                        Caminho = caminhoRelativo,
-                        EmpreendimentoId = empreendimento.Id
-                    };
+                        var caminhoPasta = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", "Empreendimentos", empreendimento.Id.ToString());
 
-                    _context.Arquivos.Add(arquivo);
+                        if (!Directory.Exists(caminhoPasta))
+                            Directory.CreateDirectory(caminhoPasta);
+
+                        var nomeArquivo = Path.GetFileNameWithoutExtension(imagem.FileName);
+                        var extensao = Path.GetExtension(imagem.FileName);
+                        var nomeFinal = $"{Guid.NewGuid()}{extensao}";
+                        var caminhoArquivo = Path.Combine(caminhoPasta, nomeFinal);
+
+                        using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
+                            await imagem.CopyToAsync(stream);
+
+                        var caminhoRelativo = Path.Combine("Imagens", "Empreendimentos", empreendimento.Id.ToString(), nomeFinal).Replace("\\", "/");
+
+                        Arquivo arquivo = new()
+                        {
+                            NomeArquivo = nomeArquivo,
+                            Extensao = extensao,
+                            Tipo = TipoArquivo.Imagem,
+                            Caminho = caminhoRelativo,
+                            EmpreendimentoId = empreendimento.Id,
+                            UnidadeId = null,
+                            Descricao = "Teste descrição de imagem empreendimento",                            
+                        };
+
+                        _context.Arquivos.Add(arquivo);
+                    }
                 }
-            }
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
         }
     }
 

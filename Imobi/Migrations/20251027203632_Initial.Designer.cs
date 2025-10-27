@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Imobi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251015172526_FileId2Image")]
-    partial class FileId2Image
+    [Migration("20251027203632_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,7 +37,10 @@ namespace Imobi.Migrations
                     b.Property<string>("Caminho")
                         .HasColumnType("text");
 
-                    b.Property<int>("EmpreendimentoId")
+                    b.Property<string>("Descricao")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("EmpreendimentoId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Extensao")
@@ -106,11 +109,11 @@ namespace Imobi.Migrations
                     b.Property<int>("ArquivoId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("BanheirosTotal")
-                        .HasColumnType("integer");
+                    b.Property<string>("BanheirosTotal")
+                        .HasColumnType("text");
 
-                    b.Property<int?>("DormitoriosTotal")
-                        .HasColumnType("integer");
+                    b.Property<string>("DormitoriosTotal")
+                        .HasColumnType("text");
 
                     b.Property<int>("EnderecoId")
                         .HasColumnType("integer");
@@ -127,14 +130,14 @@ namespace Imobi.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("SuitesTotal")
-                        .HasColumnType("integer");
+                    b.Property<string>("SuitesTotal")
+                        .HasColumnType("text");
 
                     b.Property<int>("UnidadeId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("VagasTotal")
-                        .HasColumnType("integer");
+                    b.Property<string>("VagasTotal")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -248,9 +251,7 @@ namespace Imobi.Migrations
                 {
                     b.HasOne("Imobi.Models.Empreendimento", null)
                         .WithMany("Arquivos")
-                        .HasForeignKey("EmpreendimentoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmpreendimentoId");
 
                     b.HasOne("Imobi.Models.Unidade", null)
                         .WithMany("Arquivos")

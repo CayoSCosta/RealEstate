@@ -22,11 +22,6 @@ namespace Imobi.Controllers
         public async Task<IActionResult> Index()
         {
             var unidades = _context.Unidades.Include(u => u.Empreendimento);
-
-            foreach (var unidadesItem in unidades)
-            {
-                await AtualizarCaracteristicasDeUnidadesAsync(unidadesItem.EmpreendimentoId);
-            }
             return View(unidades);
         }
 
@@ -118,8 +113,9 @@ namespace Imobi.Controllers
                             Extensao = extensao,
                             Tipo = TipoArquivo.Imagem,
                             Caminho = caminhoRelativo,
+                            Descricao = "Teste descrição de imagem unidade",
                             EmpreendimentoId = int.Parse(empreendimentoId),
-                            UnidadeId = int.Parse(unidadeId)
+                            UnidadeId = int.Parse(unidadeId),
                         };
 
                         _context.Arquivos.Add(arquivo);
@@ -228,13 +224,12 @@ namespace Imobi.Controllers
             return _context.Unidades.Any(e => e.Id == id);
         }
 
-        //private async Task<Empreendimento?> ObterUnidade(int? id)
-        //{
-        //    return await _context.Unidades
-        //        .Include(e => e.Arquivos)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //}
-        //}
+        private async Task<Unidade?> ObterUnidade(int? id)
+        {
+            return await _context.Unidades
+                .Include(e => e.Arquivos)
+                .FirstOrDefaultAsync(m => m.Id == id);
+        }
 
         private async Task<Empreendimento> AtualizarCaracteristicasDeUnidadesAsync(int empreendimentoId)
         {

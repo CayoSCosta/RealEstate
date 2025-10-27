@@ -15,9 +15,11 @@ public class Arquivo
 
     public TipoArquivo Tipo { get; set; }
 
-    public int EmpreendimentoId { get; set; }
+    public string Descricao { get; set; }
 
-    public int UnidadeId { get; set; }
+    public int? EmpreendimentoId { get; set; }
+
+    public int? UnidadeId { get; set; }
 
     [NotMapped]
     public List<IFormFile> Arquivos { get; set; } = new();
