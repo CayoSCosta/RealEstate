@@ -252,7 +252,7 @@
 				if (!confirm('Deseja realmente remover esta imagem?')) return;
 
 				try {
-					const res = await fetch(`/Imagem/Remover/${id}`, { method: 'POST' });
+					const res = await fetch(`/Empreendimento/RemoverImagem/${id}`, { method: 'POST' });
 					if (res.ok) {
 						this.closest('.card').remove();
 					} else {

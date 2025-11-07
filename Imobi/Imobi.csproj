@@ -27,7 +27,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Views\Public\" />
-	  <Folder Include="wwwroot\Imagens\empreendimento\Unidades\" />
+	  <Folder Include="wwwroot\Imagens\" />
 	</ItemGroup>
 
 </Project>

@@ -221,4 +221,31 @@ public class EmpreendimentoController : Controller
 
         return empreendimento;
     }
+
+    [HttpPost]
+    public async Task<IActionResult> RemoverImagem(int id)
+    {
+        var imagem = await _context.Arquivos
+            .FirstOrDefaultAsync(a => a.Id == id && a.EmpreendimentoId != null);
+
+        if (imagem == null)
+            return NotFound();
+
+        try
+        {
+            // Apagar o arquivo físico
+            var caminhoFisico = Path.Combine(_webHostEnvironment.WebRootPath, imagem.Caminho.Replace("/", Path.DirectorySeparatorChar.ToString()));
+            if (System.IO.File.Exists(caminhoFisico))
+                System.IO.File.Delete(caminhoFisico);
+
+            _context.Arquivos.Remove(imagem);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Erro ao remover imagem do empreendimento.");
+        }
+    }
 }

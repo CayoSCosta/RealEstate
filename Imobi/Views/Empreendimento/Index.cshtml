@@ -4,22 +4,23 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<h3 class="mb-4">Empreendimentos</h3>
 <p>
     <a asp-action="Create" class="btn btn-success">
-        <i class="bi bi-plus-lg"></i> Novo
+        @* <i class="bi bi-plus-lg"></i>  *@ Novo
     </a>
 </p>
 
 <table class="table table-hover">
     <thead class="table-light">
         <tr>
-@*             <th>@Html.DisplayNameFor(model => model.Status)</th> *@
+@*          <th>@Html.DisplayNameFor(model => model.Status)</th> *@
             <th>@Html.DisplayNameFor(model => model.Nome)</th>
-            <th>@Html.DisplayNameFor(model => model.AreaConstruida)</th>
+@*          <th>@Html.DisplayNameFor(model => model.AreaConstruida)</th>
             <th>@Html.DisplayNameFor(model => model.BanheirosTotal)</th>
             <th>@Html.DisplayNameFor(model => model.DormitoriosTotal)</th>
             <th>@Html.DisplayNameFor(model => model.SuitesTotal)</th>
-            <th>@Html.DisplayNameFor(model => model.VagasTotal)</th>
+            <th>@Html.DisplayNameFor(model => model.VagasTotal)</th> *@
             <th>@Html.DisplayNameFor(model => model.Endereco.Bairro)</th>
             <th>@Html.DisplayNameFor(model => model.Endereco.Logradouro)</th>
             <th>@Html.DisplayNameFor(model => model.Estagio)</th>
@@ -36,11 +37,11 @@
                     </div>
                 </td> *@
                 <td>@Html.DisplayFor(modelItem => item.Nome)</td>
-                <td>@Html.DisplayFor(modelItem => item.AreaConstruida)</td>
+@*                 <td>@Html.DisplayFor(modelItem => item.AreaConstruida)</td>
                 <td>@Html.DisplayFor(modelItem => item.BanheirosTotal)</td>
                 <td>@Html.DisplayFor(modelItem => item.DormitoriosTotal)</td>
                 <td>@Html.DisplayFor(modelItem => item.SuitesTotal)</td>
-                <td>@Html.DisplayFor(modelItem => item.VagasTotal)</td>
+                <td>@Html.DisplayFor(modelItem => item.VagasTotal)</td> *@
                 <td>@Html.DisplayFor(modelItem => item.Endereco.Bairro)</td>
                 <td>@($"{item.Endereco.Logradouro} nº{item.Endereco.Numero}")</td>
                 <td>@Html.DisplayFor(modelItem => item.Estagio)</td>
