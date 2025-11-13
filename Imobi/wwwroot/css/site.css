@@ -20,3 +20,20 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/*summary das telas defs create, edit ellipse details*/
+.summary-header {
+    display: list-item !important; /* mantém o triângulo */
+    list-style-position: inside; /* deixa o triângulo dentro da borda */
+}
+    summary.d-flex {
+        display: list-item !important;
+    }
+
+.summary-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    align-items: center;
+}
+
+/*fim bdo css defs summarys*/
