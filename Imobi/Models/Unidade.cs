@@ -6,6 +6,8 @@ namespace Imobi.Models;
 public class Unidade
 {
     public int Id { get; set; }
+
+    [Display(Name = "Ativo")]
     public bool Status { get; set; }
 
     [Display(Name = "Tipo")]
