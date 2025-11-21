@@ -14,75 +14,77 @@
 
         <!-- SEÇÃO: DADOS DA UNIDADE -->
         <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light">
-                <h5 class="mb-0">Informações da Unidade</h5>
-            </div>
-            <div class="card-body row g-3">
+            <details open>
+                <summary class="card-header bg-light">
+                    <span class="summary-title">Sobre a unidade</span>
+                </summary>
+                <div class="card-body row g-3">
 
-                <div class="col-md-4">
-                    <label asp-for="Tipo" class="form-label fw-semibold"></label>
-                    <input asp-for="Tipo" class="form-control" />
-                    <span asp-validation-for="Tipo" class="text-danger"></span>
-                </div>
+                    <div class="col-md-4">
+                        <label asp-for="Tipo" class="form-label fw-semibold"></label>
+                        <input asp-for="Tipo" class="form-control" />
+                        <span asp-validation-for="Tipo" class="text-danger"></span>
+                    </div>
 
-                <div class="col-md-4">
-                    <label asp-for="Dormitorios" class="form-label fw-semibold"></label>
-                    <input asp-for="Dormitorios" class="form-control" />
-                    <span asp-validation-for="Dormitorios" class="text-danger"></span>
-                </div>
+                    <div class="col-md-4">
+                        <label asp-for="Dormitorios" class="form-label fw-semibold"></label>
+                        <input asp-for="Dormitorios" class="form-control" />
+                        <span asp-validation-for="Dormitorios" class="text-danger"></span>
+                    </div>
 
-                <div class="col-md-4">
-                    <label asp-for="Suites" class="form-label fw-semibold"></label>
-                    <input asp-for="Suites" class="form-control" />
-                    <span asp-validation-for="Suites" class="text-danger"></span>
-                </div>
+                    <div class="col-md-4">
+                        <label asp-for="Suites" class="form-label fw-semibold"></label>
+                        <input asp-for="Suites" class="form-control" />
+                        <span asp-validation-for="Suites" class="text-danger"></span>
+                    </div>
 
-                <div class="col-md-4">
-                    <label asp-for="Banheiros" class="form-label fw-semibold"></label>
-                    <input asp-for="Banheiros" class="form-control" />
-                    <span asp-validation-for="Banheiros" class="text-danger"></span>
-                </div>
+                    <div class="col-md-4">
+                        <label asp-for="Banheiros" class="form-label fw-semibold"></label>
+                        <input asp-for="Banheiros" class="form-control" />
+                        <span asp-validation-for="Banheiros" class="text-danger"></span>
+                    </div>
 
-                <div class="col-md-4">
-                    <label asp-for="Vagas" class="form-label fw-semibold"></label>
-                    <input asp-for="Vagas" class="form-control" />
-                    <span asp-validation-for="Vagas" class="text-danger"></span>
-                </div>
+                    <div class="col-md-4">
+                        <label asp-for="Vagas" class="form-label fw-semibold"></label>
+                        <input asp-for="Vagas" class="form-control" />
+                        <span asp-validation-for="Vagas" class="text-danger"></span>
+                    </div>
 
-                <div class="col-md-4">
-                    <label asp-for="AreaConstruida" class="form-label fw-semibold"></label>
-                    <input asp-for="AreaConstruida" class="form-control" />
-                    <span asp-validation-for="AreaConstruida" class="text-danger"></span>
-                </div>
+                    <div class="col-md-4">
+                        <label asp-for="AreaConstruida" class="form-label fw-semibold"></label>
+                        <input asp-for="AreaConstruida" class="form-control" />
+                        <span asp-validation-for="AreaConstruida" class="text-danger"></span>
+                    </div>
 
-                <div class="col-md-4">
-                    <label asp-for="Valor" class="form-label fw-semibold"></label>
-                    <input asp-for="Valor" class="form-control" />
-                    <span asp-validation-for="Valor" class="text-danger"></span>
-                </div>
+                    <div class="col-md-4">
+                        <label asp-for="Valor" class="form-label fw-semibold"></label>
+                        <input asp-for="Valor" class="form-control" />
+                        <span asp-validation-for="Valor" class="text-danger"></span>
+                    </div>
 
-                <div class="col-md-6">
-                    <label asp-for="EmpreendimentoId" class="form-label fw-semibold">Empreendimento</label>
-                    <select asp-for="EmpreendimentoId" class="form-select" asp-items="ViewBag.EmpreendimentoId"></select>
-                    <span asp-validation-for="EmpreendimentoId" class="text-danger"></span>
-                </div>
+                    <div class="col-md-6">
+                        <label asp-for="EmpreendimentoId" class="form-label fw-semibold">Empreendimento</label>
+                        <select asp-for="EmpreendimentoId" class="form-select" asp-items="ViewBag.EmpreendimentoId"></select>
+                        <span asp-validation-for="EmpreendimentoId" class="text-danger"></span>
+                    </div>
 
-                <div class="col-md-2 d-flex align-items-center">
-                    <div class="form-check form-switch">
-                        <input asp-for="Status" class="form-check-input" type="checkbox" />
-                        <label class="form-check-label" asp-for="Status">Ativa</label>
+                    <div class="col-md-2 d-flex align-items-center">
+                        <div class="form-check form-switch">
+                            <input asp-for="Status" class="form-check-input" type="checkbox" />
+                            <label class="form-check-label" asp-for="Status">Ativa</label>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </details>
         </div>
 
         <!-- SEÇÃO: IMAGENS -->
         <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Imagens</h5>
-                <label for="imagensUpload" class="btn btn-outline-secondary mb-0">+ Imagens</label>
-            </div>
-
+            <details open>
+                <summary class="card-header bg-light">
+                    <span class="summary-title">Imagens</span>
+                    <label for="imagensUpload" class="btn btn-outline-secondary mb-0">+ Imagens</label>
+                </summary>
             <div class="card-body">
                 <input type="file" id="imagensUpload" name="Imagens" class="d-none" multiple accept="image/*" />
 
@@ -134,6 +136,7 @@
                     </div>
                 </div>
             </div>
+            </details>
         </div>
 
         <!-- BOTÕES -->

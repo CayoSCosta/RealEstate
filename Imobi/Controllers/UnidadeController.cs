@@ -189,17 +189,15 @@ namespace Imobi.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var unidade = await _context.Unidades
                 .Include(u => u.Empreendimento)
+                .Include(u => u.Arquivos)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (unidade == null)
-            {
                 return NotFound();
-            }
 
             return View(unidade);
         }
