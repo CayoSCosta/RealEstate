@@ -65,7 +65,7 @@ public class EmpreendimentoController : Controller
                 await SalvarImagens(empreendimento);
                 return RedirectToAction(nameof(Index));
             }
-            
+
             return View(empreendimento);
         }
         catch (Exception ex)
@@ -108,7 +108,7 @@ public class EmpreendimentoController : Controller
                             Caminho = caminhoRelativo,
                             EmpreendimentoId = empreendimento.Id,
                             UnidadeId = null,
-                            Descricao = "Teste descrição de imagem empreendimento",                            
+                            Descricao = "Teste descrição de imagem empreendimento",
                         };
 
                         _context.Arquivos.Add(arquivo);
@@ -161,9 +161,21 @@ public class EmpreendimentoController : Controller
         {
             try
             {
-                _context.Update(empreendimento);
-                await SalvarImagens(empreendimento);
-                await _context.SaveChangesAsync();
+                var original = _context.Empreendimentos.Find(id);
+                if (original != null)
+                {                   
+                    if(original.SuitesTotal != empreendimento.SuitesTotal || original.DormitoriosTotal !=empreendimento.DormitoriosTotal || 
+                        original.BanheirosTotal != empreendimento.BanheirosTotal || original.VagasTotal != empreendimento.VagasTotal)
+                    {
+                        return BadRequest("Tentativa de alteração não permitida.");
+                    }
+                }
+                else
+                {
+                    _context.Update(empreendimento);
+                    await SalvarImagens(empreendimento);
+                    await _context.SaveChangesAsync();
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -174,7 +186,6 @@ public class EmpreendimentoController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
-
 
         return View(empreendimento);
     }
@@ -213,7 +224,7 @@ public class EmpreendimentoController : Controller
 
     private async Task<Empreendimento?> ObterEmpreendimento(int? id)
     {
-        var empreendimento =  await _context.Empreendimentos
+        var empreendimento = await _context.Empreendimentos
             .Include(e => e.Endereco)
             .Include(e => e.Arquivos)
             .Include(e => e.Unidades)
