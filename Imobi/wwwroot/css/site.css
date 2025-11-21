@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -23,8 +23,8 @@ body {
 
 /*summary das telas defs create, edit ellipse details*/
 .summary-header {
-    display: list-item !important; /* mant�m o tri�ngulo */
-    list-style-position: inside; /* deixa o tri�ngulo dentro da borda */
+    display: list-item !important; /* mantém o triângulo */
+    list-style-position: inside; /* deixa o triângulo dentro da borda */
 }
     summary.d-flex {
         display: list-item !important;
@@ -37,3 +37,26 @@ body {
 }
 
 /*fim bdo css defs summarys*/
+
+/*inicio css loading*/
+.loading-local {
+    display: none; /* Começa invisível */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #0d6efd;
+    z-index: 10;
+    backdrop-filter: blur(2px);
+}
+
+.card.position-relative {
+    position: relative; /* Necessário para overlay */
+}
+/*fim css loading*/

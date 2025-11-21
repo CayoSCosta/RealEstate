@@ -1,0 +1,74 @@
+﻿<style>
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .loader-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .loader-text {
+        font-size: 1.1rem;
+        color: #333;
+        font-weight: 500;
+    }
+</style>
+
+<div id="app-loader" class="loader-overlay" style="display:none;">
+    <div class="loader-box">
+        <div class="spinner-border" role="status"></div>
+        <span id="loader-text" class="loader-text">Carregando...</span>
+    </div>
+</div>
+
+<script>
+    const Loading = {
+        _timeoutId: null,
+
+        show(text = "Carregando...", timeout = null, id = "app-loader") {
+            const el = document.getElementById(id);
+            const textEl = document.getElementById("loader-text");
+
+            if (textEl) textEl.textContent = text;
+            if (el) el.style.display = "flex";
+
+            // limpa timers antigos
+            if (this._timeoutId) clearTimeout(this._timeoutId);
+
+            // se passado timeout, cria um novo
+            if (timeout) {
+                this._timeoutId = setTimeout(() => {
+                    this.hide(id);
+                }, timeout);
+            }
+        },
+
+        hide(id = "app-loader") {
+            const el = document.getElementById(id);
+            if (el) el.style.display = "none";
+
+            if (this._timeoutId) {
+                clearTimeout(this._timeoutId);
+                this._timeoutId = null;
+            }
+        }
+    };
+</script>

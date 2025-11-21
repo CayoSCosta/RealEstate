@@ -5,10 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@await Html.PartialAsync("_Loader")
+
 <div class="container py-4">
     <h3 class="mb-4">Editar Unidade</h3>
 
-    <form asp-action="Edit" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <form asp-action="Edit" id="form-edit" enctype="multipart/form-data" class="needs-validation" novalidate>
         <input type="hidden" asp-for="Id" />
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -151,6 +153,18 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
 
     <script>
+        const form = document.getElementById("form-edit");
+
+        if (form) {
+            form.addEventListener("submit", function (e) {
+                Loading.show("Salvando dados...", 2000);
+                e.preventDefault();
+                setTimeout(() => form.submit(), 2000);
+            });
+        }
+    </script>
+
+    <script>
         // Remover imagem existente
         document.querySelectorAll('.btn-danger[data-id]').forEach(btn => {
             btn.addEventListener('click', async function() {
@@ -160,9 +174,11 @@
                 try {
                     const res = await fetch(`/Unidade/RemoverImagem/${id}`, { method: 'POST' });
                     if (res.ok) {
+                        Loading.hide();
                         this.closest('.card').remove();
                     } else {
                         alert('Erro ao remover a imagem.');
+                        Loading.hide();
                     }
                 } catch (err) {
                     console.error(err);

@@ -4,6 +4,9 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+@await Html.PartialAsync("_Loader")
+
 <h3 class="mb-4">Empreendimentos</h3>
 <p>
     <a asp-action="Create" class="btn btn-success">

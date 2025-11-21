@@ -5,11 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<style>
-    summary::marker {
-        color: #dc3545; /* marcador vermelho */
-    }
-</style>
+@await Html.PartialAsync("_Loader")
 
 <div class="container py-4">
 
@@ -118,7 +114,7 @@
     }
 
     <!-- BOTÕES -->
-    <form asp-action="Delete" class="mt-4">
+    <form asp-action="Delete" id="form-delete" class="mt-4">
         <input type="hidden" asp-for="Id" />
 
         <div class="d-flex justify-content-end gap-2">
@@ -131,3 +127,15 @@
         </div>
     </form>
 </div>
+
+<script>
+    const form = document.getElementById("form-delete");
+
+    if (form) {
+        form.addEventListener("submit", function (e) {
+            Loading.show("Deletando unidade...");
+            e.preventDefault();
+            setTimeout(() => form.submit(), 2000);
+        });
+    }
+</script>

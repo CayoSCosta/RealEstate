@@ -5,10 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@await Html.PartialAsync("_Loader")
+
 <div class="container py-4">
     <h3 class="mb-4">Cadastrar Unidade</h3>
 
-    <form asp-action="Create" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <form asp-action="Create" id="form-create" enctype="multipart/form-data" class="needs-validation" novalidate>
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
         <!-- SEÇÃO: DADOS GERAIS -->
@@ -113,6 +115,18 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        const form = document.getElementById("form-create");
+
+        if (form) {
+            form.addEventListener("submit", function (e) {
+                Loading.show("Criando unidade...");
+                e.preventDefault();
+                setTimeout(() => form.submit(), 2000);
+            });
+        }
+    </script>
 
     <script>
         const input = document.getElementById('imagensUpload');

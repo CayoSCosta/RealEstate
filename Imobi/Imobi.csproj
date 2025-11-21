@@ -30,4 +30,8 @@
 	  <Folder Include="wwwroot\Imagens\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Include="Imobi.sln" />
+	</ItemGroup>
+
 </Project>

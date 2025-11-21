@@ -161,21 +161,25 @@ public class EmpreendimentoController : Controller
         {
             try
             {
-                var original = _context.Empreendimentos.Find(id);
-                if (original != null)
-                {                   
-                    if(original.SuitesTotal != empreendimento.SuitesTotal || original.DormitoriosTotal !=empreendimento.DormitoriosTotal || 
-                        original.BanheirosTotal != empreendimento.BanheirosTotal || original.VagasTotal != empreendimento.VagasTotal)
-                    {
-                        return BadRequest("Tentativa de alteração não permitida.");
-                    }
-                }
-                else
-                {
-                    _context.Update(empreendimento);
-                    await SalvarImagens(empreendimento);
-                    await _context.SaveChangesAsync();
-                }
+                _context.Update(empreendimento);
+                await SalvarImagens(empreendimento);
+                await _context.SaveChangesAsync();
+
+                //var original = _context.Empreendimentos.Find(id);
+                //if (original != null)
+                //{                   
+                //    if(original.SuitesTotal != empreendimento.SuitesTotal || original.DormitoriosTotal !=empreendimento.DormitoriosTotal || 
+                //        original.BanheirosTotal != empreendimento.BanheirosTotal || original.VagasTotal != empreendimento.VagasTotal)
+                //    {
+                //        return BadRequest("Tentativa de alteração não permitida.");
+                //    }
+                //}
+                //else
+                //{
+                //    _context.Update(empreendimento);
+                //    await SalvarImagens(empreendimento);
+                //    await _context.SaveChangesAsync();
+                //}
             }
             catch (DbUpdateConcurrencyException)
             {
