@@ -1,6 +1,5 @@
 ﻿using Imobi.Config;
 using Imobi.Models;
-using Imobi.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -137,11 +136,8 @@ public class EmpreendimentoController : Controller
         .Include(e => e.Arquivos)
         .FirstOrDefaultAsync(e => e.Id == id);
 
-
-
         if (empreendimento == null)
             return NotFound();
-
 
         ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id", empreendimento.EnderecoId);
         return View(empreendimento);
@@ -152,49 +148,69 @@ public class EmpreendimentoController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Empreendimento empreendimento)
+    public async Task<IActionResult> Edit(int id, Empreendimento model)
     {
-        if (id != empreendimento.Id)
+        if (id != model.Id)
+            return BadRequest();
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var original = await _context.Empreendimentos
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (original == null)
             return NotFound();
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(empreendimento);
-                await SalvarImagens(empreendimento);
-                await _context.SaveChangesAsync();
+        var (flowControl, msg) = VerificaCamposDeEdicao(model, original);
+        if (!flowControl)
+            return BadRequest(msg);
 
-                //var original = _context.Empreendimentos.Find(id);
-                //if (original != null)
-                //{                   
-                //    if(original.SuitesTotal != empreendimento.SuitesTotal || original.DormitoriosTotal !=empreendimento.DormitoriosTotal || 
-                //        original.BanheirosTotal != empreendimento.BanheirosTotal || original.VagasTotal != empreendimento.VagasTotal)
-                //    {
-                //        return BadRequest("Tentativa de alteração não permitida.");
-                //    }
-                //}
-                //else
-                //{
-                //    _context.Update(empreendimento);
-                //    await SalvarImagens(empreendimento);
-                //    await _context.SaveChangesAsync();
-                //}
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmpreendimentoExists(empreendimento.Id))
-                    return NotFound();
-                else
-                    throw;
-            }
+        try
+        {
+            _context.Entry(original).CurrentValues.SetValues(model);
+            await SalvarImagens(original);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!EmpreendimentoExists(id))
+                return NotFound();
 
-        return View(empreendimento);
+            throw;
+        }
     }
 
-    // GET: Empreendimento/Delete/5
+    private (bool flowControl, string? msg) VerificaCamposDeEdicao(Empreendimento model, Empreendimento original)
+    {
+        var camposProtegidos = new[]
+        {
+        nameof(Empreendimento.AreaConstruida),
+        nameof(Empreendimento.SuitesTotal),
+        nameof(Empreendimento.DormitoriosTotal),
+        nameof(Empreendimento.BanheirosTotal),
+        nameof(Empreendimento.VagasTotal)
+    };
+
+        foreach (var campo in camposProtegidos)
+        {
+            var valorOriginal = original.GetType().GetProperty(campo)!.GetValue(original);
+            var valorNovo = model.GetType().GetProperty(campo)!.GetValue(model);
+
+            if (!Equals(valorOriginal, valorNovo))
+            {
+                string msg = ($"Tentativa de alteração no campo '{campo}' não permitida.");
+                return (false, msg);
+            }
+        }
+
+        return new(true, null);
+    }
+
+
+    // GET: Empreendimento/Delete/5 
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)

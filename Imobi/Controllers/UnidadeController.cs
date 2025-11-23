@@ -1,6 +1,5 @@
 ﻿using Imobi.Config;
 using Imobi.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +18,7 @@ namespace Imobi.Controllers
         }
 
         // GET: Unidade
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             var unidades = _context.Unidades.Include(u => u.Empreendimento);
             return View(unidades);
@@ -229,67 +228,50 @@ namespace Imobi.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
 
-        private async Task<Empreendimento> AtualizarCaracteristicasDeUnidadesAsync(int empreendimentoId)
+        private async Task<Empreendimento?> AtualizarCaracteristicasDeUnidadesAsync(int empreendimentoId)
         {
-            try
+            var emp = await _context.Empreendimentos
+                .Include(e => e.Unidades)
+                .FirstOrDefaultAsync(e => e.Id == empreendimentoId);
+
+            if (emp == null)
+                return null;
+
+            var unidades = emp.Unidades;
+
+            // Se não tem unidades, zera tudo
+            if (unidades == null || !unidades.Any())
             {
-                var emp = await _context.Empreendimentos
-                                .Include(e => e.Unidades)
-                                .FirstOrDefaultAsync(m => m.Id == empreendimentoId);
+                emp.AreaConstruida = "0 m²";
+                emp.BanheirosTotal = "0";
+                emp.DormitoriosTotal = "0";
+                emp.SuitesTotal = "0";
+                emp.VagasTotal = "0";
 
-                //var emp = await _context.Empreendimentos
-                //    .Include(e => e.Unidades)
-                //    .FirstOrDefaultAsync(e => e.Id == unidade.EmpreendimentoId);
-
-                if (emp == null)
-                    return emp;
-
-                if (emp == null || emp.Unidades == null || !emp.Unidades.Any())
-                {
-                    if (emp != null)
-                    {
-                        emp.AreaConstruida = "0 m²";
-                        emp.BanheirosTotal = "0";
-                        emp.DormitoriosTotal = "0";
-                        emp.SuitesTotal = "0";
-                        emp.VagasTotal = "0";
-                        _context.Update(emp);
-                        await _context.SaveChangesAsync();
-                    }
-
-                    return emp;
-                }
-
-                var areaConstruidaMin = emp.Unidades.Min(u => u.AreaConstruida);
-                var areaConstruidaMax = emp.Unidades.Max(u => u.AreaConstruida);
-
-                var banheirosMin = emp.Unidades.Min(u => u.Banheiros);
-                var banheirosMax = emp.Unidades.Max(u => u.Banheiros);
-
-                var dormitoriosMin = emp.Unidades.Min(u => u.Dormitorios);
-                var dormitoriosMax = emp.Unidades.Max(u => u.Dormitorios);
-
-                var suitesMin = emp.Unidades.Min(u => u.Suites);
-                var suitesMax = emp.Unidades.Max(u => u.Suites);
-
-                var vagasMin = emp.Unidades.Min(u => u.Vagas);
-                var vagasMax = emp.Unidades.Max(u => u.Vagas);
-
-                emp.BanheirosTotal = banheirosMin == banheirosMax ? $"{banheirosMin}" : $"{banheirosMin} - {banheirosMax}";
-                emp.DormitoriosTotal = dormitoriosMin == dormitoriosMax ? $"{dormitoriosMin}" : $"{dormitoriosMin} - {dormitoriosMax}";
-                emp.SuitesTotal = suitesMin == suitesMax ? $"{suitesMin}" : $"{suitesMin} - {suitesMax}";
-                emp.VagasTotal = vagasMin == vagasMax ? $"{vagasMin}" : $"{vagasMin} - {vagasMax}";
-                emp.AreaConstruida = areaConstruidaMin == areaConstruidaMax ? $"{areaConstruidaMin} m²" : $"{areaConstruidaMin} - {areaConstruidaMax} m²";
-
-                _context.Update(emp);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return emp;
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            // Função auxiliar para ranges
+            static string Range(int min, int max) =>
+                min == max ? $"{min}" : $"{min} - {max}";
+
+            static string RangeArea(int min, int max) =>
+                min == max ? $"{min} m²" : $"{min} - {max} m²";
+
+            emp.BanheirosTotal = Range(unidades.Min(u => u.Banheiros), unidades.Max(u => u.Banheiros));
+            emp.DormitoriosTotal = Range(unidades.Min(u => u.Dormitorios), unidades.Max(u => u.Dormitorios));
+            emp.SuitesTotal = Range(unidades.Min(u => u.Suites), unidades.Max(u => u.Suites));
+            emp.VagasTotal = Range(unidades.Min(u => u.Vagas), unidades.Max(u => u.Vagas));
+
+            emp.AreaConstruida = RangeArea(unidades.Min(u => u.AreaConstruida),unidades.Max(u => u.AreaConstruida)
+            );
+
+            await _context.SaveChangesAsync();
+
+            return emp;
         }
+
 
         [HttpPost]
         public async Task<IActionResult> RemoverImagem(int id)
