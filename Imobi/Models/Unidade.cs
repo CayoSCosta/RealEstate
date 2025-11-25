@@ -32,6 +32,8 @@ public class Unidade
     public decimal? Valor { get; set; }
 
     public Empreendimento? Empreendimento { get; set; }
+
+    [Display(Name = "Empreendimento")]
     public int EmpreendimentoId { get; set; }
 
     public List<Arquivo>? Arquivos { get; set; }

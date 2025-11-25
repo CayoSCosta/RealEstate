@@ -43,7 +43,7 @@ namespace Imobi.Controllers
         // GET: Unidade/Create
         public IActionResult Create()
         {
-            ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Id");
+            ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Nome");
             return View();
         }
 
@@ -62,6 +62,7 @@ namespace Imobi.Controllers
                     await _context.SaveChangesAsync();
                     await SalvarImagens(unidade);
                     await AtualizarCaracteristicasDeUnidadesAsync(unidade.EmpreendimentoId);
+                    TempData["Sucesso"] = $"Unidade CRIADA com sucesso!";
                     return RedirectToAction(nameof(Index));
                 }
                 ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Id", unidade.EmpreendimentoId);
@@ -69,7 +70,6 @@ namespace Imobi.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -178,6 +178,7 @@ namespace Imobi.Controllers
                     else
                         throw;
                 }
+                TempData["Sucesso"] = $"Unidade ATUALIZADA com sucesso!";
                 return RedirectToAction(nameof(Index));
             }
             ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Id", unidade.EmpreendimentoId);
@@ -206,13 +207,13 @@ namespace Imobi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var unidade = await _context.Unidades.FindAsync(id);
+            var unidade = await ObterUnidade(id);
+
             if (unidade != null)
-            {
                 _context.Unidades.Remove(unidade);
-            }
 
             await _context.SaveChangesAsync();
+            TempData["Sucesso"] = $"Unidade DELETADA com sucesso!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -224,6 +225,7 @@ namespace Imobi.Controllers
         private async Task<Unidade?> ObterUnidade(int? id)
         {
             return await _context.Unidades
+                .Include(e => e.Empreendimento)
                 .Include(e => e.Arquivos)
                 .FirstOrDefaultAsync(m => m.Id == id);
         }

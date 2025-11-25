@@ -144,7 +144,7 @@
 
                 if (cep.length !== 8) return;
 
-                Loading.show("Consultando CEP...",2000);
+                Loading.show("Consultando CEP...",1);
 
                 try {
                     const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
@@ -168,8 +168,10 @@
         if (form) {
             form.addEventListener("submit", function (e) {
                 Loading.show("Criando empreendimento...");
-                e.preventDefault();
-                setTimeout(() => form.submit(), 2000);
+                const btn = form.querySelector('button[type="submit"]');
+                if (btn) btn.disabled = true;
+                // e.preventDefault();
+                //setTimeout(() => form.submit(), 2000);
             });
         }
     </script>

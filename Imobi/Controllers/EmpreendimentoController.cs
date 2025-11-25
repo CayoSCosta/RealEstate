@@ -62,6 +62,8 @@ public class EmpreendimentoController : Controller
                 _context.Add(empreendimento);
                 await _context.SaveChangesAsync();
                 await SalvarImagens(empreendimento);
+
+                TempData["Sucesso"] = $"Empreendimento {empreendimento.Nome} criado com sucesso!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -69,7 +71,7 @@ public class EmpreendimentoController : Controller
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError("", "Erro ao criar empreendimento: " + ex.Message);
+            TempData["Erro"] = $"Erro ao criar empreendimento: {empreendimento.Nome}" + ex.Message;
             return View(empreendimento);
         }
     }
@@ -156,8 +158,7 @@ public class EmpreendimentoController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var original = await _context.Empreendimentos
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var original = await ObterEmpreendimento(id);
 
         if (original == null)
             return NotFound();
@@ -172,6 +173,7 @@ public class EmpreendimentoController : Controller
             await SalvarImagens(original);
             await _context.SaveChangesAsync();
 
+            TempData["Sucesso"] = $"Empreendimento {model.Nome} ALTERADO com sucesso!";
             return RedirectToAction(nameof(Index));
         }
         catch (DbUpdateConcurrencyException)
@@ -234,6 +236,7 @@ public class EmpreendimentoController : Controller
             _context.Empreendimentos.Remove(empreendimento);
 
         await _context.SaveChangesAsync();
+        TempData["Sucesso"] = $"Empreendimento {empreendimento?.Nome} DELETADO com sucesso!";
         return RedirectToAction(nameof(Index));
     }
 

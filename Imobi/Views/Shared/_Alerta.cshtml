@@ -1,0 +1,59 @@
+﻿@{
+    var sucesso = TempData["Sucesso"] as string;
+    var erro = TempData["Erro"] as string;
+    var aviso = TempData["Aviso"] as string;
+    var info = TempData["Info"] as string;
+}
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 2000;">
+        @if (sucesso != null)
+        {
+            <div class="toast align-items-center text-bg-success border-0" role="alert" autohide="true" delay="5000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-check-circle-fill me-2"></i> @sucesso
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        }
+
+        @if (erro != null)
+        {
+            <div class="toast align-items-center text-bg-danger border-0" role="alert" autohide="true" delay="6000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-x-circle-fill me-2"></i> @erro
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        }
+
+        @if (aviso != null)
+        {
+            <div class="toast align-items-center text-bg-warning border-0" role="alert" autohide="true" delay="6000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @aviso
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        }
+
+        @if (info != null)
+        {
+            <div class="toast align-items-center text-bg-info border-0" role="alert" autohide="true" delay="5000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-info-circle-fill me-2"></i> @info
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>

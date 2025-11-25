@@ -42,31 +42,31 @@
 
                     <div class="col-md-3">
                         <label asp-for="AreaConstruida" class="form-label fw-semibold"></label>
-                        <input asp-for="AreaConstruida" class="form-control" disabled />
+                        <input asp-for="AreaConstruida" class="form-control bg-light" readonly />
                         <span asp-validation-for="AreaConstruida" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-3">
                         <label asp-for="DormitoriosTotal" class="form-label fw-semibold"></label>
-                        <input asp-for="DormitoriosTotal" class="form-control" disabled />
+                        <input asp-for="DormitoriosTotal" class="form-control bg-light" readonly />
                         <span asp-validation-for="DormitoriosTotal" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-3">
                         <label asp-for="SuitesTotal" class="form-label fw-semibold"></label>
-                        <input asp-for="SuitesTotal" class="form-control" disabled />
+                        <input asp-for="SuitesTotal" class="form-control bg-light" readonly />
                         <span asp-validation-for="SuitesTotal" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-3">
                         <label asp-for="BanheirosTotal" class="form-label fw-semibold"></label>
-                        <input asp-for="BanheirosTotal" class="form-control" disabled />
+                        <input asp-for="BanheirosTotal" class="form-control bg-light" readonly />
                         <span asp-validation-for="BanheirosTotal" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-3">
                         <label asp-for="VagasTotal" class="form-label fw-semibold"></label>
-                        <input asp-for="VagasTotal" class="form-control" disabled />
+                        <input asp-for="VagasTotal" class="form-control bg-light" readonly />
                         <span asp-validation-for="VagasTotal" class="text-danger"></span>
                     </div>
 
@@ -130,6 +130,7 @@
                         <input asp-for="Endereco.Uf" class="form-control text-uppercase" maxlength="2" />
                         <span asp-validation-for="Endereco.Uf" class="text-danger"></span>
                     </div>
+                    <input type="hidden" asp-for="EnderecoId" />
                 </div>
             </details>
         </div>
