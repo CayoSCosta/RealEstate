@@ -47,6 +47,23 @@ namespace Imobi.Controllers
             return View();
         }
 
+        // GET: Unidade/Create/{empreendimentoId}
+        [HttpGet("Unidade/Create/{empreendimentoId}")]
+        public IActionResult Create(int empreendimentoId)
+        {
+            var empreendimento = _context.Empreendimentos
+                .FirstOrDefault(e => e.Id == empreendimentoId);
+
+            if (empreendimento == null)
+                return NotFound();
+
+            ViewBag.EmpreendimentoNome = empreendimento.Nome;
+            ViewBag.EmpreendimentoId = empreendimento.Id;
+
+            return View(new Unidade { EmpreendimentoId = empreendimentoId });
+        }
+
+
         // POST: Unidade/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -54,25 +71,19 @@ namespace Imobi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Unidade unidade)
         {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    _context.Add(unidade);
-                    await _context.SaveChangesAsync();
-                    await SalvarImagens(unidade);
-                    await AtualizarCaracteristicasDeUnidadesAsync(unidade.EmpreendimentoId);
-                    TempData["Sucesso"] = $"Unidade CRIADA com sucesso!";
-                    return RedirectToAction(nameof(Index));
-                }
-                ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Id", unidade.EmpreendimentoId);
+            if (!ModelState.IsValid)
                 return View(unidade);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            _context.Add(unidade);
+            await _context.SaveChangesAsync();
+
+            await SalvarImagens(unidade);
+            await AtualizarCaracteristicasDeUnidadesAsync(unidade.EmpreendimentoId);
+
+            TempData["Sucesso"] = "Unidade CRIADA com sucesso!";
+            return RedirectToAction(nameof(Index));
         }
+
 
         private async Task SalvarImagens(Unidade unidade)
         {

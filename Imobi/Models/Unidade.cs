@@ -41,5 +41,4 @@ public class Unidade
 
     [NotMapped]
     public List<IFormFile>? Imagens { get; set; }
-
 }
