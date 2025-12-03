@@ -26,6 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="logs\" />
 	  <Folder Include="Views\Public\" />
 	  <Folder Include="wwwroot\Imagens\" />
 	</ItemGroup>
