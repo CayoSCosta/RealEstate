@@ -1,6 +1,8 @@
 using Imobi.Config;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Microsoft.AspNetCore.Identity;
+using Imobi.Models.Identity;
 
 SerilogConfig.Configure();
 Log.Information("Serilog inicializado com sucesso!");
@@ -8,8 +10,8 @@ Log.Information("Serilog inicializado com sucesso!");
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog();
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddIdentityConfig(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -26,9 +28,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

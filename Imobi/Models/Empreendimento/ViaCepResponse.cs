@@ -1,4 +1,4 @@
-﻿namespace Imobi.Models;
+﻿namespace Imobi.Models.Empreendimento;
 
 public class ViaCepResponse
 {

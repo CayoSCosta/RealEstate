@@ -1,4 +1,4 @@
-﻿using Imobi.Models;
+﻿using Imobi.Models.Empreendimento;
 using System.Text.Json;
 
 namespace Imobi.Service;

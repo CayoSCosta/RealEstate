@@ -1,5 +1,5 @@
 ﻿using Imobi.Config;
-using Imobi.Models;
+using Imobi.Models.Empreendimento;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;

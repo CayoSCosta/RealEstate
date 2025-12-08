@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Imobi.Models;
+namespace Imobi.Models.Empreendimento;
 
 #nullable disable
 public class Arquivo

@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,36 +14,24 @@
     <link rel="stylesheet" href="~/Imobi.styles.css" asp-append-version="true" />
 </head>
 <body>
-    @* <partial name="_Navbar" />
-
+    @{
+        var user = HttpContextAccessor.HttpContext?.User;
+        var isAuthenticated = user?.Identity?.IsAuthenticated ?? false;
+    }
+    @if (isAuthenticated)
+    {
+        <partial name="_Navbar" />
+    }
+    else
+    {
+        <!-- se quiser um navbar simples público, coloque aqui ou deixe vazio -->
+    }
     <div class="d-flex">
 
-        <partial name="_Sidebar" />
-
-        <div class="container">
-            <main id="content" role="main" class="pb-3" style="margin-top: 50px">
-
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
-                        toastElList.forEach(function (toastEl) {
-                            var toast = new bootstrap.Toast(toastEl);
-                            toast.show();
-                        });
-                    });
-                </script>
-
-                @await Html.PartialAsync("_Alerta")
-
-                @RenderBody()
-            </main>
-        </div>
-    </div> *@
-
-    <partial name="_Navbar" />
-    <div class="d-flex">
-
-        <partial name="_Sidebar" />
+        @if (isAuthenticated)
+        {
+            <partial name="_Sidebar" />
+        }
 
         <div id="content" class="flex-grow-1">
             <main class="p-4">

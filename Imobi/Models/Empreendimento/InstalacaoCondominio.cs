@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Imobi.Models;
+namespace Imobi.Models.Empreendimento;
 
 public class InstalacaoCondominio
 {
