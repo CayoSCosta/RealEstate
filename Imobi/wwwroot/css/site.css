@@ -63,13 +63,21 @@ body {
 
 /*inicio sidebar*/
 #content {
-    margin-left: 130px;
+    margin-left: 250px; /* distância quando sidebar aberto */
+    transition: margin-left 0.3s ease;
     padding: 20px;
-    transition: margin-left 0.3s;
+    margin-top: 56px; /* se você preferir, substitua por padding-top no main */
 }
 
+    /* quando o conteúdo estiver em estado colapsado */
     #content.collapsed {
-        margin-left: 30px;
+        margin-left: 80px;
     }
 
-/*fim sidebar*/
+/* mobile: sidebar em overlay, conteúdo sem margin */
+@media (max-width: 768px) {
+    #content {
+        margin-left: 0 !important;
+    }
+}
+/*fim mobile*/

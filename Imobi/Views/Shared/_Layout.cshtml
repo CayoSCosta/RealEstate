@@ -11,54 +11,54 @@
     <link rel="stylesheet" href="~/Imobi.styles.css" asp-append-version="true" />
 </head>
 <body>
-@*     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Imobi</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Empreendimento" asp-action="Index">Empreendimento</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Unidade" asp-action="Index">Unidade</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header> *@
+    @* <partial name="_Navbar" />
+
+    <div class="d-flex">
+
+        <partial name="_Sidebar" />
+
+        <div class="container">
+            <main id="content" role="main" class="pb-3" style="margin-top: 50px">
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+                        toastElList.forEach(function (toastEl) {
+                            var toast = new bootstrap.Toast(toastEl);
+                            toast.show();
+                        });
+                    });
+                </script>
+
+                @await Html.PartialAsync("_Alerta")
+
+                @RenderBody()
+            </main>
+        </div>
+    </div> *@
 
     <partial name="_Navbar" />
-    <partial name="_Sidebar" />
+    <div class="d-flex">
 
-    <div class="container">
-        <main role="main" class="pb-3">
+        <partial name="_Sidebar" />
 
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
-                    toastElList.forEach(function (toastEl) {
-                        var toast = new bootstrap.Toast(toastEl);
-                        toast.show();
+        <div id="content" class="flex-grow-1">
+            <main class="p-4">
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+                        toastElList.forEach(function (toastEl) {
+                            var toast = new bootstrap.Toast(toastEl);
+                            toast.show();
+                        });
                     });
-                });
-            </script>
+                </script>
+                @await Html.PartialAsync("_Alerta")
+                @RenderBody()
 
-            @await Html.PartialAsync("_Alerta")
+            </main>
+        </div>
 
-            @RenderBody()
-        </main>
     </div>
 
     <footer class="border-top footer text-muted">
