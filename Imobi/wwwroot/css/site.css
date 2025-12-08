@@ -60,3 +60,16 @@ body {
     position: relative; /* Necessário para overlay */
 }
 /*fim css loading*/
+
+/*inicio sidebar*/
+#content {
+    margin-left: 130px;
+    padding: 20px;
+    transition: margin-left 0.3s;
+}
+
+    #content.collapsed {
+        margin-left: 30px;
+    }
+
+/*fim sidebar*/

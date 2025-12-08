@@ -10,11 +10,13 @@ namespace Imobi.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ILogger<UnidadeController> _logger;
 
-        public UnidadeController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        public UnidadeController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, ILogger<UnidadeController> logger)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _logger = logger;
         }
 
         // GET: Unidade
@@ -28,14 +30,20 @@ namespace Imobi.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
+            {
+                _logger.LogInformation($"UnidadeController/Details - Parametro id é igual a nulo.");
                 return NotFound();
+            }
 
             var unidade = await _context.Unidades
                 .Include(u => u.Empreendimento)
                 .Include(u => u.Arquivos)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (unidade == null)
+            {
+                _logger.LogInformation($"UnidadeController/Details - unidade é igual a nulo.");
                 return NotFound();
+            }
 
             return View(unidade);
         }
@@ -55,14 +63,17 @@ namespace Imobi.Controllers
                 .FirstOrDefault(e => e.Id == empreendimentoId);
 
             if (empreendimento == null)
+            {
+                _logger.LogInformation($"UnidadeController/Create - empreendimento é igual a nulo.");
                 return NotFound();
+            }
+
 
             ViewBag.EmpreendimentoNome = empreendimento.Nome;
             ViewBag.EmpreendimentoId = empreendimento.Id;
 
             return View(new Unidade { EmpreendimentoId = empreendimentoId });
         }
-
 
         // POST: Unidade/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -72,45 +83,63 @@ namespace Imobi.Controllers
         public async Task<IActionResult> Create(Unidade unidade)
         {
             if (!ModelState.IsValid)
+            {
+                _logger.LogInformation($"UnidadeController/Create - ModelState não é válido.");
                 return View(unidade);
+            }               
 
-            _context.Add(unidade);
+            await _context.AddAsync(unidade);
             await _context.SaveChangesAsync();
 
             await SalvarImagens(unidade);
             await AtualizarCaracteristicasDeUnidadesAsync(unidade.EmpreendimentoId);
 
+            _logger.LogInformation($"UnidadeController/Create - Unidade ID:{unidade.Id} CRIADA com sucesso!");
             TempData["Sucesso"] = "Unidade CRIADA com sucesso!";
             return RedirectToAction(nameof(Index));
         }
 
-
         private async Task SalvarImagens(Unidade unidade)
         {
-            if (unidade.Imagens != null && unidade.Imagens.Any())
-            {
-                foreach (var imagem in unidade.Imagens)
-                {
-                    if (imagem.Length > 0)
-                    {
+            _logger.LogInformation($"UnidadeController/SalvarImagens - Iniciando salvamento de imagens para a Unidade ID:{unidade.Id}");
 
+            if (unidade.Imagens == null || !unidade.Imagens.Any())
+            {
+                _logger.LogInformation($"UnidadeController/SalvarImagens - Nenhuma imagem enviada para a Unidade ID:{unidade.Id}");
+                return;
+            }
+
+            foreach (var imagem in unidade.Imagens)
+            {
+                if (imagem.Length > 0)
+                {
+                    try
+                    {
                         string empreendimentoId = unidade.EmpreendimentoId.ToString();
                         string unidadeId = unidade.Id.ToString();
 
-                        //verifica pasta empreendimento
+                        // verifica pasta empreendimento
                         var caminhoPastaEmpreendimento = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", "Empreendimentos", empreendimentoId);
                         if (!Directory.Exists(caminhoPastaEmpreendimento))
+                        {
                             Directory.CreateDirectory(caminhoPastaEmpreendimento);
+                            _logger.LogInformation($"UnidadeController/SalvarImagens - Pasta criada: {caminhoPastaEmpreendimento}");
+                        }
 
-                        //verifica pasta unidade
+                        // verifica pasta unidade
                         var caminhoPastaUnidade = Path.Combine(caminhoPastaEmpreendimento, unidadeId);
                         if (!Directory.Exists(caminhoPastaUnidade))
+                        {
                             Directory.CreateDirectory(caminhoPastaUnidade);
+                            _logger.LogInformation($"UnidadeController/SalvarImagens - Pasta criada: {caminhoPastaUnidade}");
+                        }
 
                         var nomeArquivo = Path.GetFileNameWithoutExtension(imagem.FileName);
                         var extensao = Path.GetExtension(imagem.FileName);
                         var nomeFinal = $"{Guid.NewGuid()}{extensao}";
                         var caminhoArquivo = Path.Combine(caminhoPastaUnidade, nomeFinal);
+
+                        _logger.LogInformation($"UnidadeController/SalvarImagens - Salvando imagem '{imagem.FileName}' como '{nomeFinal}' no caminho: {caminhoArquivo}");
 
                         using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
                             await imagem.CopyToAsync(stream);
@@ -129,25 +158,44 @@ namespace Imobi.Controllers
                         };
 
                         _context.Arquivos.Add(arquivo);
+
+                        _logger.LogInformation($"UnidadeController/SalvarImagens - Registro criado para imagem '{nomeFinal}' no banco.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"UnidadeController/SalvarImagens - ERRO ao salvar imagem '{imagem.FileName}' para Unidade ID:{unidade.Id}");
                     }
                 }
-
-                await _context.SaveChangesAsync();
+                else
+                {
+                    _logger.LogInformation($"UnidadeController/SalvarImagens - Imagem ignorada pois seu tamanho é zero. Unidade ID:{unidade.Id}");
+                }
             }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"UnidadeController/SalvarImagens - Todas as imagens da Unidade ID:{unidade.Id} foram processadas e salvas com sucesso.");
         }
+
 
         // GET: Unidade/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
+            {
+                _logger.LogInformation($"UnidadeController/Edit - o parâmetro id é igual a nullo");
                 return NotFound();
+            }
+
 
             var unidade = await _context.Unidades
                 .Include(u => u.Arquivos)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (unidade == null)
+            {
+                _logger.LogInformation($"UnidadeController/Edit - unidade é igual a nullo");
                 return NotFound();
+            }
 
             ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Id", unidade.EmpreendimentoId);
             return View(unidade);
@@ -160,47 +208,63 @@ namespace Imobi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Unidade unidade)
         {
+            _logger.LogInformation($"UnidadeController/Edit - Iniciando edição da Unidade ID:{id}");
+
             if (id != unidade.Id)
-                return NotFound();
-
-            if (ModelState.IsValid)
             {
-                //foreach (var entry in ModelState)
-                //{
-                //    var key = entry.Key;
-                //    var errors = entry.Value.Errors;
-                //    foreach (var error in errors)
-                //    {
-                //        Console.WriteLine($"Erro no campo {key}: {error.ErrorMessage}");
-                //    }
-                //}
+                _logger.LogInformation($"UnidadeController/Edit - ID da rota ({id}) é diferente do ID da entidade ({unidade.Id}).");
+                return NotFound();
+            }
 
-                try
-                {
-                    _context.Update(unidade);
-                    await AtualizarCaracteristicasDeUnidadesAsync(unidade.EmpreendimentoId);
-                    await SalvarImagens(unidade);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UnidadeExists(unidade.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
+            if (!ModelState.IsValid)
+            {
+                _logger.LogInformation($"UnidadeController/Edit - ModelState inválido para Unidade ID:{id}");
+                return View(unidade);
+            }
+
+            try
+            {
+                _logger.LogInformation($"UnidadeController/Edit - Atualizando entidade Unidade ID:{id} no contexto.");
+                _context.Update(unidade);
+
+                await AtualizarCaracteristicasDeUnidadesAsync(unidade.EmpreendimentoId);
+                await SalvarImagens(unidade);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"UnidadeController/Edit - Unidade ID:{id} ATUALIZADA com sucesso!");
                 TempData["Sucesso"] = $"Unidade ATUALIZADA com sucesso!";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Id", unidade.EmpreendimentoId);
-            return View(unidade);
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, $"UnidadeController/Edit - ERRO de concorrência ao atualizar Unidade ID:{id}");
+
+                if (!UnidadeExists(unidade.Id))
+                {
+                    _logger.LogInformation($"UnidadeController/Edit - Unidade ID:{id} não encontrada durante tratamento de concorrência.");
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"UnidadeController/Edit - ERRO inesperado ao atualizar Unidade ID:{id}");
+                throw;
+            }
         }
+
 
         // GET: Unidade/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
+            {
+                _logger.LogInformation($"UnidadeController/Delete - parâmetro id é igual a nulo");
                 return NotFound();
+            }
 
             var unidade = await _context.Unidades
                 .Include(u => u.Empreendimento)
@@ -208,7 +272,10 @@ namespace Imobi.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (unidade == null)
+            {
+                _logger.LogInformation($"UnidadeController/Delete - unidade é igual a nulo");
                 return NotFound();
+            }
 
             return View(unidade);
         }
@@ -221,9 +288,14 @@ namespace Imobi.Controllers
             var unidade = await ObterUnidade(id);
 
             if (unidade != null)
+            {
+                _logger.LogInformation($"UnidadeController/DeleteConfirmed - parâmetro id é igual a nulo");
                 _context.Unidades.Remove(unidade);
+            }                
 
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"UnidadeController/DeleteConfirmed - Unidade ID:{unidade!.Id} DELETADA com sucesso!");
             TempData["Sucesso"] = $"Unidade DELETADA com sucesso!";
             return RedirectToAction(nameof(Index));
         }
@@ -248,13 +320,18 @@ namespace Imobi.Controllers
                 .FirstOrDefaultAsync(e => e.Id == empreendimentoId);
 
             if (emp == null)
+            {
+                _logger.LogInformation($"UnidadeController/AtualizarCaracteristicasDeUnidadesAsync - Empreendimento ID:{empreendimentoId} não encontrado.");
                 return null;
+            }
 
             var unidades = emp.Unidades;
 
             // Se não tem unidades, zera tudo
             if (unidades == null || !unidades.Any())
             {
+                _logger.LogInformation($"UnidadeController/AtualizarCaracteristicasDeUnidadesAsync - Empreendimento ID:{empreendimentoId} não possui unidades. Zerando características.");
+
                 emp.AreaConstruida = "0 m²";
                 emp.BanheirosTotal = "0";
                 emp.DormitoriosTotal = "0";
@@ -262,55 +339,88 @@ namespace Imobi.Controllers
                 emp.VagasTotal = "0";
 
                 await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"UnidadeController/AtualizarCaracteristicasDeUnidadesAsync - Características zeradas com sucesso para Empreendimento ID:{empreendimentoId}");
                 return emp;
             }
 
-            // Função auxiliar para ranges
-            static string Range(int min, int max) =>
-                min == max ? $"{min}" : $"{min} - {max}";
+            try
+            {
+                _logger.LogInformation($"UnidadeController/AtualizarCaracteristicasDeUnidadesAsync - Calculando ranges de características para {unidades.Count} unidades do Empreendimento ID:{empreendimentoId}");
 
-            static string RangeArea(int min, int max) =>
-                min == max ? $"{min} m²" : $"{min} - {max} m²";
+                // Funções auxiliares
+                static string Range(int min, int max) => min == max ? $"{min}" : $"{min} - {max}";
+                static string RangeArea(int min, int max) => min == max ? $"{min} m²" : $"{min} - {max} m²";
 
-            emp.BanheirosTotal = Range(unidades.Min(u => u.Banheiros), unidades.Max(u => u.Banheiros));
-            emp.DormitoriosTotal = Range(unidades.Min(u => u.Dormitorios), unidades.Max(u => u.Dormitorios));
-            emp.SuitesTotal = Range(unidades.Min(u => u.Suites), unidades.Max(u => u.Suites));
-            emp.VagasTotal = Range(unidades.Min(u => u.Vagas), unidades.Max(u => u.Vagas));
+                emp.BanheirosTotal = Range(unidades.Min(u => u.Banheiros), unidades.Max(u => u.Banheiros));
+                emp.DormitoriosTotal = Range(unidades.Min(u => u.Dormitorios), unidades.Max(u => u.Dormitorios));
+                emp.SuitesTotal = Range(unidades.Min(u => u.Suites), unidades.Max(u => u.Suites));
+                emp.VagasTotal = Range(unidades.Min(u => u.Vagas), unidades.Max(u => u.Vagas));
 
-            emp.AreaConstruida = RangeArea(unidades.Min(u => u.AreaConstruida),unidades.Max(u => u.AreaConstruida)
-            );
+                emp.AreaConstruida = RangeArea(
+                    unidades.Min(u => u.AreaConstruida),
+                    unidades.Max(u => u.AreaConstruida)
+                );
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-            return emp;
+                _logger.LogInformation($"UnidadeController/AtualizarCaracteristicasDeUnidadesAsync - Características do Empreendimento ID:{empreendimentoId} atualizadas com sucesso!");
+
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"UnidadeController/AtualizarCaracteristicasDeUnidadesAsync - ERRO ao atualizar características do Empreendimento ID:{empreendimentoId}");
+                throw;
+            }
         }
-
 
         [HttpPost]
         public async Task<IActionResult> RemoverImagem(int id)
         {
+            _logger.LogInformation($"UnidadeController/RemoverImagem - Iniciando remoção da imagem ID:{id}");
+
             var imagem = await _context.Arquivos
                 .FirstOrDefaultAsync(a => a.Id == id && a.EmpreendimentoId != null);
 
             if (imagem == null)
+            {
+                _logger.LogInformation($"UnidadeController/RemoverImagem - Imagem ID:{id} não encontrada no banco.");
                 return NotFound();
+            }
 
             try
             {
-                // Apagar o arquivo físico
+                // Caminho do arquivo físico
                 var caminhoFisico = Path.Combine(_webHostEnvironment.WebRootPath, imagem.Caminho.Replace("/", Path.DirectorySeparatorChar.ToString()));
-                if (System.IO.File.Exists(caminhoFisico))
-                    System.IO.File.Delete(caminhoFisico);
 
+                _logger.LogInformation($"UnidadeController/RemoverImagem - Caminho do arquivo físico: {caminhoFisico}");
+
+                // Apagar arquivo físico se existir
+                if (System.IO.File.Exists(caminhoFisico))
+                {
+                    System.IO.File.Delete(caminhoFisico);
+                    _logger.LogInformation($"UnidadeController/RemoverImagem - Arquivo físico removido com sucesso para imagem ID:{id}");
+                }
+                else
+                {
+                    _logger.LogInformation($"UnidadeController/RemoverImagem - Arquivo físico não encontrado para imagem ID:{id}. Removendo apenas do banco.");
+                }
+
+                // Remover do banco
                 _context.Arquivos.Remove(imagem);
                 await _context.SaveChangesAsync();
 
+                _logger.LogInformation($"UnidadeController/RemoverImagem - Registro removido do banco com sucesso para imagem ID:{id}");
+
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"UnidadeController/RemoverImagem - ERRO ao remover imagem ID:{id}");
                 return StatusCode(500, "Erro ao remover imagem do empreendimento.");
             }
         }
+
     }
 }

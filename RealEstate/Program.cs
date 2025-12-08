@@ -40,7 +40,6 @@ public class Program
         });
 
         builder.Services.AddScoped<IImagemService, ImageService>();
-
         builder.Services.AddHttpClient<ViaCepService>();
 
         builder.Services.AddRazorPages();
