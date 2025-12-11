@@ -1,5 +1,6 @@
 ﻿using Imobi.Config;
 using Imobi.Models.Empreendimento;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace Imobi.Controllers
         }
 
         // GET: Unidade
+        [Authorize]
         public IActionResult Index()
         {
             var unidades = _context.Unidades.Include(u => u.Empreendimento);
@@ -27,6 +29,7 @@ namespace Imobi.Controllers
         }
 
         // GET: Unidade/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -49,6 +52,7 @@ namespace Imobi.Controllers
         }
 
         // GET: Unidade/Create
+        [Authorize]
         public IActionResult Create()
         {
             ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Nome");
@@ -56,6 +60,7 @@ namespace Imobi.Controllers
         }
 
         // GET: Unidade/Create/{empreendimentoId}
+        [Authorize]
         [HttpGet("Unidade/Create/{empreendimentoId}")]
         public IActionResult Create(int empreendimentoId)
         {
@@ -78,6 +83,7 @@ namespace Imobi.Controllers
         // POST: Unidade/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Unidade unidade)
@@ -99,85 +105,8 @@ namespace Imobi.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task SalvarImagens(Unidade unidade)
-        {
-            _logger.LogInformation($"UnidadeController/SalvarImagens - Iniciando salvamento de imagens para a Unidade ID:{unidade.Id}");
-
-            if (unidade.Imagens == null || !unidade.Imagens.Any())
-            {
-                _logger.LogInformation($"UnidadeController/SalvarImagens - Nenhuma imagem enviada para a Unidade ID:{unidade.Id}");
-                return;
-            }
-
-            foreach (var imagem in unidade.Imagens)
-            {
-                if (imagem.Length > 0)
-                {
-                    try
-                    {
-                        string empreendimentoId = unidade.EmpreendimentoId.ToString();
-                        string unidadeId = unidade.Id.ToString();
-
-                        // verifica pasta empreendimento
-                        var caminhoPastaEmpreendimento = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", "Empreendimentos", empreendimentoId);
-                        if (!Directory.Exists(caminhoPastaEmpreendimento))
-                        {
-                            Directory.CreateDirectory(caminhoPastaEmpreendimento);
-                            _logger.LogInformation($"UnidadeController/SalvarImagens - Pasta criada: {caminhoPastaEmpreendimento}");
-                        }
-
-                        // verifica pasta unidade
-                        var caminhoPastaUnidade = Path.Combine(caminhoPastaEmpreendimento, unidadeId);
-                        if (!Directory.Exists(caminhoPastaUnidade))
-                        {
-                            Directory.CreateDirectory(caminhoPastaUnidade);
-                            _logger.LogInformation($"UnidadeController/SalvarImagens - Pasta criada: {caminhoPastaUnidade}");
-                        }
-
-                        var nomeArquivo = Path.GetFileNameWithoutExtension(imagem.FileName);
-                        var extensao = Path.GetExtension(imagem.FileName);
-                        var nomeFinal = $"{Guid.NewGuid()}{extensao}";
-                        var caminhoArquivo = Path.Combine(caminhoPastaUnidade, nomeFinal);
-
-                        _logger.LogInformation($"UnidadeController/SalvarImagens - Salvando imagem '{imagem.FileName}' como '{nomeFinal}' no caminho: {caminhoArquivo}");
-
-                        using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
-                            await imagem.CopyToAsync(stream);
-
-                        var caminhoRelativo = Path.Combine("Imagens", "Empreendimentos", empreendimentoId, unidadeId, nomeFinal).Replace("\\", "/");
-
-                        Arquivo arquivo = new()
-                        {
-                            NomeArquivo = nomeArquivo,
-                            Extensao = extensao,
-                            Tipo = TipoArquivo.Imagem,
-                            Caminho = caminhoRelativo,
-                            Descricao = "Teste descrição de imagem unidade",
-                            EmpreendimentoId = int.Parse(empreendimentoId),
-                            UnidadeId = int.Parse(unidadeId),
-                        };
-
-                        _context.Arquivos.Add(arquivo);
-
-                        _logger.LogInformation($"UnidadeController/SalvarImagens - Registro criado para imagem '{nomeFinal}' no banco.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, $"UnidadeController/SalvarImagens - ERRO ao salvar imagem '{imagem.FileName}' para Unidade ID:{unidade.Id}");
-                    }
-                }
-                else
-                {
-                    _logger.LogInformation($"UnidadeController/SalvarImagens - Imagem ignorada pois seu tamanho é zero. Unidade ID:{unidade.Id}");
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            _logger.LogInformation($"UnidadeController/SalvarImagens - Todas as imagens da Unidade ID:{unidade.Id} foram processadas e salvas com sucesso.");
-        }
-
-
         // GET: Unidade/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -204,6 +133,7 @@ namespace Imobi.Controllers
         // POST: Unidade/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Unidade unidade)
@@ -256,8 +186,8 @@ namespace Imobi.Controllers
             }
         }
 
-
         // GET: Unidade/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -281,6 +211,7 @@ namespace Imobi.Controllers
         }
 
         // POST: Unidade/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -298,6 +229,54 @@ namespace Imobi.Controllers
             _logger.LogInformation($"UnidadeController/DeleteConfirmed - Unidade ID:{unidade!.Id} DELETADA com sucesso!");
             TempData["Sucesso"] = $"Unidade DELETADA com sucesso!";
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> RemoverImagem(int id)
+        {
+            _logger.LogInformation($"UnidadeController/RemoverImagem - Iniciando remoção da imagem ID:{id}");
+
+            var imagem = await _context.Arquivos
+                .FirstOrDefaultAsync(a => a.Id == id && a.EmpreendimentoId != null);
+
+            if (imagem == null)
+            {
+                _logger.LogInformation($"UnidadeController/RemoverImagem - Imagem ID:{id} não encontrada no banco.");
+                return NotFound();
+            }
+
+            try
+            {
+                // Caminho do arquivo físico
+                var caminhoFisico = Path.Combine(_webHostEnvironment.WebRootPath, imagem.Caminho.Replace("/", Path.DirectorySeparatorChar.ToString()));
+
+                _logger.LogInformation($"UnidadeController/RemoverImagem - Caminho do arquivo físico: {caminhoFisico}");
+
+                // Apagar arquivo físico se existir
+                if (System.IO.File.Exists(caminhoFisico))
+                {
+                    System.IO.File.Delete(caminhoFisico);
+                    _logger.LogInformation($"UnidadeController/RemoverImagem - Arquivo físico removido com sucesso para imagem ID:{id}");
+                }
+                else
+                {
+                    _logger.LogInformation($"UnidadeController/RemoverImagem - Arquivo físico não encontrado para imagem ID:{id}. Removendo apenas do banco.");
+                }
+
+                // Remover do banco
+                _context.Arquivos.Remove(imagem);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"UnidadeController/RemoverImagem - Registro removido do banco com sucesso para imagem ID:{id}");
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"UnidadeController/RemoverImagem - ERRO ao remover imagem ID:{id}");
+                return StatusCode(500, "Erro ao remover imagem do empreendimento.");
+            }
         }
 
         private bool UnidadeExists(int id)
@@ -375,51 +354,81 @@ namespace Imobi.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> RemoverImagem(int id)
+        private async Task SalvarImagens(Unidade unidade)
         {
-            _logger.LogInformation($"UnidadeController/RemoverImagem - Iniciando remoção da imagem ID:{id}");
+            _logger.LogInformation($"UnidadeController/SalvarImagens - Iniciando salvamento de imagens para a Unidade ID:{unidade.Id}");
 
-            var imagem = await _context.Arquivos
-                .FirstOrDefaultAsync(a => a.Id == id && a.EmpreendimentoId != null);
-
-            if (imagem == null)
+            if (unidade.Imagens == null || !unidade.Imagens.Any())
             {
-                _logger.LogInformation($"UnidadeController/RemoverImagem - Imagem ID:{id} não encontrada no banco.");
-                return NotFound();
+                _logger.LogInformation($"UnidadeController/SalvarImagens - Nenhuma imagem enviada para a Unidade ID:{unidade.Id}");
+                return;
             }
 
-            try
+            foreach (var imagem in unidade.Imagens)
             {
-                // Caminho do arquivo físico
-                var caminhoFisico = Path.Combine(_webHostEnvironment.WebRootPath, imagem.Caminho.Replace("/", Path.DirectorySeparatorChar.ToString()));
-
-                _logger.LogInformation($"UnidadeController/RemoverImagem - Caminho do arquivo físico: {caminhoFisico}");
-
-                // Apagar arquivo físico se existir
-                if (System.IO.File.Exists(caminhoFisico))
+                if (imagem.Length > 0)
                 {
-                    System.IO.File.Delete(caminhoFisico);
-                    _logger.LogInformation($"UnidadeController/RemoverImagem - Arquivo físico removido com sucesso para imagem ID:{id}");
+                    try
+                    {
+                        string empreendimentoId = unidade.EmpreendimentoId.ToString();
+                        string unidadeId = unidade.Id.ToString();
+
+                        // verifica pasta empreendimento
+                        var caminhoPastaEmpreendimento = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", "Empreendimentos", empreendimentoId);
+                        if (!Directory.Exists(caminhoPastaEmpreendimento))
+                        {
+                            Directory.CreateDirectory(caminhoPastaEmpreendimento);
+                            _logger.LogInformation($"UnidadeController/SalvarImagens - Pasta criada: {caminhoPastaEmpreendimento}");
+                        }
+
+                        // verifica pasta unidade
+                        var caminhoPastaUnidade = Path.Combine(caminhoPastaEmpreendimento, unidadeId);
+                        if (!Directory.Exists(caminhoPastaUnidade))
+                        {
+                            Directory.CreateDirectory(caminhoPastaUnidade);
+                            _logger.LogInformation($"UnidadeController/SalvarImagens - Pasta criada: {caminhoPastaUnidade}");
+                        }
+
+                        var nomeArquivo = Path.GetFileNameWithoutExtension(imagem.FileName);
+                        var extensao = Path.GetExtension(imagem.FileName);
+                        var nomeFinal = $"{Guid.NewGuid()}{extensao}";
+                        var caminhoArquivo = Path.Combine(caminhoPastaUnidade, nomeFinal);
+
+                        _logger.LogInformation($"UnidadeController/SalvarImagens - Salvando imagem '{imagem.FileName}' como '{nomeFinal}' no caminho: {caminhoArquivo}");
+
+                        using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
+                            await imagem.CopyToAsync(stream);
+
+                        var caminhoRelativo = Path.Combine("Imagens", "Empreendimentos", empreendimentoId, unidadeId, nomeFinal).Replace("\\", "/");
+
+                        Arquivo arquivo = new()
+                        {
+                            NomeArquivo = nomeArquivo,
+                            Extensao = extensao,
+                            Tipo = TipoArquivo.Imagem,
+                            Caminho = caminhoRelativo,
+                            Descricao = "Teste descrição de imagem unidade",
+                            EmpreendimentoId = int.Parse(empreendimentoId),
+                            UnidadeId = int.Parse(unidadeId),
+                        };
+
+                        _context.Arquivos.Add(arquivo);
+
+                        _logger.LogInformation($"UnidadeController/SalvarImagens - Registro criado para imagem '{nomeFinal}' no banco.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"UnidadeController/SalvarImagens - ERRO ao salvar imagem '{imagem.FileName}' para Unidade ID:{unidade.Id}");
+                    }
                 }
                 else
                 {
-                    _logger.LogInformation($"UnidadeController/RemoverImagem - Arquivo físico não encontrado para imagem ID:{id}. Removendo apenas do banco.");
+                    _logger.LogInformation($"UnidadeController/SalvarImagens - Imagem ignorada pois seu tamanho é zero. Unidade ID:{unidade.Id}");
                 }
-
-                // Remover do banco
-                _context.Arquivos.Remove(imagem);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"UnidadeController/RemoverImagem - Registro removido do banco com sucesso para imagem ID:{id}");
-
-                return Ok();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"UnidadeController/RemoverImagem - ERRO ao remover imagem ID:{id}");
-                return StatusCode(500, "Erro ao remover imagem do empreendimento.");
-            }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"UnidadeController/SalvarImagens - Todas as imagens da Unidade ID:{unidade.Id} foram processadas e salvas com sucesso.");
         }
 
     }

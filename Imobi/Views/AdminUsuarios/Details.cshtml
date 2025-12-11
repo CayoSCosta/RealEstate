@@ -1,0 +1,38 @@
+﻿@model Imobi.Models.Identity.ApplicationUser
+@{
+    ViewData["Title"] = "Detalhes do Usuário";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">Detalhes — @Model.Email</h5>
+    </div>
+
+    <div class="card-body">
+        <dl class="row g-3">
+
+            <dt class="col-sm-3">Nome</dt>
+            <dd class="col-sm-9">@Model.Nome @Model.SobreNome</dd>
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">
+                @if (Model.Ativo)
+                {
+                    <span class="badge bg-success">Ativo</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Inativo</span>
+                }
+            </dd>
+
+        </dl>
+    </div>
+
+    <div class="card-footer text-end">
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+    </div>
+</div>

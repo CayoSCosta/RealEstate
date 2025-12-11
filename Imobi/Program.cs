@@ -1,8 +1,9 @@
 using Imobi.Config;
+using Imobi.Models.Identity;
+using Imobi.Service;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Microsoft.AspNetCore.Identity;
-using Imobi.Models.Identity;
 
 SerilogConfig.Configure();
 Log.Information("Serilog inicializado com sucesso!");
@@ -32,8 +33,14 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+//app.MapGet("/", context =>
+//{
+//    context.Response.Redirect("/Conta/Login");
+//    return Task.CompletedTask;
+//});
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Conta}/{action=Login}");
 
 app.Run();

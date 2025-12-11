@@ -1,34 +1,35 @@
 ﻿html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
-/*summary das telas defs create, edit ellipse details*/
+/* summary */
 .summary-header {
-    display: list-item !important; /* mantém o triângulo */
-    list-style-position: inside; /* deixa o triângulo dentro da borda */
+    display: list-item !important;
+    list-style-position: inside;
 }
-    summary.d-flex {
-        display: list-item !important;
-    }
+
+summary.d-flex {
+    display: list-item !important;
+}
 
 .summary-title {
     font-weight: 600;
@@ -36,11 +37,9 @@ body {
     align-items: center;
 }
 
-/*fim bdo css defs summarys*/
-
-/*inicio css loading*/
+/* loading */
 .loading-local {
-    display: none; /* Começa invisível */
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -57,27 +56,30 @@ body {
 }
 
 .card.position-relative {
-    position: relative; /* Necessário para overlay */
+    position: relative;
 }
-/*fim css loading*/
 
-/*inicio sidebar*/
+/* ===== CONTENT AREA ===== */
 #content {
-    margin-left: 250px; /* distância quando sidebar aberto */
     transition: margin-left 0.3s ease;
     padding: 20px;
-    margin-top: 56px; /* se você preferir, substitua por padding-top no main */
+    margin-top: 56px;
 }
 
-    /* quando o conteúdo estiver em estado colapsado */
-    #content.collapsed {
+/* Desktop – sidebar aberto */
+.auth-user #content {
+    margin-left: 250px;
+}
+
+    /* Desktop – sidebar colapsado */
+    .auth-user #content.collapsed {
         margin-left: 80px;
     }
 
-/* mobile: sidebar em overlay, conteúdo sem margin */
-@media (max-width: 768px) {
-    #content {
+/* Mobile – nunca usar margin-left */
+@media (max-width: 991px) {
+    #content,
+    .auth-user #content {
         margin-left: 0 !important;
     }
 }
-/*fim mobile*/

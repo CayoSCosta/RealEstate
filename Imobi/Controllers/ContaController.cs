@@ -12,10 +12,7 @@ public class ContaController : Controller
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<ContaController> _logger;
 
-    public ContaController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        ILogger<ContaController> logger)
+    public ContaController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<ContaController> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -122,7 +119,7 @@ public class ContaController : Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Login", "Conta");
     }
 
     [HttpGet]

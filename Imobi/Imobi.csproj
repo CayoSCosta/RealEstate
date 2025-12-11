@@ -1,3 +1,4 @@
+﻿
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
@@ -7,10 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Views\Public\**" />
-	  <Content Remove="Views\Public\**" />
-	  <EmbeddedResource Remove="Views\Public\**" />
-	  <None Remove="Views\Public\**" />
+		<Compile Remove="Views\Public\**" />
+		<Content Remove="Views\Public\**" />
+		<EmbeddedResource Remove="Views\Public\**" />
+		<None Remove="Views\Public\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -22,11 +23,9 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
@@ -35,11 +34,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="wwwroot\Imagens\" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="Imobi.sln" />
+		<Folder Include="wwwroot\Imagens" />
 	</ItemGroup>
 
 </Project>

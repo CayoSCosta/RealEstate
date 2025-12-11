@@ -6,6 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-RealEstate-6db8dc8d-b95c-4474-b213-f5482a95e84d</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <!-- Disable static web assets resolution to avoid invalid wildcard asset errors during build.
+         Remove this if you want the SDK to process static web assets and fix the underlying asset entries. -->
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
   </PropertyGroup>
 
   <!-- <ItemGroup>

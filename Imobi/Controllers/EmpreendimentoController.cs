@@ -1,5 +1,6 @@
 ﻿using Imobi.Config;
 using Imobi.Models.Empreendimento;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ public class EmpreendimentoController : Controller
     }
 
     // GET: Empreendimento
+    [Authorize]
     public async Task<IActionResult> Index()
     {
         var applicationDbContext = await _context.Empreendimentos
@@ -30,6 +32,7 @@ public class EmpreendimentoController : Controller
     }
 
     // GET: Empreendimento/Details/5
+    [Authorize]
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -50,6 +53,7 @@ public class EmpreendimentoController : Controller
     }
 
     //GET: Empreendimento/Create
+    [Authorize]
     public IActionResult Create()
     {
         ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id");
@@ -59,6 +63,7 @@ public class EmpreendimentoController : Controller
     // POST: Empreendimento/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Empreendimento empreendimento)
@@ -91,70 +96,8 @@ public class EmpreendimentoController : Controller
         }
     }
 
-    private async Task<bool> SalvarImagens(Empreendimento empreendimento)
-    {
-        _logger.LogInformation($"EmpreendimentoController/SalvarImagens - Iniciando salvamento de imagens. EmpreendimentoId={empreendimento.Id}, Nome={empreendimento.Nome}");
-
-        try
-        {
-            if (empreendimento.Imagens != null && empreendimento.Imagens.Any())
-            {
-                foreach (var imagem in empreendimento.Imagens)
-                {
-                    if (imagem.Length > 0)
-                    {
-                        var caminhoPasta = Path.Combine(_webHostEnvironment.WebRootPath,"Imagens", "Empreendimentos", empreendimento.Id.ToString());
-
-                        if (!Directory.Exists(caminhoPasta))
-                        {
-                            _logger.LogInformation($"EmpreendimentoController/SalvarImagens - Criando diretório: {caminhoPasta}");
-                            Directory.CreateDirectory(caminhoPasta);
-                        }
-
-                        var nomeArquivo = Path.GetFileNameWithoutExtension(imagem.FileName);
-                        var extensao = Path.GetExtension(imagem.FileName);
-                        var nomeFinal = $"{Guid.NewGuid()}{extensao}";
-                        var caminhoArquivo = Path.Combine(caminhoPasta, nomeFinal);
-
-                        using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
-                            await imagem.CopyToAsync(stream);
-
-                        var caminhoRelativo = Path.Combine("Imagens", "Empreendimentos", empreendimento.Id.ToString(), nomeFinal).Replace("\\", "/");
-
-                        Arquivo arquivo = new()
-                        {
-                            NomeArquivo = nomeArquivo,
-                            Extensao = extensao,
-                            Tipo = TipoArquivo.Imagem,
-                            Caminho = caminhoRelativo,
-                            EmpreendimentoId = empreendimento.Id,
-                            UnidadeId = null,
-                            Descricao = "Imagem referente ao empreendimento."
-                        };
-
-                        _context.Arquivos.Add(arquivo);
-                    }
-                }
-
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"EmpreendimentoController/SalvarImagens - Imagens salvas com sucesso. EmpreendimentoId={empreendimento.Id}");
-                return true;
-            }
-
-            _logger.LogWarning($"EmpreendimentoController/SalvarImagens - Nenhuma imagem enviada. EmpreendimentoId={empreendimento.Id}");
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"EmpreendimentoController/SalvarImagens - Erro ao salvar imagens. EmpreendimentoId={empreendimento.Id}, Nome={empreendimento.Nome} \n {ex.Message}");
-            return false;
-        }
-    }
-
-
     // GET: Empreendimento/Edit/5
+    [Authorize]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -176,6 +119,7 @@ public class EmpreendimentoController : Controller
     // POST: Empreendimento/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Empreendimento model)
@@ -233,35 +177,8 @@ public class EmpreendimentoController : Controller
         }
     }
 
-    private (bool flowControl, string? msg) VerificaCamposDeEdicao(Empreendimento model, Empreendimento original)
-    {
-        var camposProtegidos = new[]
-        {
-            nameof(Empreendimento.AreaConstruida),
-            nameof(Empreendimento.SuitesTotal),
-            nameof(Empreendimento.DormitoriosTotal),
-            nameof(Empreendimento.BanheirosTotal),
-            nameof(Empreendimento.VagasTotal)
-        };
-
-        foreach (var campo in camposProtegidos)
-        {
-            var valorOriginal = original.GetType().GetProperty(campo)!.GetValue(original);
-            var valorNovo = model.GetType().GetProperty(campo)!.GetValue(model);
-
-            if (!Equals(valorOriginal, valorNovo))
-            {
-                _logger.LogWarning($"EmpreendimentoController/Edit - Tentativa de alteração no campo protegido '{campo}'. Valor Original: {valorOriginal}, Valor Novo: {valorNovo}");
-                string msg = ($"Tentativa de alteração no campo '{campo}' não permitida.");
-                return (false, msg);
-            }
-        }
-
-        return new(true, null);
-    }
-
-
     // GET: Empreendimento/Delete/5 
+    [Authorize]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -282,6 +199,7 @@ public class EmpreendimentoController : Controller
     }
 
     // POST: Empreendimento/Delete/5
+    [Authorize]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
@@ -298,22 +216,13 @@ public class EmpreendimentoController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize]
     private bool EmpreendimentoExists(int id)
     {
         return _context.Empreendimentos.Any(e => e.Id == id);
     }
 
-    private async Task<Empreendimento?> ObterEmpreendimento(int? id)
-    {
-        var empreendimento = await _context.Empreendimentos
-            .Include(e => e.Endereco)
-            .Include(e => e.Arquivos)
-            .Include(e => e.Unidades)
-            .FirstOrDefaultAsync(m => m.Id == id);
-
-        return empreendimento;
-    }
-
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> RemoverImagem(int id)
     {
@@ -346,6 +255,106 @@ public class EmpreendimentoController : Controller
         {
             _logger.LogError($"EmpreendimentoController/RemoverImagem - Erro ao remover imagem. ArquivoId={id}");
             return StatusCode(500, "Erro ao remover imagem do empreendimento.");
+        }
+    }
+
+    private async Task<Empreendimento?> ObterEmpreendimento(int? id)
+    {
+        var empreendimento = await _context.Empreendimentos
+            .Include(e => e.Endereco)
+            .Include(e => e.Arquivos)
+            .Include(e => e.Unidades)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        return empreendimento;
+    }
+
+    private (bool flowControl, string? msg) VerificaCamposDeEdicao(Empreendimento model, Empreendimento original)
+    {
+        var camposProtegidos = new[]
+        {
+            nameof(Empreendimento.AreaConstruida),
+            nameof(Empreendimento.SuitesTotal),
+            nameof(Empreendimento.DormitoriosTotal),
+            nameof(Empreendimento.BanheirosTotal),
+            nameof(Empreendimento.VagasTotal)
+        };
+
+        foreach (var campo in camposProtegidos)
+        {
+            var valorOriginal = original.GetType().GetProperty(campo)!.GetValue(original);
+            var valorNovo = model.GetType().GetProperty(campo)!.GetValue(model);
+
+            if (!Equals(valorOriginal, valorNovo))
+            {
+                _logger.LogWarning($"EmpreendimentoController/Edit - Tentativa de alteração no campo protegido '{campo}'. Valor Original: {valorOriginal}, Valor Novo: {valorNovo}");
+                string msg = ($"Tentativa de alteração no campo '{campo}' não permitida.");
+                return (false, msg);
+            }
+        }
+
+        return new(true, null);
+    }
+
+    private async Task<bool> SalvarImagens(Empreendimento empreendimento)
+    {
+        _logger.LogInformation($"EmpreendimentoController/SalvarImagens - Iniciando salvamento de imagens. EmpreendimentoId={empreendimento.Id}, Nome={empreendimento.Nome}");
+
+        try
+        {
+            if (empreendimento.Imagens != null && empreendimento.Imagens.Any())
+            {
+                foreach (var imagem in empreendimento.Imagens)
+                {
+                    if (imagem.Length > 0)
+                    {
+                        var caminhoPasta = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", "Empreendimentos", empreendimento.Id.ToString());
+
+                        if (!Directory.Exists(caminhoPasta))
+                        {
+                            _logger.LogInformation($"EmpreendimentoController/SalvarImagens - Criando diretório: {caminhoPasta}");
+                            Directory.CreateDirectory(caminhoPasta);
+                        }
+
+                        var nomeArquivo = Path.GetFileNameWithoutExtension(imagem.FileName);
+                        var extensao = Path.GetExtension(imagem.FileName);
+                        var nomeFinal = $"{Guid.NewGuid()}{extensao}";
+                        var caminhoArquivo = Path.Combine(caminhoPasta, nomeFinal);
+
+                        using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
+                            await imagem.CopyToAsync(stream);
+
+                        var caminhoRelativo = Path.Combine("Imagens", "Empreendimentos", empreendimento.Id.ToString(), nomeFinal).Replace("\\", "/");
+
+                        Arquivo arquivo = new()
+                        {
+                            NomeArquivo = nomeArquivo,
+                            Extensao = extensao,
+                            Tipo = TipoArquivo.Imagem,
+                            Caminho = caminhoRelativo,
+                            EmpreendimentoId = empreendimento.Id,
+                            UnidadeId = null,
+                            Descricao = "Imagem referente ao empreendimento."
+                        };
+
+                        _context.Arquivos.Add(arquivo);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"EmpreendimentoController/SalvarImagens - Imagens salvas com sucesso. EmpreendimentoId={empreendimento.Id}");
+                return true;
+            }
+
+            _logger.LogWarning($"EmpreendimentoController/SalvarImagens - Nenhuma imagem enviada. EmpreendimentoId={empreendimento.Id}");
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"EmpreendimentoController/SalvarImagens - Erro ao salvar imagens. EmpreendimentoId={empreendimento.Id}, Nome={empreendimento.Nome} \n {ex.Message}");
+            return false;
         }
     }
 }

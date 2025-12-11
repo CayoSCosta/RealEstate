@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Imobi.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,13 +13,14 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Imobi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251208194128_Inicial")]
+    partial class Inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("auth")
                 .HasAnnotation("ProductVersion", "8.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -59,7 +61,7 @@ namespace Imobi.Migrations
 
                     b.HasIndex("UnidadeId");
 
-                    b.ToTable("Arquivos", "realestate");
+                    b.ToTable("Arquivos");
                 });
 
             modelBuilder.Entity("Imobi.Models.Empreendimento.Condominio", b =>
@@ -90,7 +92,7 @@ namespace Imobi.Migrations
 
                     b.HasIndex("InstalacoesId");
 
-                    b.ToTable("Condominios", "realestate");
+                    b.ToTable("Condominios");
                 });
 
             modelBuilder.Entity("Imobi.Models.Empreendimento.Empreendimento", b =>
@@ -141,7 +143,7 @@ namespace Imobi.Migrations
 
                     b.HasIndex("EnderecoId");
 
-                    b.ToTable("Empreendimentos", "realestate");
+                    b.ToTable("Empreendimentos");
                 });
 
             modelBuilder.Entity("Imobi.Models.Empreendimento.Endereco", b =>
@@ -181,7 +183,7 @@ namespace Imobi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Enderecos", "realestate");
+                    b.ToTable("Enderecos");
                 });
 
             modelBuilder.Entity("Imobi.Models.Empreendimento.InstalacaoCondominio", b =>
@@ -197,7 +199,7 @@ namespace Imobi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("InstalacaoCondominios", "realestate");
+                    b.ToTable("InstalacaoCondominios");
                 });
 
             modelBuilder.Entity("Imobi.Models.Empreendimento.Unidade", b =>
@@ -242,7 +244,7 @@ namespace Imobi.Migrations
 
                     b.HasIndex("EmpreendimentoId");
 
-                    b.ToTable("Unidades", "realestate");
+                    b.ToTable("Unidades");
                 });
 
             modelBuilder.Entity("Imobi.Models.Identity.ApplicationUser", b =>
@@ -329,7 +331,7 @@ namespace Imobi.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("Usuarios", "auth");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -355,7 +357,7 @@ namespace Imobi.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("Perfis", "auth");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -380,7 +382,7 @@ namespace Imobi.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("PerfisClaims", "auth");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -405,7 +407,7 @@ namespace Imobi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsuariosClaims", "auth");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -427,7 +429,7 @@ namespace Imobi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsuariosLogins", "auth");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -442,7 +444,7 @@ namespace Imobi.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UsuariosPerfis", "auth");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -461,7 +463,7 @@ namespace Imobi.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("UsuariosTokens", "auth");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Imobi.Models.Empreendimento.Arquivo", b =>
