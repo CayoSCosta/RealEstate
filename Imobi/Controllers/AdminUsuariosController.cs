@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Imobi.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class AdminUsuariosController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -25,8 +25,25 @@ public class AdminUsuariosController : Controller
     public async Task<IActionResult> Index()
     {
         var users = await _userManager.Users.ToListAsync();
-        return View(users);
+
+        var model = new List<UsuarioListItemViewModel>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+
+            model.Add(new UsuarioListItemViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Ativo = user.Ativo,
+                Roles = roles.ToList()
+            });
+        }
+
+        return View(model);
     }
+
 
     // DETALHES
     public async Task<IActionResult> Details(string id)

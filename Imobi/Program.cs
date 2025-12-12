@@ -1,8 +1,5 @@
 using Imobi.Config;
-using Imobi.Models.Identity;
-using Imobi.Service;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Imobi.Middleware;
 using Serilog;
 
 SerilogConfig.Configure();
@@ -26,6 +23,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseMiddleware<ClaimAuthorizationMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

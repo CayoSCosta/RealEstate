@@ -1,0 +1,38 @@
+﻿@model Imobi.Models.ViewModels.AdminRoles.RoleClaimsViewModel
+
+<div class="container mt-4">
+    <h3>Claims da Role: <b>@Model.RoleName</b></h3>
+
+    <h5 class="mt-3">Adicionar Claim</h5>
+    <form asp-action="AddClaim" method="post" class="row g-3 align-items-end">
+        <input type="hidden" asp-for="RoleId" />
+
+        <div class="col-md-6">
+            <label class="form-label">Nova Claim</label>
+            <input asp-for="NewClaim" class="form-control" placeholder="Ex: Empreendimento.Create" />
+        </div>
+
+        <div class="col-md-3">
+            <button class="btn btn-primary w-100">Adicionar</button>
+        </div>
+    </form>
+
+    <h5 class="mt-4">Claims Existentes</h5>
+
+    <ul class="list-group mt-3">
+        @foreach (var c in Model.Claims)
+        {
+            <li class="list-group-item d-flex justify-content-between">
+                @c
+                <a class="btn btn-sm btn-danger"
+                   asp-action="RemoveClaim"
+                   asp-route-roleId="@Model.RoleId"
+                   asp-route-claim="@c">Remover</a>
+            </li>
+        }
+    </ul>
+
+    <div class="text-end mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+    </div>
+</div>
