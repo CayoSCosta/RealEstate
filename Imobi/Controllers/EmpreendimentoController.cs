@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Imobi.Controllers;
 
+[Authorize(Roles = "Admin, Gestor, Corretor, User")]
 public class EmpreendimentoController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -21,7 +22,6 @@ public class EmpreendimentoController : Controller
     }
 
     // GET: Empreendimento
-    [Authorize]
     public async Task<IActionResult> Index()
     {
         var applicationDbContext = await _context.Empreendimentos
@@ -32,7 +32,6 @@ public class EmpreendimentoController : Controller
     }
 
     // GET: Empreendimento/Details/5
-    [Authorize]
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -53,7 +52,6 @@ public class EmpreendimentoController : Controller
     }
 
     //GET: Empreendimento/Create
-    [Authorize]
     public IActionResult Create()
     {
         ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id");
@@ -63,7 +61,6 @@ public class EmpreendimentoController : Controller
     // POST: Empreendimento/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Empreendimento empreendimento)
@@ -97,7 +94,6 @@ public class EmpreendimentoController : Controller
     }
 
     // GET: Empreendimento/Edit/5
-    [Authorize]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -119,7 +115,6 @@ public class EmpreendimentoController : Controller
     // POST: Empreendimento/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Empreendimento model)
@@ -178,7 +173,6 @@ public class EmpreendimentoController : Controller
     }
 
     // GET: Empreendimento/Delete/5 
-    [Authorize]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -199,7 +193,6 @@ public class EmpreendimentoController : Controller
     }
 
     // POST: Empreendimento/Delete/5
-    [Authorize]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
@@ -216,13 +209,11 @@ public class EmpreendimentoController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [Authorize]
     private bool EmpreendimentoExists(int id)
     {
         return _context.Empreendimentos.Any(e => e.Id == id);
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> RemoverImagem(int id)
     {

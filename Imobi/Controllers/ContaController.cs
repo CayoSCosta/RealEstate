@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Imobi.Controllers;
-
+[AllowAnonymous]
 public class ContaController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -20,7 +20,6 @@ public class ContaController : Controller
     }
 
     [HttpGet]
-    [AllowAnonymous]
     public IActionResult Login(string? returnUrl = null)
     {
         if (User?.Identity?.IsAuthenticated == true)
@@ -30,7 +29,6 @@ public class ContaController : Controller
     }
 
     [HttpPost]
-    [AllowAnonymous]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
@@ -67,7 +65,6 @@ public class ContaController : Controller
     }
 
     [HttpGet]
-    [AllowAnonymous]
     public IActionResult Register(string? returnUrl = null)
     {
         if (User?.Identity?.IsAuthenticated == true)
@@ -77,7 +74,6 @@ public class ContaController : Controller
     }
 
     [HttpPost]
-    [AllowAnonymous]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
@@ -114,6 +110,7 @@ public class ContaController : Controller
         return View(model);
     }
 
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
@@ -123,11 +120,9 @@ public class ContaController : Controller
     }
 
     [HttpGet]
-    [AllowAnonymous]
     public IActionResult ForgotPassword() => View(new ForgotPasswordViewModel());
 
     [HttpPost]
-    [AllowAnonymous]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
     {
@@ -154,11 +149,9 @@ public class ContaController : Controller
     }
 
     [HttpGet]
-    [AllowAnonymous]
     public IActionResult ForgotPasswordConfirmation() => View();
 
     [HttpGet]
-    [AllowAnonymous]
     public IActionResult ResetPassword(string? token = null, string? email = null)
     {
         if (token == null || email == null) return BadRequest("Token inválido.");
@@ -166,7 +159,6 @@ public class ContaController : Controller
     }
 
     [HttpPost]
-    [AllowAnonymous]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
@@ -189,6 +181,7 @@ public class ContaController : Controller
     [HttpGet]
     public IActionResult ResetPasswordConfirmation() => View();
 
+    [Authorize]
     [HttpGet]
     public IActionResult AccessDenied() => View();
 }
