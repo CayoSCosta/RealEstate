@@ -1,0 +1,33 @@
+﻿/* Adicione isso ao theme.css ou site.css */
+.toast {
+    background-color: var(--bg-surface);
+    box-shadow: var(--shadow-md);
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.toast-body {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.text-bg-success {
+    background-color: var(--color-success) !important;
+    color: white;
+}
+
+.text-bg-danger {
+    background-color: var(--color-danger) !important;
+    color: white;
+}
+
+.text-bg-warning {
+    background-color: var(--color-warning) !important;
+    color: #fff;
+}
+
+.text-bg-info {
+    background-color: var(--color-accent) !important;
+    color: white;
+}

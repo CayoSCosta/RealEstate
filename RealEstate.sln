@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36401.2
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstate", "RealEstate\RealEstate.csproj", "{01381766-EC61-4B8C-9F36-50284DC6B5A6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imobi", "Imobi\Imobi.csproj", "{17A007F1-AD31-49C4-A3E1-2FE4B2ECC3CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imobi.MVC", "src\Imobi.MVC\Imobi.MVC.csproj", "{8FB1637E-9A38-8A88-2412-427A6FE8585C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{01381766-EC61-4B8C-9F36-50284DC6B5A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01381766-EC61-4B8C-9F36-50284DC6B5A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01381766-EC61-4B8C-9F36-50284DC6B5A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01381766-EC61-4B8C-9F36-50284DC6B5A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{17A007F1-AD31-49C4-A3E1-2FE4B2ECC3CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17A007F1-AD31-49C4-A3E1-2FE4B2ECC3CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17A007F1-AD31-49C4-A3E1-2FE4B2ECC3CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17A007F1-AD31-49C4-A3E1-2FE4B2ECC3CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FB1637E-9A38-8A88-2412-427A6FE8585C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FB1637E-9A38-8A88-2412-427A6FE8585C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FB1637E-9A38-8A88-2412-427A6FE8585C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FB1637E-9A38-8A88-2412-427A6FE8585C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

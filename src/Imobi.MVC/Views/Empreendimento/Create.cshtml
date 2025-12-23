@@ -1,0 +1,121 @@
+﻿@using Imobi.Models.Empreendimento
+@model Empreendimento
+
+@{
+    ViewData["Title"] = "Criar Empreendimento";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Html.PartialAsync("_Loader")
+
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Cadastrar Empreendimento</h3>
+    </div>
+
+    <form asp-action="Create" id="form-create" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="card card-panel mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3 text-primary">Dados Gerais</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Nome" class="form-label fw-semibold"></label>
+                        <input asp-for="Nome" class="form-control" />
+                        <span asp-validation-for="Nome" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Sobre" class="form-label fw-semibold"></label>
+                        <input asp-for="Sobre" class="form-control" />
+                        <span asp-validation-for="Sobre" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Estagio" class="form-label fw-semibold"></label>
+                        <input asp-for="Estagio" class="form-control" />
+                        <span asp-validation-for="Estagio" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-end">
+                        <div class="form-check form-switch mb-2">
+                            <input asp-for="Status" class="form-check-input" type="checkbox" />
+                            <label class="form-check-label" asp-for="Status">Ativo</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-panel mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title text-primary mb-0">Galeria</h5>
+                    <label for="imagensUpload" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-cloud-upload"></i> Adicionar Imagens
+                    </label>
+                </div>
+
+                <input type="file" id="imagensUpload" name="Imagens" class="d-none" multiple accept="image/*" />
+
+                <div id="previewContainer" class="border rounded p-3 bg-light text-center">
+                    <p class="text-muted mb-0 small">Nenhuma imagem selecionada</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-panel mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3 text-primary">Localização</h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label asp-for="Endereco.Cep" class="form-label fw-semibold"></label>
+                        <input asp-for="Endereco.Cep" class="form-control" placeholder="00000-000" maxlength="9">
+                        <span asp-validation-for="Endereco.Cep" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-5">
+                        <label asp-for="Endereco.Logradouro" class="form-label fw-semibold"></label>
+                        <input asp-for="Endereco.Logradouro" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label asp-for="Endereco.Numero" class="form-label fw-semibold"></label>
+                        <input asp-for="Endereco.Numero" class="form-control" />
+                        <span asp-validation-for="Endereco.Numero" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label asp-for="Endereco.Bairro" class="form-label fw-semibold"></label>
+                        <input asp-for="Endereco.Bairro" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Endereco.Complemento" class="form-label fw-semibold"></label>
+                        <input asp-for="Endereco.Complemento" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Endereco.Cidade" class="form-label fw-semibold"></label>
+                        <input asp-for="Endereco.Cidade" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label asp-for="Endereco.Uf" class="form-label fw-semibold"></label>
+                        <input asp-for="Endereco.Uf" class="form-control" readonly />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 pb-5">
+            <a asp-action="Index" class="btn btn-light border">Cancelar</a>
+            <button type="submit" class="btn btn-primary px-4">Salvar Cadastro</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

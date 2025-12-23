@@ -1,0 +1,16 @@
+﻿/* ==================== summary.css ==================== */
+
+.summary-header {
+    display: list-item !important;
+    list-style-position: inside;
+}
+
+summary.d-flex {
+    display: list-item !important;
+}
+
+.summary-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    align-items: center;
+}
