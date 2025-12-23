@@ -69,6 +69,7 @@ public class AdminUsuariosController : Controller
         return View(vm);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Edit(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
@@ -95,6 +96,34 @@ public class AdminUsuariosController : Controller
         return View(vm);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(UsuarioListItemViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _userManager.FindByIdAsync(model.Id);
+        if (user == null) return NotFound();
+
+        user.Nome = model.Nome;
+        user.SobreNome = model.SobreNome;
+        user.Email = model.Email;
+        user.Ativo = model.Ativo;
+
+        await _userManager.UpdateAsync(user);
+
+        // Atualiza roles
+        var rolesAtuais = await _userManager.GetRolesAsync(user);
+        var rolesSelecionadas = model.Roles.Where(r => r.Selected).Select(r => r.Name);
+
+        await _userManager.RemoveFromRolesAsync(user, rolesAtuais);
+        await _userManager.AddToRolesAsync(user, rolesSelecionadas);
+
+        TempData["Sucesso"] = "Usuário alterado com sucesso";
+
+        return RedirectToAction(nameof(Edit), new { id = user.Id });
+    }
 
     // ATIVAR / DESATIVAR
     public async Task<IActionResult> ToggleStatus(string id)
@@ -122,7 +151,7 @@ public class AdminUsuariosController : Controller
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        TempData["msg"] = $"Senha redefinida para: {novaSenha}";
+        TempData["Sucesso"] = $"Senha do usuário {user.Nome} redefinida para: {novaSenha}";
         return RedirectToAction(nameof(Index));
     }
 

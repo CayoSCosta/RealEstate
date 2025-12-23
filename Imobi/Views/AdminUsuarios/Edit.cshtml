@@ -4,7 +4,9 @@
 	ViewData["Title"] = "Editar Usuário";
 }
 
-<form asp-action="Edit" method="post">
+@await Html.PartialAsync("_Loader")
+
+<form asp-action="Edit" method="post" id="form-edit">
 	<input type="hidden" asp-for="Id" />
 
 	<!-- CARD 1: DADOS DO USUÁRIO -->
@@ -39,6 +41,10 @@
 						</div>
 					</div>
 
+					<a asp-action="ResetPassword" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-warning" title="Resetar Senha" onclick="return confirm('Redefinir senha deste usuário?');">
+						<i class="bi bi-key"><span>Alterar senha</span></i>
+					</a>
+
 				</div>
 			</div>
 		</details>
@@ -63,8 +69,7 @@
 									@Model.Roles[i].Name
 								</label>
 
-								<input type="hidden"
-									   asp-for="Roles[i].Name" />
+								<input type="hidden" asp-for="Roles[i].Name" />
 							</div>
 						</div>
 					}
@@ -75,9 +80,23 @@
 
 	<!-- BOTÕES -->
 	<div class="text-end mt-4">
-		<a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+		<a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
 		<button class="btn btn-primary ms-2">
 			<i class="bi bi-check-circle me-1"></i> Salvar
 		</button>
 	</div>
 </form>
+
+@section Scripts {
+	<script>
+		const form = document.getElementById("form-edit");
+
+		if (form) {
+			form.addEventListener("submit", function (e) {
+				Loading.show("Salvando dados...");
+				e.preventDefault();
+				setTimeout(() => form.submit(), 2000);
+			});
+		}
+	</script>
+}
