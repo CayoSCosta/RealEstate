@@ -65,30 +65,25 @@ public class EmpreendimentoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Empreendimento empreendimento)
     {
-        _logger.LogInformation($"EmpreendimentoController/Create - Iniciando criação de empreendimento: {empreendimento.Nome}");
         try
         {
             if (ModelState.IsValid)
             {
                 _context.Add(empreendimento);
                 await _context.SaveChangesAsync();
-
-                var imagensSalvas = await SalvarImagens(empreendimento);
-                if (!imagensSalvas)
-                    TempData["Aviso"] = "O empreendimento foi criado, mas algumas imagens não puderam ser salvas.";
+                await SalvarImagens(empreendimento);
 
                 TempData["Sucesso"] = $"Empreendimento {empreendimento.Nome} criado com sucesso!";
-                _logger.LogInformation($"EmpreendimentoController/Create - Empreendimento criado com sucesso: Nome: {empreendimento.Nome} ID: {empreendimento.Id}");
-
                 return RedirectToAction(nameof(Index));
             }
 
+            TempData["Aviso"] = "Verifique os campos destacados em vermelho.";
             return View(empreendimento);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"EmpreendimentoController/Create - Erro ao criar empreendimento: {empreendimento.Nome} ID: {empreendimento.Id}");
-            TempData["Erro"] = $"EmpreendimentoController/Create - Erro ao criar empreendimento: {empreendimento.Nome} ID: {empreendimento.Id}" + ex.Message;
+            _logger.LogError(ex, "Erro ao criar");
+            TempData["Erro"] = "Ocorreu um erro interno ao salvar.";
             return View(empreendimento);
         }
     }
@@ -121,54 +116,64 @@ public class EmpreendimentoController : Controller
     {
         if (id != model.Id)
         {
-            _logger.LogWarning($"EmpreendimentoController/Edit - ID do modelo não corresponde ao ID da rota. ID Rota: {id}, ID Modelo: {model.Id}");
+            TempData["Erro"] = "Identificador do registro inconsistente.";
             return BadRequest();
         }
 
         if (!ModelState.IsValid)
         {
-            _logger.LogWarning($"EmpreendimentoController/Edit - Modelo inválido para ID: {id}");
+            TempData["Aviso"] = "Existem campos inválidos. Verifique os destaques em vermelho.";
             return View(model);
-        }
-        
-        var original = await ObterEmpreendimento(id);
-
-        if (original == null)
-        {
-            _logger.LogWarning($"EmpreendimentoController/Edit - Empreendimento original não encontrado para ID: {id}");
-            return NotFound();
-        }
-
-        var (flowControl, msg) = VerificaCamposDeEdicao(model, original);
-        if (!flowControl)
-        {
-            _logger.LogWarning($"EmpreendimentoController/Edit - {msg} Para ID: {id}");
-            return BadRequest(msg);
         }
 
         try
         {
-            _logger.LogInformation($"EmpreendimentoController/Edit - Atualizando empreendimento ID: {id}...");
+            var original = await ObterEmpreendimento(id);
+            if (original == null)
+            {
+                TempData["Erro"] = "Empreendimento não encontrado na base de dados.";
+                return NotFound();
+            }
+
+            var (flowControl, msg) = VerificaCamposDeEdicao(model, original);
+            if (!flowControl)
+            {
+                TempData["Erro"] = msg;
+                return View(model);
+            }
+
+            _logger.LogInformation($"EmpreendimentoController/Edit - Atualizando ID: {id}...");
 
             _context.Entry(original).CurrentValues.SetValues(model);
 
             var imagensSalvas = await SalvarImagens(original);
             if (!imagensSalvas)
-                TempData["Aviso"] = "O empreendimento foi atualizado, mas algumas imagens não puderam ser salvas.";
+            {
+                TempData["Aviso"] = "O empreendimento foi salvo, mas houve falha ao processar algumas imagens.";
+            }
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"EmpreendimentoController/Edit - Empreendimento ID: {id} atualizado com sucesso.");
-
-            TempData["Sucesso"] = $"Empreendimento {model.Nome} ALTERADO com sucesso!";
+            TempData["Sucesso"] = "Empreendimento atualizado com sucesso!";
             return RedirectToAction(nameof(Index));
         }
         catch (DbUpdateConcurrencyException)
         {
             if (!EmpreendimentoExists(id))
+            {
                 return NotFound();
-
-            throw;
+            }
+            else
+            {
+                TempData["Erro"] = "O registro foi modificado por outro usuário enquanto você editava.";
+                throw;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"EmpreendimentoController/Edit - Erro fatal ID: {id}");
+            TempData["Erro"] = "Erro interno ao atualizar o registro. Tente novamente.";
+            return View(model);
         }
     }
 

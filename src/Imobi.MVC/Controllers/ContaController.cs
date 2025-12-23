@@ -44,6 +44,9 @@ public class ContaController : Controller
             {
                 user.UltimoLogin = DateTime.UtcNow;
                 await _userManager.UpdateAsync(user);
+
+                // --- TOAST DE SUCESSO AQUI ---
+                TempData["Sucesso"] = $"Bem-vindo de volta, {user.Nome}!";
             }
 
             _logger.LogInformation("Usuário logado: {Email}", model.Email);
@@ -56,11 +59,13 @@ public class ContaController : Controller
 
         if (result.IsLockedOut)
         {
-            ModelState.AddModelError(string.Empty, "Conta temporariamente bloqueada por muitas tentativas. Tente novamente mais tarde.");
+            // --- TOAST DE AVISO ---
+            TempData["Aviso"] = "Conta temporariamente bloqueada. Tente mais tarde.";
             return View(model);
         }
 
-        ModelState.AddModelError(string.Empty, "Login inválido.");
+        // --- TOAST DE ERRO ---
+        TempData["Erro"] = "Email ou senha inválidos.";
         return View(model);
     }
 
@@ -85,20 +90,18 @@ public class ContaController : Controller
             Email = model.Email,
             Nome = model.Nome,
             SobreNome = model.SobreNome,
-            Ativo = true, // opcional: ativar automaticamente
+            Ativo = true,
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
         {
-            // opcional: adicionar role default
-            // await _userManager.AddToRoleAsync(user, "User");
-
             _logger.LogInformation("Novo usuário criado: {Email}", model.Email);
-
-            // Se você requer confirmação de e-mail, envie token aqui.
             await _signInManager.SignInAsync(user, isPersistent: false);
+
+            // --- TOAST DE SUCESSO ---
+            TempData["Sucesso"] = "Conta criada com sucesso! Seja bem-vindo.";
 
             if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                 return LocalRedirect(model.ReturnUrl);
@@ -106,7 +109,10 @@ public class ContaController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error.Description);
+
+        TempData["Erro"] = "Não foi possível criar a conta. Verifique os erros.";
         return View(model);
     }
 
@@ -116,6 +122,9 @@ public class ContaController : Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
+
+        TempData["Info"] = "Você saiu do sistema.";
+
         return RedirectToAction("Login", "Conta");
     }
 
