@@ -1,0 +1,77 @@
+﻿/* ===== Sidebar base ===== */
+#sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding: 10px;
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    overflow-y: auto;
+    transition: width 0.3s ease;
+    flex-direction: column;
+    z-index: 1030;
+}
+
+
+    /* Sidebar colapsado */
+    #sidebar.collapsed {
+        width: 80px;
+    }
+
+    /* Links */
+    #sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+        font-size: 16px;
+        white-space: nowrap;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        #sidebar .nav-link:hover {
+            background-color: #e9ecef;
+        }
+
+        #sidebar .nav-link i {
+            min-width: 24px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+    /* Ocultar texto quando colapsado */
+    #sidebar.collapsed .nav-link span {
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
+        transition: opacity 0.2s ease, width 0.2s ease;
+    }
+
+    /* Centralizar ícones */
+    #sidebar.collapsed .nav-link {
+        justify-content: center;
+        padding: 10px 0;
+    }
+
+    /* Remover submenus quando colapsado */
+    #sidebar.collapsed .collapse,
+    #sidebar.collapsed .collapsing {
+        display: none !important;
+    }
+
+/* Submenus */
+#submenuImoveis .nav-link {
+    padding-left: 28px;
+}
+
+#sidebar .nav-link span,
+#sidebar .nav-link i {
+    color: #0d6efd;
+}
+
+/* Offcanvas garantir topo */
+.offcanvas.offcanvas-start {
+    z-index: 2000 !important;
+}

@@ -1,0 +1,43 @@
+﻿@model List<IdentityRole>
+
+<div class="container">
+    <h3 class="mb-4">Gerenciar funções</h3>
+
+    <p>
+        <a asp-action="Create" class="btn btn-success">Novo</a>
+    </p>
+
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Nome</th>
+                <th width="250"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Name</td>
+                    <td class="text-end">
+                        <a asp-action="Edit" asp-route-id="@r.Id" class="btn btn-sm btn-outline-primary" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a asp-action="Claims" asp-route-id="@r.Id" class="btn btn-sm btn-outline-warning" title="Claims">
+                            <i class="bi bi-shield-check"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@r.Id" class="btn btn-sm btn-outline-danger" title="Excluir">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@* <a asp-action="ResetPassword" asp-route-id="@u.Id" class="btn btn-sm btn-outline-warning"
+   onclick="return confirm('Redefinir senha deste usuário?');">
+    <i class="bi bi-key"></i>
+</a> *@
