@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Imobi.Controllers;
 
-[Authorize(Roles = "Admin, Gestor, Corretor, User")]
+[Authorize]
 public class EmpreendimentoController : Controller
 {
     private readonly ApplicationDbContext _context;

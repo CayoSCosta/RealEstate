@@ -1,4 +1,6 @@
-﻿namespace Imobi.Models.ViewModels.AdminUsuarios;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Imobi.Models.ViewModels.AdminUsuarios;
 
 #nullable disable
 public class EditRolesViewModel
@@ -8,6 +10,8 @@ public class EditRolesViewModel
     public List<RoleSelection> Roles { get; set; } = new();
 }
 
+
+[NotMapped]
 public class RoleSelection
 {
     public string Name { get; set; }

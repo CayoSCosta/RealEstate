@@ -1,21 +1,28 @@
-﻿@model Imobi.Models.Identity.ApplicationUser
+﻿@model UsuarioListItemViewModel
+
 @{
     ViewData["Title"] = "Detalhes do Usuário";
 }
 
 <div class="card shadow-sm">
     <div class="card-header">
-        <h5 class="mb-0">Detalhes — @Model.Email</h5>
+        <h5 class="mb-0">
+            Detalhes do Usuário
+        </h5>
     </div>
 
     <div class="card-body">
-        <dl class="row g-3">
+        <dl class="row g-3 mb-0">
 
             <dt class="col-sm-3">Nome</dt>
-            <dd class="col-sm-9">@Model.Nome @Model.SobreNome</dd>
+            <dd class="col-sm-9">
+                @Model.Nome @Model.SobreNome
+            </dd>
 
-            <dt class="col-sm-3">Email</dt>
-            <dd class="col-sm-9">@Model.Email</dd>
+            <dt class="col-sm-3">E-mail</dt>
+            <dd class="col-sm-9">
+                @Model.Email
+            </dd>
 
             <dt class="col-sm-3">Status</dt>
             <dd class="col-sm-9">
@@ -29,10 +36,41 @@
                 }
             </dd>
 
+            <dt class="col-sm-3">Perfis</dt>
+            <dd class="col-sm-9">
+                @if (Model.RolesNames != null && Model.RolesNames.Any())
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var role in Model.RolesNames)
+                        {
+                            <span class="badge rounded-pill bg-primary">
+                                <i class="bi bi-person-badge me-1"></i>
+                                @role
+                            </span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <span class="text-muted">
+                        Nenhum perfil atribuído
+                    </span>
+                }
+            </dd>
+
         </dl>
     </div>
 
-    <div class="card-footer text-end">
-        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+    <div class="card-footer d-flex justify-content-end gap-2">
+        <a asp-action="Index" class="btn btn-secondary">
+            Voltar
+        </a>
+
+        @* Exemplo de ação futura *@
+        @* 
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            Editar
+        </a>
+        *@
     </div>
 </div>

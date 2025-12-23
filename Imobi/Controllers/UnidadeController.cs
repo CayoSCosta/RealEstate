@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Imobi.Controllers;
 
-[Authorize(Roles = "Admin, Gestor, Corretor, User")]
+[Authorize]
 public class UnidadeController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -51,6 +51,7 @@ public class UnidadeController : Controller
     }
 
     // GET: Unidade/Create
+    [HttpGet]
     public IActionResult Create()
     {
         ViewData["EmpreendimentoId"] = new SelectList(_context.Empreendimentos, "Id", "Nome");
@@ -80,8 +81,8 @@ public class UnidadeController : Controller
     // POST: Unidade/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
     [ValidateAntiForgeryToken]
+    [HttpPost("Unidade/Create/{empreendimentoId}")]
     public async Task<IActionResult> Create(Unidade unidade)
     {
         if (!ModelState.IsValid)

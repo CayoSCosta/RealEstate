@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Imobi.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class AdminUsuariosController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -37,21 +37,64 @@ public class AdminUsuariosController : Controller
                 Id = user.Id,
                 Email = user.Email,
                 Ativo = user.Ativo,
-                Roles = roles.ToList()
+                RolesNames = roles.ToList()
             });
         }
 
         return View(model);
     }
 
-
     // DETALHES
     public async Task<IActionResult> Details(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null) return NotFound();
-        return View(user);
+        var vm = new UsuarioListItemViewModel();
+        if (user != null)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            vm.Email = user.Email;
+            vm.Ativo = user.Ativo;
+            vm.Id = user.Id;
+            vm.Nome = user.Nome;
+            vm.SobreNome = user.SobreNome;
+            vm.RolesNames = roles.ToList();
+        }
+
+        if (user == null)
+        {
+            _logger.LogInformation("AdminUsuarioController/Details - user == null");
+            return NotFound();
+        }
+
+        return View(vm);
     }
+
+    public async Task<IActionResult> Edit(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound();
+
+        var userRoles = await _userManager.GetRolesAsync(user);
+        var allRoles = _roleManager.Roles.Select(r => r.Name).ToList();
+
+        var vm = new UsuarioListItemViewModel
+        {
+            Id = user.Id,
+            Nome = user.Nome,
+            SobreNome = user.SobreNome,
+            Email = user.Email,
+            Ativo = user.Ativo,
+            RolesNames = userRoles.ToList(),
+            Roles = allRoles.Select(r => new RoleSelection
+            {
+                Name = r,
+                Selected = userRoles.Contains(r)
+            }).ToList()
+        };
+
+        return View(vm);
+    }
+
 
     // ATIVAR / DESATIVAR
     public async Task<IActionResult> ToggleStatus(string id)

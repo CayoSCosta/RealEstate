@@ -1,0 +1,83 @@
+﻿@model Imobi.Models.ViewModels.AdminUsuarios.UsuarioListItemViewModel
+
+@{
+	ViewData["Title"] = "Editar Usuário";
+}
+
+<form asp-action="Edit" method="post">
+	<input type="hidden" asp-for="Id" />
+
+	<!-- CARD 1: DADOS DO USUÁRIO -->
+	<h3 class="mb-4">Editar Usuário</h3>
+	<div class="card shadow-sm mb-4">
+		<details open>
+			<summary class="card-header bg-light">
+				<span class="summary-title">Dados do usuário</span>
+			</summary>
+			<div class="card-body">
+				<div class="row g-3">
+
+					<div class="col-md-6">
+						<label asp-for="Nome" class="form-label"></label>
+						<input asp-for="Nome" class="form-control" />
+					</div>
+
+					<div class="col-md-6">
+						<label asp-for="SobreNome" class="form-label"></label>
+						<input asp-for="SobreNome" class="form-control" />
+					</div>
+
+					<div class="col-md-6">
+						<label asp-for="Email" class="form-label"></label>
+						<input asp-for="Email" class="form-control" />
+					</div>
+
+					<div class="col-md-3 d-flex align-items-end">
+						<div class="form-check">
+							<input class="form-check-input" asp-for="Ativo" />
+							<label class="form-check-label">Ativo</label>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</details>
+	</div>
+
+	<!-- CARD 2: ROLES -->
+	<div class="card shadow-sm">
+		<details open>
+			<summary class="card-header bg-light">
+				<span class="summary-title">Perfis de acesso</span>
+			</summary>
+			<div class="card-body">
+				<div class="row g-2">
+					@for (int i = 0; i < Model.Roles.Count; i++)
+					{
+						<div class="col-md-4">
+							<div class="form-check">
+								<input class="form-check-input"
+									   asp-for="Roles[i].Selected" />
+
+								<label class="form-check-label">
+									@Model.Roles[i].Name
+								</label>
+
+								<input type="hidden"
+									   asp-for="Roles[i].Name" />
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</details>
+	</div>
+
+	<!-- BOTÕES -->
+	<div class="text-end mt-4">
+		<a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+		<button class="btn btn-primary ms-2">
+			<i class="bi bi-check-circle me-1"></i> Salvar
+		</button>
+	</div>
+</form>

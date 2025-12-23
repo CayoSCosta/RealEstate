@@ -7,7 +7,7 @@ using Imobi.Models.ViewModels.AdminRoles;
 
 namespace Imobi.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class AdminRolesController : Controller
 {
     private readonly RoleManager<IdentityRole> _roleManager;

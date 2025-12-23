@@ -41,4 +41,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Conta}/{action=Login}");
 
+await IdentitySeed.SeedAsync(app.Services);
+
 app.Run();

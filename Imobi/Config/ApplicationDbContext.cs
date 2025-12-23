@@ -3,6 +3,7 @@ using Imobi.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Imobi.Models.ViewModels.AdminUsuarios;
 
 namespace Imobi.Config;
 
@@ -48,4 +49,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Unidade>().ToTable("Unidades", "realestate");
         builder.Entity<Endereco>().ToTable("Enderecos", "realestate");
     }
+
+public DbSet<Imobi.Models.ViewModels.AdminUsuarios.UsuarioListItemViewModel> UsuarioListItemViewModel { get; set; } = default!;
 }
