@@ -1,0 +1,103 @@
+﻿@model Imobi.MVC.Models.ViewModels.MeuPerfil.MeuPerfilViewModel
+
+@{
+    ViewData["Title"] = "Meu Perfil";
+}
+
+@await Html.PartialAsync("_Loader")
+
+<h3 class="mb-4">Meu Perfil</h3>
+
+<form asp-action="Index" method="post" enctype="multipart/form-data" id="form-perfil">
+
+    <!-- CARD: DADOS PESSOAIS -->
+    <div class="card shadow-sm mb-4">
+        <details open>
+            <summary class="card-header bg-light">
+                <span class="summary-title">Dados pessoais</span>
+            </summary>
+
+            <div class="card-body">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label asp-for="Nome" class="form-label"></label>
+                        <input asp-for="Nome" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="SobreNome" class="form-label"></label>
+                        <input asp-for="SobreNome" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="EmailSecundario" class="form-label"></label>
+                        <input asp-for="EmailSecundario" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Foto" class="form-label"></label>
+                        <input asp-for="Foto" type="file" class="form-control" />
+                    </div>
+
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- CARD: SEGURANÇA -->
+    <div class="card shadow-sm mb-4">
+        <details>
+            <summary class="card-header bg-light">
+                <span class="summary-title">Segurança</span>
+            </summary>
+
+            <div class="card-body">
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <input name="SenhaAtual" type="password" class="form-control" placeholder="Senha atual" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <input name="NovaSenha" type="password" class="form-control" placeholder="Nova senha" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <input name="ConfirmarNovaSenha" type="password" class="form-control" placeholder="Confirmar nova senha" />
+                    </div>
+
+                </div>
+
+                <button formaction="/Perfil/AlterarSenha"
+                        formmethod="post"
+                        class="btn btn-outline-warning mt-3">
+                    Alterar senha
+                </button>
+            </div>
+        </details>
+    </div>
+
+    <!-- BOTÕES -->
+    <div class="text-end">
+        <button class="btn btn-primary">
+            <i class="bi bi-check-circle me-1"></i> Salvar alterações
+        </button>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script>
+        const form = document.getElementById("form-perfil");
+
+        form?.addEventListener("submit", function (e) {
+            Loading.show("Salvando perfil...");
+        });
+    </script>
+}

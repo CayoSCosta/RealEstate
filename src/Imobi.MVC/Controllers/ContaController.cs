@@ -45,7 +45,6 @@ public class ContaController : Controller
                 user.UltimoLogin = DateTime.UtcNow;
                 await _userManager.UpdateAsync(user);
 
-                // --- TOAST DE SUCESSO AQUI ---
                 TempData["Sucesso"] = $"Bem-vindo de volta, {user.Nome}!";
             }
 
@@ -59,12 +58,10 @@ public class ContaController : Controller
 
         if (result.IsLockedOut)
         {
-            // --- TOAST DE AVISO ---
             TempData["Aviso"] = "Conta temporariamente bloqueada. Tente mais tarde.";
             return View(model);
         }
 
-        // --- TOAST DE ERRO ---
         TempData["Erro"] = "Email ou senha inválidos.";
         return View(model);
     }
@@ -100,7 +97,6 @@ public class ContaController : Controller
             _logger.LogInformation("Novo usuário criado: {Email}", model.Email);
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            // --- TOAST DE SUCESSO ---
             TempData["Sucesso"] = "Conta criada com sucesso! Seja bem-vindo.";
 
             if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
@@ -124,7 +120,6 @@ public class ContaController : Controller
         await _signInManager.SignOutAsync();
 
         TempData["Info"] = "Você saiu do sistema.";
-
         return RedirectToAction("Login", "Conta");
     }
 

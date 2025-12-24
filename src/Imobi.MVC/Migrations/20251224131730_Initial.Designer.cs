@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Imobi.MVC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251223211542_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251224131730_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
