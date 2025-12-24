@@ -1,22 +1,16 @@
-﻿
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Views\Public\**" />
-		<Content Remove="Views\Public\**" />
-		<EmbeddedResource Remove="Views\Public\**" />
-		<None Remove="Views\Public\**" />
+		<ProjectReference Include="..\Imobi.Domain\Imobi.Domain.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="16.0.0" />
-		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.19" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.22" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.22" />
@@ -33,16 +27,6 @@
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
 		<PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="wwwroot\Imagens" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\Imobi.Data\Imobi.Data.csproj" />
-	  <ProjectReference Include="..\Imobi.Domain\Imobi.Domain.csproj" />
-	  <ProjectReference Include="..\Imobi.Service\Imobi.Service.csproj" />
 	</ItemGroup>
 
 </Project>

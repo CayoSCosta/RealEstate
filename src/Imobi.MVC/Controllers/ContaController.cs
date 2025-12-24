@@ -1,10 +1,11 @@
-﻿using Imobi.Models.Identity;
+﻿using Imobi.Data.Identity;
 using Imobi.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Imobi.Controllers;
+
 [AllowAnonymous]
 public class ContaController : Controller
 {
@@ -45,7 +46,6 @@ public class ContaController : Controller
                 user.UltimoLogin = DateTime.UtcNow;
                 await _userManager.UpdateAsync(user);
 
-                // --- TOAST DE SUCESSO AQUI ---
                 TempData["Sucesso"] = $"Bem-vindo de volta, {user.Nome}!";
             }
 
@@ -59,12 +59,10 @@ public class ContaController : Controller
 
         if (result.IsLockedOut)
         {
-            // --- TOAST DE AVISO ---
             TempData["Aviso"] = "Conta temporariamente bloqueada. Tente mais tarde.";
             return View(model);
         }
 
-        // --- TOAST DE ERRO ---
         TempData["Erro"] = "Email ou senha inválidos.";
         return View(model);
     }
@@ -100,7 +98,6 @@ public class ContaController : Controller
             _logger.LogInformation("Novo usuário criado: {Email}", model.Email);
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            // --- TOAST DE SUCESSO ---
             TempData["Sucesso"] = "Conta criada com sucesso! Seja bem-vindo.";
 
             if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
@@ -140,7 +137,6 @@ public class ContaController : Controller
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
         {
-            // Não informar se o email existe por segurança
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
 
@@ -151,7 +147,6 @@ public class ContaController : Controller
             new { token, email = model.Email },
             protocol: Request.Scheme);
 
-        // TODO: enviar email REAL via IEmailSender — aqui só logamos
         _logger.LogInformation("Reset password link: {Url}", callbackUrl);
 
         return RedirectToAction(nameof(ForgotPasswordConfirmation));
@@ -176,7 +171,6 @@ public class ContaController : Controller
         var user = await _userManager.FindByEmailAsync(model.Email!);
         if (user == null)
         {
-            // Não fornecer pista
             return RedirectToAction(nameof(ResetPasswordConfirmation));
         }
 
