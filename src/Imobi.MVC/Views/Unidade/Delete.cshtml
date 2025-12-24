@@ -1,96 +1,111 @@
-﻿@using Imobi.Models.Empreendimento
-@model Unidade
+﻿@model Imobi.MVC.ViewModels.EmpreendimentoViewModel
 
 @{
-    ViewData["Title"] = "Excluir Unidade";
+    ViewData["Title"] = "Excluir Empreendimento";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @await Html.PartialAsync("_Loader")
 
-<div class="py-4">
+<style>
+    summary::marker {
+        color: #dc3545;
+    }
+</style>
 
-    <!-- TÍTULO -->
+<div class="py-4">
     <h3 class="mb-4 text-danger">
-        <i class="bi bi-trash"></i> Excluir Unidade
+        <i class="bi bi-trash"></i> Excluir Empreendimento
     </h3>
 
-    <!-- ALERTA -->
     <div class="alert alert-warning shadow-sm">
-        <strong>Atenção!</strong> Esta ação é irreversível. Tem certeza de que deseja excluir esta unidade?
+        <strong>Atenção!</strong> Esta ação é irreversível.
+        Tem certeza de que deseja excluir este empreendimento?
     </div>
 
-    <!-- CARD: Sobre a Unidade -->
     <div class="card shadow-sm mb-4 border-danger">
         <details open>
             <summary class="card-header bg-light d-flex justify-content-between align-items-center">
-                <span class="summary-title flex-grow-1" style="color: #dc3545;">Sobre a Unidade</span>
+                <span class="summary-title flex-grow-1" style="color: #dc3545;">Sobre o Empreendimento</span>
             </summary>
-
             <div class="card-body row g-3">
-                <div class="col-md-3">
+                <div class="col-md-6">
+                    <strong>Nome:</strong>
+                    <p class="form-control-plaintext">@Model.Nome</p>
+                </div>
+                <div class="col-md-6">
                     <strong>Status:</strong>
                     <div class="form-check mt-1">
                         <input class="form-check-input" type="checkbox" disabled @(Model.Status ? "checked" : "") />
-                        <label class="form-check-label">Ativa</label>
+                        <label class="form-check-label">Ativo</label>
                     </div>
                 </div>
-
-                <div class="col-md-3">
-                    <strong>Tipo:</strong>
-                    <p class="form-control-plaintext">@Model.Tipo</p>
+                <div class="col-md-4">
+                    <strong>Estágio:</strong>
+                    <p class="form-control-plaintext">@Model.Estagio</p>
                 </div>
-
-                <div class="col-md-3">
-                    <strong>Dormitórios:</strong>
-                    <p class="form-control-plaintext">@Model.Dormitorios</p>
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Suítes:</strong>
-                    <p class="form-control-plaintext">@Model.Suites</p>
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Banheiros:</strong>
-                    <p class="form-control-plaintext">@Model.Banheiros</p>
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Vagas:</strong>
-                    <p class="form-control-plaintext">@Model.Vagas</p>
-                </div>
-
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <strong>Área Construída:</strong>
                     <p class="form-control-plaintext">@Model.AreaConstruida m²</p>
                 </div>
-
-                <div class="col-md-3">
-                    <strong>Empreendimento:</strong>
-                    <p class="form-control-plaintext">@Model.Empreendimento?.Nome (@Model.Empreendimento?.Id)</p>
+                <div class="col-md-4">
+                    <strong>Vagas:</strong>
+                    <p class="form-control-plaintext">@Model.VagasTotal</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Banheiros:</strong>
+                    <p class="form-control-plaintext">@Model.BanheirosTotal</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Dormitórios:</strong>
+                    <p class="form-control-plaintext">@Model.DormitoriosTotal</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Suítes:</strong>
+                    <p class="form-control-plaintext">@Model.SuitesTotal</p>
+                </div>
+                <div class="col-12">
+                    <strong>Descrição:</strong>
+                    <p class="form-control-plaintext">@Model.Sobre</p>
                 </div>
             </div>
         </details>
     </div>
 
-    <!-- CARD: Valores -->
     <div class="card shadow-sm mb-4 border-danger">
         <details open>
             <summary class="card-header bg-light d-flex justify-content-between align-items-center">
-                <span class="summary-title flex-grow-1" style="color: #dc3545;">Valores</span>
+                <span class="summary-title flex-grow-1" style="color: #dc3545;">Endereço</span>
             </summary>
-
             <div class="card-body row g-3">
-                <div class="col-md-4">
-                    <strong>Valor da Unidade:</strong>
-                    <p class="form-control-plaintext">R$ @Model.Valor?.ToString("N2")</p>
+                <div class="col-md-3">
+                    <strong>CEP:</strong>
+                    <p class="form-control-plaintext">@Model.Endereco?.Cep</p>
+                </div>
+                <div class="col-md-5">
+                    <strong>Logradouro:</strong>
+                    <p class="form-control-plaintext">@Model.Endereco?.Logradouro</p>
+                </div>
+                <div class="col-md-2">
+                    <strong>Número:</strong>
+                    <p class="form-control-plaintext">@Model.Endereco?.Numero</p>
+                </div>
+                <div class="col-md-2">
+                    <strong>Bairro:</strong>
+                    <p class="form-control-plaintext">@Model.Endereco?.Bairro</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Cidade:</strong>
+                    <p class="form-control-plaintext">@Model.Endereco?.Cidade</p>
+                </div>
+                <div class="col-md-2">
+                    <strong>UF:</strong>
+                    <p class="form-control-plaintext">@Model.Endereco?.Uf</p>
                 </div>
             </div>
         </details>
     </div>
 
-    <!-- CARD: Imagens (se houver) -->
     @if (Model.Arquivos != null && Model.Arquivos.Any())
     {
         <div class="card shadow-sm mb-4 border-danger">
@@ -114,10 +129,8 @@
         </div>
     }
 
-    <!-- BOTÕES -->
     <form asp-action="Delete" id="form-delete" class="mt-4">
         <input type="hidden" asp-for="Id" />
-
         <div class="d-flex justify-content-end gap-2">
             <a asp-action="Index" class="btn btn-outline-secondary px-4">
                 <i class="bi bi-x-circle"></i> Cancelar
@@ -128,15 +141,3 @@
         </div>
     </form>
 </div>
-
-<script>
-    const form = document.getElementById("form-delete");
-
-    if (form) {
-        form.addEventListener("submit", function (e) {
-            Loading.show("Deletando unidade...");
-            e.preventDefault();
-            setTimeout(() => form.submit(), 2000);
-        });
-    }
-</script>

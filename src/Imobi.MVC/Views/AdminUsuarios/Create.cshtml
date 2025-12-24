@@ -1,4 +1,4 @@
-﻿@model RegisterViewModel
+﻿@* @model RegisterViewModel
 @{
     ViewData["Title"] = "Criar Usuário";
 }
@@ -50,3 +50,137 @@
         </div>
     </form>
 </div>
+ *@
+@model Imobi.MVC.Models.ViewModels.AdminUsuarios.CreateUsuarioViewModel
+
+@{
+    ViewData["Title"] = "Criar Usuário";
+}
+
+@await Html.PartialAsync("_Loader")
+
+<form asp-action="Create" method="post" id="form-create">
+
+    <!-- CARD 1: DADOS DO USUÁRIO -->
+    <h3 class="mb-4">Criar Usuário</h3>
+
+    <div class="card shadow-sm mb-4">
+        <details open>
+            <summary class="card-header bg-light">
+                <span class="summary-title">Dados do usuário</span>
+            </summary>
+
+            <div class="card-body">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label asp-for="Nome" class="form-label"></label>
+                        <input asp-for="Nome" class="form-control" />
+                        <span asp-validation-for="Nome" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="SobreNome" class="form-label"></label>
+                        <input asp-for="SobreNome" class="form-control" />
+                        <span asp-validation-for="SobreNome" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3 d-flex align-items-end">
+                        <div class="form-check">
+                            <input class="form-check-input" asp-for="Ativo" />
+                            <label class="form-check-label" asp-for="Ativo"></label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- CARD 2: SENHA -->
+    <div class="card shadow-sm mb-4">
+        <details open>
+            <summary class="card-header bg-light">
+                <span class="summary-title">Senha inicial</span>
+            </summary>
+
+            <div class="card-body">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ConfirmPassword" class="form-label"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- CARD 3: ROLES -->
+    <div class="card shadow-sm">
+        <details open>
+            <summary class="card-header bg-light">
+                <span class="summary-title">Perfis de acesso</span>
+            </summary>
+
+            <div class="card-body">
+                <div class="row g-2">
+                    @for (int i = 0; i < Model.Roles.Count; i++)
+                    {
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       asp-for="Roles[i].Selected" />
+
+                                <label class="form-check-label">
+                                    @Model.Roles[i].Name
+                                </label>
+
+                                <input type="hidden" asp-for="Roles[i].Name" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- BOTÕES -->
+    <div class="text-end mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+        <button class="btn btn-primary ms-2">
+            <i class="bi bi-check-circle me-1"></i> Criar usuário
+        </button>
+    </div>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const form = document.getElementById("form-create");
+
+        if (form) {
+            form.addEventListener("submit", function (e) {
+                Loading.show("Criando usuário...");
+                e.preventDefault();
+                setTimeout(() => form.submit(), 1200);
+            });
+        }
+    </script>
+}

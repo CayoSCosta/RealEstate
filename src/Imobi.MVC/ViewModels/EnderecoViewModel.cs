@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Imobi.MVC.Models.ViewModels
+namespace Imobi.MVC.ViewModels
 {
     public class EnderecoViewModel
     {

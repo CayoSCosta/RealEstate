@@ -21,5 +21,13 @@ namespace Imobi.Data.Repositories
                 .Include(e => e.Arquivos)
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
+
+        public async Task<IEnumerable<Empreendimento>> ObterTodos()
+        {
+            return await Db.Empreendimentos
+                .AsNoTracking()
+                .Include(e => e.Endereco)
+                .ToListAsync();
+        }
     }
 }

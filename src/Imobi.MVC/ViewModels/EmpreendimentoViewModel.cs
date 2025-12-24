@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Imobi.MVC.Models.ViewModels
+namespace Imobi.MVC.ViewModels
 {
     public class EmpreendimentoViewModel
     {
@@ -27,10 +27,14 @@ namespace Imobi.MVC.Models.ViewModels
         public string SuitesTotal { get; set; } = string.Empty;
         public string VagasTotal { get; set; } = string.Empty;
 
+        public Guid EnderecoId { get; set; }
         public EnderecoViewModel Endereco { get; set; } = new();
+
+        public List<UnidadeViewModel> Unidades { get; set; } = new();
 
         [Display(Name = "Imagens do Empreendimento")]
         public List<IFormFile> ImagensUpload { get; set; } = new();
+
         public List<ArquivoViewModel> Arquivos { get; set; } = new();
     }
 }

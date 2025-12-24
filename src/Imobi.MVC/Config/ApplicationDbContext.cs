@@ -1,9 +1,8 @@
 ﻿using Imobi.Models.Empreendimento;
-using Imobi.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Imobi.Models.ViewModels.AdminUsuarios;
+using Imobi.Data.Identity;
 
 namespace Imobi.Config;
 

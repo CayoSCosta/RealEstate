@@ -1,4 +1,4 @@
-﻿using Imobi.Data.Identity; // Confirme se o namespace da pasta Identity é esse mesmo
+﻿using Imobi.Data.Identity;
 using Imobi.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -30,5 +30,22 @@ namespace Imobi.Data.Context
 
             builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<Entity>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    if (entry.Entity.Id == Guid.Empty)
+                    {
+                        entry.Entity.Id = Guid.NewGuid();
+                    }
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
     }
 }

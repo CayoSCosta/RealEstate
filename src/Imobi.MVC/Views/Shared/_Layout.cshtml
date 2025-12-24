@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="~/css/sidebar.css" />
     <link rel="stylesheet" href="~/css/loading.css" />
     <link rel="stylesheet" href="~/css/toast.css" />
+
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body class="h-100 @(isAuthenticated ? "auth-user" : "no-auth")">
@@ -70,7 +72,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

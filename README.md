@@ -45,6 +45,7 @@ Este documento descreve a configuração do PostgreSQL utilizado pelo projeto **
 "ConnectionStrings": {
   "DefaultConnection": "Host=localhost;Port=5432;Database=imobidb;Username=imobiuser;Password=imobi123"
 }
+```
 
 🛠️ Comandos Entity Framework Core (Cheatsheet)
 Estes comandos devem ser executados no Package Manager Console do Visual Studio.

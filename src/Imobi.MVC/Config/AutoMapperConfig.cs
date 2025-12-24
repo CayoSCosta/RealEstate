@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Imobi.Domain.Models;
-using Imobi.MVC.Models.ViewModels;
+using Imobi.MVC.ViewModels;
 
 namespace Imobi.MVC.Config
 {
@@ -15,6 +15,9 @@ namespace Imobi.MVC.Config
             CreateMap<Arquivo, ArquivoViewModel>().ReverseMap();
 
             CreateMap<Unidade, UnidadeViewModel>().ReverseMap();
+            CreateMap<Unidade, UnidadeViewModel>()
+                    .ForMember(dest => dest.Empreendimento, opt => opt.MapFrom(src => src.Empreendimento))
+                    .ReverseMap();
 
         }
     }

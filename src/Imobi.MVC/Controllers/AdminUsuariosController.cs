@@ -1,5 +1,6 @@
-﻿using Imobi.Models.Identity;
+﻿using Imobi.Data.Identity;
 using Imobi.Models.ViewModels.AdminUsuarios;
+using Imobi.MVC.Models.ViewModels.AdminUsuarios;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +44,70 @@ public class AdminUsuariosController : Controller
 
         return View(model);
     }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        var roles = _roleManager.Roles
+            .Select(r => new RoleSelection
+            {
+                Name = r.Name!,
+                Selected = false
+            })
+            .ToList();
+
+        var vm = new CreateUsuarioViewModel
+        {
+            Roles = roles
+        };
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CreateUsuarioViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = new ApplicationUser
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            Nome = model.Nome,
+            SobreNome = model.SobreNome,
+            Ativo = model.Ativo,
+            EmailConfirmed = true // comum em criação administrativa
+        };
+
+        var result = await _userManager.CreateAsync(user, model.Password);
+
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
+
+            return View(model);
+        }
+
+        // atribui roles selecionadas
+        var rolesSelecionadas = model.Roles?
+            .Where(r => r.Selected)
+            .Select(r => r.Name)
+            .ToList();
+
+        if (rolesSelecionadas?.Any() == true)
+            await _userManager.AddToRolesAsync(user, rolesSelecionadas);
+
+        _logger.LogInformation(
+            "Usuário criado pelo admin: {Email}", user.Email);
+
+        TempData["Sucesso"] = "Usuário criado com sucesso.";
+
+        return RedirectToAction(nameof(Index));
+    }
+
 
     // DETALHES
     public async Task<IActionResult> Details(string id)

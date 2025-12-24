@@ -1,22 +1,27 @@
-﻿using Imobi.Config;
-using Imobi.Models.Empreendimento;
+﻿using AutoMapper;
+using Imobi.Domain.Interfaces;
+using Imobi.Domain.Models;
+using Imobi.MVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace Imobi.Controllers;
 
 [Authorize]
 public class EmpreendimentoController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IEmpreendimentoService _empreendimentoService;
+    private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ILogger<EmpreendimentoController> _logger;
 
-    public EmpreendimentoController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, ILogger<EmpreendimentoController> logger)
+    public EmpreendimentoController(IEmpreendimentoService empreendimentoService,
+                                    IMapper mapper,
+                                    IWebHostEnvironment webHostEnvironment,
+                                    ILogger<EmpreendimentoController> logger)
     {
-        _context = context;
+        _empreendimentoService = empreendimentoService;
+        _mapper = mapper;
         _webHostEnvironment = webHostEnvironment;
         _logger = logger;
     }
@@ -24,333 +29,138 @@ public class EmpreendimentoController : Controller
     // GET: Empreendimento
     public async Task<IActionResult> Index()
     {
-        var applicationDbContext = await _context.Empreendimentos
-            .Include(e => e.Endereco)
-            .ToListAsync();
+        // 1. Service busca no banco (Entidades)
+        var empreendimentos = await _empreendimentoService.ObterTodos();
 
-        return View(applicationDbContext);
+        // 2. AutoMapper converte Entidades -> ViewModels
+        var viewModel = _mapper.Map<IEnumerable<EmpreendimentoViewModel>>(empreendimentos);
+
+        return View(viewModel);
     }
 
     // GET: Empreendimento/Details/5
-    public async Task<IActionResult> Details(int? id)
+    public async Task<IActionResult> Details(Guid id)
     {
-        if (id == null)
-        {
-            _logger.LogInformation($"EmpreendimentoController/Details - Parametro id é igual a nulo.");
-            return NotFound();
-        }            
+        var empreendimento = await _empreendimentoService.ObterComDetalhes(id);
 
-        Empreendimento? empreendimento = await ObterEmpreendimento(id);
+        if (empreendimento == null) return NotFound();
 
-        if (empreendimento == null)
-        {
-            _logger.LogInformation("EmpreendimentoController/Details - empreendimento é igual a nulo.");
-            return NotFound();
-        }
+        var viewModel = _mapper.Map<EmpreendimentoViewModel>(empreendimento);
 
-        return View(empreendimento);
+        return View(viewModel);
     }
 
-    //GET: Empreendimento/Create
+    // GET: Empreendimento/Create
     public IActionResult Create()
     {
-        ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id");
-        return View();
+        return View(new EmpreendimentoViewModel());
     }
 
     // POST: Empreendimento/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Empreendimento empreendimento)
+    public async Task<IActionResult> Create(EmpreendimentoViewModel viewModel)
     {
+        if (!ModelState.IsValid) return View(viewModel);
+
         try
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(empreendimento);
-                await _context.SaveChangesAsync();
-                await SalvarImagens(empreendimento);
+            // Converte VM -> Entidade
+            var empreendimento = _mapper.Map<Empreendimento>(viewModel);
 
-                TempData["Sucesso"] = $"Empreendimento {empreendimento.Nome} criado com sucesso!";
-                return RedirectToAction(nameof(Index));
-            }
+            // O Service salva no banco E processa as imagens (passamos o Path do servidor)
+            await _empreendimentoService.Adicionar(empreendimento, viewModel.ImagensUpload, _webHostEnvironment.WebRootPath);
 
-            TempData["Aviso"] = "Verifique os campos destacados em vermelho.";
-            return View(empreendimento);
+            TempData["Sucesso"] = $"Empreendimento {viewModel.Nome} criado com sucesso!";
+            return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar");
-            TempData["Erro"] = "Ocorreu um erro interno ao salvar.";
-            return View(empreendimento);
+            _logger.LogError(ex, "Erro ao criar empreendimento");
+            TempData["Erro"] = "Erro interno ao salvar.";
+            return View(viewModel);
         }
     }
 
     // GET: Empreendimento/Edit/5
-    public async Task<IActionResult> Edit(int? id)
+    public async Task<IActionResult> Edit(Guid id)
     {
-        if (id == null)
-            return NotFound();
+        var empreendimento = await _empreendimentoService.ObterComDetalhes(id);
 
-        var empreendimento = await _context.Empreendimentos
-        .Include(e => e.Unidades)
-        .Include(e => e.Endereco)
-        .Include(e => e.Arquivos)
-        .FirstOrDefaultAsync(e => e.Id == id);
+        if (empreendimento == null) return NotFound();
 
-        if (empreendimento == null)
-            return NotFound();
+        var viewModel = _mapper.Map<EmpreendimentoViewModel>(empreendimento);
 
-        ViewData["EnderecoId"] = new SelectList(_context.Enderecos, "Id", "Id", empreendimento.EnderecoId);
-        return View(empreendimento);
+        return View(viewModel);
     }
 
     // POST: Empreendimento/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Empreendimento model)
+    public async Task<IActionResult> Edit(Guid id, EmpreendimentoViewModel viewModel)
     {
-        if (id != model.Id)
+        if (id != viewModel.Id)
         {
-            TempData["Erro"] = "Identificador do registro inconsistente.";
-            return BadRequest();
+            TempData["Erro"] = "ID Inconsistente";
+            return RedirectToAction(nameof(Index));
         }
 
-        if (!ModelState.IsValid)
-        {
-            TempData["Aviso"] = "Existem campos inválidos. Verifique os destaques em vermelho.";
-            return View(model);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
         try
         {
-            var original = await ObterEmpreendimento(id);
-            if (original == null)
-            {
-                TempData["Erro"] = "Empreendimento não encontrado na base de dados.";
-                return NotFound();
-            }
+            var empreendimento = _mapper.Map<Empreendimento>(viewModel);
 
-            var (flowControl, msg) = VerificaCamposDeEdicao(model, original);
-            if (!flowControl)
-            {
-                TempData["Erro"] = msg;
-                return View(model);
-            }
-
-            _logger.LogInformation($"EmpreendimentoController/Edit - Atualizando ID: {id}...");
-
-            _context.Entry(original).CurrentValues.SetValues(model);
-
-            var imagensSalvas = await SalvarImagens(original);
-            if (!imagensSalvas)
-            {
-                TempData["Aviso"] = "O empreendimento foi salvo, mas houve falha ao processar algumas imagens.";
-            }
-
-            await _context.SaveChangesAsync();
+            // Service atualiza banco e salva novas imagens se houver
+            await _empreendimentoService.Atualizar(empreendimento, viewModel.ImagensUpload, _webHostEnvironment.WebRootPath);
 
             TempData["Sucesso"] = "Empreendimento atualizado com sucesso!";
             return RedirectToAction(nameof(Index));
         }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!EmpreendimentoExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                TempData["Erro"] = "O registro foi modificado por outro usuário enquanto você editava.";
-                throw;
-            }
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"EmpreendimentoController/Edit - Erro fatal ID: {id}");
-            TempData["Erro"] = "Erro interno ao atualizar o registro. Tente novamente.";
-            return View(model);
+            _logger.LogError(ex, $"Erro ao editar ID: {id}");
+            TempData["Erro"] = "Erro ao atualizar.";
+            return View(viewModel);
         }
     }
 
-    // GET: Empreendimento/Delete/5 
-    public async Task<IActionResult> Delete(int? id)
+    // GET: Empreendimento/Delete
+    public async Task<IActionResult> Delete(Guid id)
     {
-        if (id == null)
-        {
-            _logger.LogInformation("EmpreendimentoController/Delete - Parametro id é igual a nulo.");
-            return NotFound();
-        }
-            
-        var empreendimento = await ObterEmpreendimento(id);
+        var empreendimento = await _empreendimentoService.ObterComDetalhes(id); // Use ComDetalhes para mostrar fotos na tela de delete
+        if (empreendimento == null) return NotFound();
 
-        if (empreendimento == null)
-        {
-            _logger.LogInformation("EmpreendimentoController/Delete - empreendimento é igual a nulo.");
-            return NotFound();
-        }
+        var viewModel = _mapper.Map<EmpreendimentoViewModel>(empreendimento);
 
-        return View(empreendimento);
+        return View(viewModel);
     }
 
-    // POST: Empreendimento/Delete/5
+    // POST: Empreendimento/Delete
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var empreendimento = await ObterEmpreendimento(id);
-        if (empreendimento != null)
-        {
-            _logger.LogInformation($"EmpreendimentoController/Delete - empreendimento {empreendimento.Nome} DELETADO com sucesso.");
-            _context.Empreendimentos.Remove(empreendimento);
-        }
+        // Service remove do banco E deleta arquivos da pasta
+        await _empreendimentoService.Remover(id, _webHostEnvironment.WebRootPath);
 
-        await _context.SaveChangesAsync();
-        TempData["Sucesso"] = $"Empreendimento {empreendimento?.Nome} DELETADO com sucesso!";
+        TempData["Sucesso"] = "Empreendimento excluído com sucesso!";
         return RedirectToAction(nameof(Index));
     }
 
-    private bool EmpreendimentoExists(int id)
-    {
-        return _context.Empreendimentos.Any(e => e.Id == id);
-    }
-
+    // AJAX: Remover Imagem
     [HttpPost]
-    public async Task<IActionResult> RemoverImagem(int id)
+    public async Task<IActionResult> RemoverImagem(Guid id)
     {
-        _logger.LogInformation($"EmpreendimentoController/RemoverImagem - Iniciando remoção de imagem. ArquivoId={id}");
-
-        var imagem = await _context.Arquivos
-            .FirstOrDefaultAsync(a => a.Id == id && a.EmpreendimentoId != null);
-
-        if (imagem == null)
-        {
-            _logger.LogWarning($"EmpreendimentoController/RemoverImagem - Imagem não encontrada ou não pertence a um empreendimento. ArquivoId={id}");
-            return NotFound();
-        }
-            
         try
         {
-            // Apagar o arquivo físico
-            _logger.LogInformation($"EmpreendimentoController/RemoverImagem - Removendo arquivo físico. Caminho={imagem.Caminho}");
-            var caminhoFisico = Path.Combine(_webHostEnvironment.WebRootPath, imagem.Caminho.Replace("/", Path.DirectorySeparatorChar.ToString()));
-            if (System.IO.File.Exists(caminhoFisico))
-                System.IO.File.Delete(caminhoFisico);
-
-            _context.Arquivos.Remove(imagem);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"EmpreendimentoController/RemoverImagem - Imagem removida com sucesso. ArquivoId={id}");
+            await _empreendimentoService.RemoverImagem(id, _webHostEnvironment.WebRootPath);
             return Ok();
-        }
-        catch (Exception)
-        {
-            _logger.LogError($"EmpreendimentoController/RemoverImagem - Erro ao remover imagem. ArquivoId={id}");
-            return StatusCode(500, "Erro ao remover imagem do empreendimento.");
-        }
-    }
-
-    private async Task<Empreendimento?> ObterEmpreendimento(int? id)
-    {
-        var empreendimento = await _context.Empreendimentos
-            .Include(e => e.Endereco)
-            .Include(e => e.Arquivos)
-            .Include(e => e.Unidades)
-            .FirstOrDefaultAsync(m => m.Id == id);
-
-        return empreendimento;
-    }
-
-    private (bool flowControl, string? msg) VerificaCamposDeEdicao(Empreendimento model, Empreendimento original)
-    {
-        var camposProtegidos = new[]
-        {
-            nameof(Empreendimento.AreaConstruida),
-            nameof(Empreendimento.SuitesTotal),
-            nameof(Empreendimento.DormitoriosTotal),
-            nameof(Empreendimento.BanheirosTotal),
-            nameof(Empreendimento.VagasTotal)
-        };
-
-        foreach (var campo in camposProtegidos)
-        {
-            var valorOriginal = original.GetType().GetProperty(campo)!.GetValue(original);
-            var valorNovo = model.GetType().GetProperty(campo)!.GetValue(model);
-
-            if (!Equals(valorOriginal, valorNovo))
-            {
-                _logger.LogWarning($"EmpreendimentoController/Edit - Tentativa de alteração no campo protegido '{campo}'. Valor Original: {valorOriginal}, Valor Novo: {valorNovo}");
-                string msg = ($"Tentativa de alteração no campo '{campo}' não permitida.");
-                return (false, msg);
-            }
-        }
-
-        return new(true, null);
-    }
-
-    private async Task<bool> SalvarImagens(Empreendimento empreendimento)
-    {
-        _logger.LogInformation($"EmpreendimentoController/SalvarImagens - Iniciando salvamento de imagens. EmpreendimentoId={empreendimento.Id}, Nome={empreendimento.Nome}");
-
-        try
-        {
-            if (empreendimento.Imagens != null && empreendimento.Imagens.Any())
-            {
-                foreach (var imagem in empreendimento.Imagens)
-                {
-                    if (imagem.Length > 0)
-                    {
-                        var caminhoPasta = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", "Empreendimentos", empreendimento.Id.ToString());
-
-                        if (!Directory.Exists(caminhoPasta))
-                        {
-                            _logger.LogInformation($"EmpreendimentoController/SalvarImagens - Criando diretório: {caminhoPasta}");
-                            Directory.CreateDirectory(caminhoPasta);
-                        }
-
-                        var nomeArquivo = Path.GetFileNameWithoutExtension(imagem.FileName);
-                        var extensao = Path.GetExtension(imagem.FileName);
-                        var nomeFinal = $"{Guid.NewGuid()}{extensao}";
-                        var caminhoArquivo = Path.Combine(caminhoPasta, nomeFinal);
-
-                        using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
-                            await imagem.CopyToAsync(stream);
-
-                        var caminhoRelativo = Path.Combine("Imagens", "Empreendimentos", empreendimento.Id.ToString(), nomeFinal).Replace("\\", "/");
-
-                        Arquivo arquivo = new()
-                        {
-                            NomeArquivo = nomeArquivo,
-                            Extensao = extensao,
-                            Tipo = TipoArquivo.Imagem,
-                            Caminho = caminhoRelativo,
-                            EmpreendimentoId = empreendimento.Id,
-                            UnidadeId = null,
-                            Descricao = "Imagem referente ao empreendimento."
-                        };
-
-                        _context.Arquivos.Add(arquivo);
-                    }
-                }
-
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"EmpreendimentoController/SalvarImagens - Imagens salvas com sucesso. EmpreendimentoId={empreendimento.Id}");
-                return true;
-            }
-
-            _logger.LogWarning($"EmpreendimentoController/SalvarImagens - Nenhuma imagem enviada. EmpreendimentoId={empreendimento.Id}");
-
-            return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError($"EmpreendimentoController/SalvarImagens - Erro ao salvar imagens. EmpreendimentoId={empreendimento.Id}, Nome={empreendimento.Nome} \n {ex.Message}");
-            return false;
+            _logger.LogError(ex, "Erro ao remover imagem via AJAX");
+            return BadRequest();
         }
     }
 }

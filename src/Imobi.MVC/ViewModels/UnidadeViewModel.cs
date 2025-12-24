@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Imobi.MVC.Models.ViewModels
+namespace Imobi.MVC.ViewModels
 {
     public class UnidadeViewModel
     {
@@ -38,7 +38,7 @@ namespace Imobi.MVC.Models.ViewModels
         [Required]
         public Guid EmpreendimentoId { get; set; }
 
-        public string? EmpreendimentoNome { get; set; }
+        public EmpreendimentoViewModel Empreendimento { get; set; }
 
         [Display(Name = "Imagens da Unidade")]
         public List<IFormFile> ImagensUpload { get; set; } = new();
