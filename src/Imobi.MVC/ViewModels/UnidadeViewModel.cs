@@ -43,5 +43,7 @@ namespace Imobi.MVC.ViewModels
         [Display(Name = "Imagens da Unidade")]
         public List<IFormFile> ImagensUpload { get; set; } = new();
         public List<ArquivoViewModel> Arquivos { get; set; } = new();
+
+        public IEnumerable<ImagemViewModel> Imagens { get; set; } = new List<ImagemViewModel>();
     }
 }

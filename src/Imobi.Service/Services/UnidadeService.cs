@@ -49,12 +49,13 @@ public class UnidadeService : IUnidadeService
     {
         var unidades = await _unidadeRepo.BuscarPorEmpreendimentoAsync(empreendimentoId);
         var emp = await _empreendimentoRepo.ObterPorId(empreendimentoId);
+
         if (emp == null || !unidades.Any()) return;
 
-        emp.BanheirosTotal = $"{unidades.Min(u => u.Banheiros)} - {unidades.Max(u => u.Banheiros)}";
-        emp.VagasTotal = $"{unidades.Min(u => u.Vagas)} - {unidades.Max(u => u.Vagas)}";
-        emp.DormitoriosTotal = $"{unidades.Min(u => u.Dormitorios)} - {unidades.Max(u => u.Dormitorios)}";
-        emp.SuitesTotal = $"{unidades.Min(u => u.Suites)} - {unidades.Max(u => u.Suites)}";
+        emp.BanheirosTotal = unidades.Min(u => u.Banheiros);
+        emp.VagasTotal = unidades.Min(u => u.Vagas);
+        emp.DormitoriosTotal = unidades.Min(u => u.Dormitorios);
+        emp.SuitesTotal = unidades.Min(u => u.Suites);
 
         await _empreendimentoRepo.Atualizar(emp);
     }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Imobi.Domain.Models
 {
@@ -12,12 +9,16 @@ namespace Imobi.Domain.Models
         public string Nome { get; set; } = string.Empty;
         public string Sobre { get; set; } = string.Empty;
 
-        public string AreaConstruida { get; set; } = string.Empty;
+        // Alterado de string para double? (Área geralmente tem casas decimais)
+        public double? AreaConstruida { get; set; }
+
         public string Estagio { get; set; } = string.Empty;
-        public string BanheirosTotal { get; set; } = string.Empty;
-        public string DormitoriosTotal { get; set; } = string.Empty;
-        public string SuitesTotal { get; set; } = string.Empty;
-        public string VagasTotal { get; set; } = string.Empty;
+
+        // Alterados de string para int? (Quantidades são números inteiros e agora opcionais)
+        public int? BanheirosTotal { get; set; }
+        public int? DormitoriosTotal { get; set; }
+        public int? SuitesTotal { get; set; }
+        public int? VagasTotal { get; set; }
 
         // Relacionamentos
         public ICollection<Unidade> Unidades { get; set; } = new List<Unidade>();
@@ -25,6 +26,8 @@ namespace Imobi.Domain.Models
         public Guid EnderecoId { get; set; }
         public Endereco? Endereco { get; set; }
 
-        public ICollection<Arquivo> Arquivos { get; set; } = new List<Arquivo>();
+        [Obsolete("Use a coleção Imagens agora.")]
+        public virtual ICollection<Arquivo> Arquivos { get; set; } = new List<Arquivo>();
+        public virtual ICollection<Imagem> Imagens { get; set; } = new List<Imagem>();
     }
 }

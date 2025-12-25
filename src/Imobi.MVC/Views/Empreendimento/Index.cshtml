@@ -1,50 +1,103 @@
 ﻿@model IEnumerable<Imobi.MVC.ViewModels.EmpreendimentoViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestão de Empreendimentos";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @await Html.PartialAsync("_Loader")
 
-<h3 class="mb-4">Empreendimentos</h3>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-0 text-dark fw-bold">Empreendimentos</h3>
+            <p class="text-muted small mb-0">Gerencie o catálogo de imóveis e lançamentos</p>
+        </div>
+        <a asp-action="Upsert" class="btn btn-success shadow-sm px-4">
+            <i class="bi bi-plus-circle me-2"></i> Novo Empreendimento
+        </a>
+    </div>
 
-<p>
-    <a asp-action="Create" class="btn btn-success">Novo</a>
-</p>
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">@Html.DisplayNameFor(model => model.Nome)  </th>
+                            <th>Localização (Bairro)  </th>
+                            <th>Endereço Completo  </th>
+                            <th>@Html.DisplayNameFor(model => model.Estagio)  </th>
+                            <th class="text-center pe-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">
+                                        @Html.DisplayFor(modelItem => item.Nome)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Endereco.Bairro)
+                                    </td>
+                                    <td>
+                                        <span class="text-muted small">
+                                            @($"{item.Endereco.Logradouro}, nº {item.Endereco.Numero}")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill bg-info text-dark px-3">
+                                            @Html.DisplayFor(modelItem => item.Estagio)
+                                        </span>
+                                    </td>
+                                    <td class="pe-4">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <a asp-action="Upsert" asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-primary"
+                                               data-bs-toggle="tooltip" title="Editar">
+                                                <i class="bi bi-pencil-square"></i> 
+                                            </a>
 
-<table class="table table-hover shadow-sm">
-    <thead class="table-light">
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Nome)</th>
-            <th>@Html.DisplayNameFor(model => model.Endereco.Bairro)</th>
-            <th>@Html.DisplayNameFor(model => model.Endereco.Logradouro)</th>
-            <th>@Html.DisplayNameFor(model => model.Estagio)</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Nome)</td>
-                <td>@Html.DisplayFor(modelItem => item.Endereco.Bairro)</td>
-                <td>@($"{item.Endereco.Logradouro} nº{item.Endereco.Numero}")</td>
-                <td>@Html.DisplayFor(modelItem => item.Estagio)</td>
-                <td>
-                    <div class="d-flex gap-1">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Editar">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Detalhes">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Excluir">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                                            <a asp-action="Details" asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-info"
+                                               data-bs-toggle="tooltip" title="Visualizar Detalhes">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+
+                                            <a asp-action="Delete" asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-danger"
+                                               data-bs-toggle="tooltip" title="Excluir">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    Nenhum empreendimento cadastrado até o momento.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+}

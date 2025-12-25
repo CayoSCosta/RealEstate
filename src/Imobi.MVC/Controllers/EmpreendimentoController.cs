@@ -12,33 +12,25 @@ public class EmpreendimentoController : Controller
 {
     private readonly IEmpreendimentoService _empreendimentoService;
     private readonly IMapper _mapper;
-    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ILogger<EmpreendimentoController> _logger;
 
     public EmpreendimentoController(IEmpreendimentoService empreendimentoService,
                                     IMapper mapper,
-                                    IWebHostEnvironment webHostEnvironment,
                                     ILogger<EmpreendimentoController> logger)
     {
         _empreendimentoService = empreendimentoService;
         _mapper = mapper;
-        _webHostEnvironment = webHostEnvironment;
         _logger = logger;
     }
 
-    // GET: Empreendimento
     public async Task<IActionResult> Index()
     {
-        // 1. Service busca no banco (Entidades)
         var empreendimentos = await _empreendimentoService.ObterTodos();
-
-        // 2. AutoMapper converte Entidades -> ViewModels
         var viewModel = _mapper.Map<IEnumerable<EmpreendimentoViewModel>>(empreendimentos);
 
         return View(viewModel);
     }
 
-    // GET: Empreendimento/Details/5
     public async Task<IActionResult> Details(Guid id)
     {
         var empreendimento = await _empreendimentoService.ObterComDetalhes(id);
@@ -50,85 +42,72 @@ public class EmpreendimentoController : Controller
         return View(viewModel);
     }
 
-    // GET: Empreendimento/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Upsert(Guid? id)
     {
-        return View(new EmpreendimentoViewModel());
-    }
+        var viewModel = new EmpreendimentoViewModel();
 
-    // POST: Empreendimento/Create
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(EmpreendimentoViewModel viewModel)
-    {
-        if (!ModelState.IsValid) return View(viewModel);
-
-        try
+        if (id.HasValue && id.Value != Guid.Empty)
         {
-            // Converte VM -> Entidade
-            var empreendimento = _mapper.Map<Empreendimento>(viewModel);
-
-            // O Service salva no banco E processa as imagens (passamos o Path do servidor)
-            await _empreendimentoService.Adicionar(empreendimento, viewModel.ImagensUpload, _webHostEnvironment.WebRootPath);
-
-            TempData["Sucesso"] = $"Empreendimento {viewModel.Nome} criado com sucesso!";
-            return RedirectToAction(nameof(Index));
+            var empreendimento = await _empreendimentoService.ObterComDetalhes(id.Value);
+            if (empreendimento == null) return NotFound();
+            viewModel = _mapper.Map<EmpreendimentoViewModel>(empreendimento);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Erro ao criar empreendimento");
-            TempData["Erro"] = "Erro interno ao salvar.";
-            return View(viewModel);
-        }
-    }
-
-    // GET: Empreendimento/Edit/5
-    public async Task<IActionResult> Edit(Guid id)
-    {
-        var empreendimento = await _empreendimentoService.ObterComDetalhes(id);
-
-        if (empreendimento == null) return NotFound();
-
-        var viewModel = _mapper.Map<EmpreendimentoViewModel>(empreendimento);
 
         return View(viewModel);
     }
 
-    // POST: Empreendimento/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, EmpreendimentoViewModel viewModel)
+    public async Task<IActionResult> Upsert(EmpreendimentoViewModel viewModel)
     {
-        if (id != viewModel.Id)
-        {
-            TempData["Erro"] = "ID Inconsistente";
-            return RedirectToAction(nameof(Index));
-        }
-
         if (!ModelState.IsValid) return View(viewModel);
 
         try
         {
             var empreendimento = _mapper.Map<Empreendimento>(viewModel);
+            var isNovo = viewModel.Id == Guid.Empty;
 
-            // Service atualiza banco e salva novas imagens se houver
-            await _empreendimentoService.Atualizar(empreendimento, viewModel.ImagensUpload, _webHostEnvironment.WebRootPath);
+            if (viewModel.ImagensBase64 != null && viewModel.ImagensBase64.Any())
+            {
+                foreach (var base64 in viewModel.ImagensBase64)
+                {
+                    if (string.IsNullOrEmpty(base64)) continue;
 
-            TempData["Sucesso"] = "Empreendimento atualizado com sucesso!";
+                    empreendimento.Imagens.Add(new Imagem
+                    {
+                        Base64 = base64,
+                        Tipo = "Fachada",
+                        Ordem = empreendimento.Imagens.Count + 1
+                    });
+                }
+            }
+
+            var listaImagensParaProcessar = empreendimento.Imagens.ToList();
+
+            if (isNovo)
+            {
+                await _empreendimentoService.Adicionar(empreendimento, listaImagensParaProcessar);
+                TempData["Sucesso"] = "Empreendimento cadastrado com sucesso!";
+            }
+            else
+            {
+                await _empreendimentoService.Atualizar(empreendimento, listaImagensParaProcessar);
+                TempData["Sucesso"] = "Empreendimento atualizado com sucesso!";
+            }
+
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Erro ao editar ID: {id}");
-            TempData["Erro"] = "Erro ao atualizar.";
+            _logger.LogError(ex, "Erro no Upsert");
+            TempData["Erro"] = ex.Message;
             return View(viewModel);
         }
     }
 
-    // GET: Empreendimento/Delete
     public async Task<IActionResult> Delete(Guid id)
     {
-        var empreendimento = await _empreendimentoService.ObterComDetalhes(id); // Use ComDetalhes para mostrar fotos na tela de delete
+        var empreendimento = await _empreendimentoService.ObterComDetalhes(id);
         if (empreendimento == null) return NotFound();
 
         var viewModel = _mapper.Map<EmpreendimentoViewModel>(empreendimento);
@@ -136,25 +115,22 @@ public class EmpreendimentoController : Controller
         return View(viewModel);
     }
 
-    // POST: Empreendimento/Delete
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        // Service remove do banco E deleta arquivos da pasta
-        await _empreendimentoService.Remover(id, _webHostEnvironment.WebRootPath);
+        await _empreendimentoService.Remover(id);
 
         TempData["Sucesso"] = "Empreendimento excluído com sucesso!";
         return RedirectToAction(nameof(Index));
     }
 
-    // AJAX: Remover Imagem
     [HttpPost]
     public async Task<IActionResult> RemoverImagem(Guid id)
     {
         try
         {
-            await _empreendimentoService.RemoverImagem(id, _webHostEnvironment.WebRootPath);
+            await _empreendimentoService.RemoverImagem(id);
             return Ok();
         }
         catch (Exception ex)

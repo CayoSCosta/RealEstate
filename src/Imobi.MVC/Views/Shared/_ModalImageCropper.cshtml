@@ -1,0 +1,70 @@
+﻿@model Imobi.MVC.Models.Components.ModalCropperOptions
+
+<div class="modal fade" id="@Model.ModalId" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Model.Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <ul class="nav nav-pills nav-fill mb-3" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-upload-@Model.ModalId" data-bs-toggle="pill" data-bs-target="#content-upload-@Model.ModalId" type="button">
+                            <i class="bi bi-cloud-upload me-2"></i>Fazer Upload
+                        </button>
+                    </li>
+                    @if (Model.EnableAvatars)
+                    {
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-avatars-@Model.ModalId" data-bs-toggle="pill" data-bs-target="#content-avatars-@Model.ModalId" type="button">
+                                <i class="bi bi-emoji-smile me-2"></i>Escolher Avatar
+                            </button>
+                        </li>
+                    }
+                </ul>
+
+                <div class="tab-content">
+
+                    <div class="tab-pane fade show active" id="content-upload-@Model.ModalId" role="tabpanel">
+                        <div class="mb-3 text-center">
+                            <label class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-folder2-open me-1"></i> Selecionar Imagem
+                                <input type="file" class="input-file-cropper" accept="image/*" hidden>
+                            </label>
+                        </div>
+
+                        <div class="img-container shadow-sm border">
+                            <img class="image-to-crop d-none" src="" alt="Imagem para recorte">
+                            <div class="placeholder-crop text-muted p-5 text-center">
+                                <i class="bi bi-image fs-1 d-block mb-2"></i>
+                                Nenhuma imagem selecionada
+                            </div>
+                        </div>
+
+                        <div class="mt-2 text-center text-muted small">
+                            <i class="bi bi-mouse"></i> Use o mouse para ajustar o recorte e o zoom.
+                        </div>
+                    </div>
+
+                    @if (Model.EnableAvatars)
+                    {
+                        <div class="tab-pane fade" id="content-avatars-@Model.ModalId" role="tabpanel">
+                            <p class="text-center text-muted mb-3">Escolha um avatar da nossa coleção:</p>
+                            <div class="d-flex flex-wrap justify-content-center gap-3 py-2 avatar-grid-container">
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary px-4 btn-confirm-crop">
+                    <i class="bi bi-check-lg me-1"></i> Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

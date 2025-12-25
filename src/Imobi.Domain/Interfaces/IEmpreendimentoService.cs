@@ -5,14 +5,12 @@ namespace Imobi.Domain.Interfaces
 {
     public interface IEmpreendimentoService : IDisposable
     {
-        Task<IEnumerable<Empreendimento>> ObterTodos();
-        Task<Empreendimento?> ObterPorId(Guid id);
+        Task Adicionar(Empreendimento empreendimento, List<Imagem> imagensDoForm);
+        Task Atualizar(Empreendimento empreendimento, List<Imagem> imagensDoForm);
         Task<Empreendimento?> ObterComDetalhes(Guid id);
-
-        Task Adicionar(Empreendimento empreendimento, List<IFormFile> imagens, string webRootPath);
-        Task Atualizar(Empreendimento empreendimento, List<IFormFile> imagens, string webRootPath);
-        Task Remover(Guid id, string webRootPath);
-
-        Task RemoverImagem(Guid arquivoId, string webRootPath);
+        Task<Empreendimento?> ObterPorId(Guid id);
+        Task<IEnumerable<Empreendimento>> ObterTodos();
+        Task Remover(Guid id);
+        Task RemoverImagem(Guid imagemId);
     }
 }

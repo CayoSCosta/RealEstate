@@ -14,7 +14,7 @@ namespace Imobi.Data.Repositories
         {
             return await DbSet
                 .Include(u => u.Empreendimento)
-                .Include(u => u.Arquivos) 
+                .Include(u => u.Imagens) 
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
@@ -23,7 +23,7 @@ namespace Imobi.Data.Repositories
             return await DbSet
                 .AsNoTracking()
                 .Include(u => u.Empreendimento)
-                .Include(u => u.Arquivos)
+                .Include(u => u.Imagens)
                 .ToListAsync();
         }
 
@@ -32,7 +32,7 @@ namespace Imobi.Data.Repositories
             return await DbSet
                 .AsNoTracking()
                 .Include(u => u.Empreendimento)
-                .Include(u => u.Arquivos)
+                .Include(u => u.Imagens)
                 .Where(u => u.EmpreendimentoId == empreendimentoId)
                 .ToListAsync();
         }
@@ -42,7 +42,7 @@ namespace Imobi.Data.Repositories
             var query = DbSet
                 .AsNoTracking()
                 .Include(u => u.Empreendimento)
-                .Include(u => u.Arquivos)
+                .Include(u => u.Imagens)
                 .AsQueryable();
 
             if (quartos.HasValue)
