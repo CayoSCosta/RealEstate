@@ -12,6 +12,7 @@ namespace Imobi.Data.Context
 
         public DbSet<Empreendimento> Empreendimentos => Set<Empreendimento>();
         public DbSet<Arquivo> Arquivos => Set<Arquivo>();
+        public DbSet<Imagem> Imagens => Set<Imagem>();
         public DbSet<Unidade> Unidades => Set<Unidade>();
         public DbSet<Endereco> Enderecos => Set<Endereco>();
 

@@ -1,149 +1,138 @@
 ﻿using Imobi.Domain.Interfaces;
 using Imobi.Domain.Models;
-using Microsoft.AspNetCore.Http;
-using Imobi.Domain.Enum;
 
-namespace Imobi.Application.Services;
-
-public class EmpreendimentoService : IEmpreendimentoService
+namespace Imobi.Application.Services
 {
-    private readonly IEmpreendimentoRepository _empreendimentoRepo;
-    private readonly IArquivoRepository _arquivoRepo;
-
-    public EmpreendimentoService(IEmpreendimentoRepository empreendimentoRepo,
-                                 IArquivoRepository arquivoRepo)
+    public class EmpreendimentoService : IEmpreendimentoService
     {
-        _empreendimentoRepo = empreendimentoRepo;
-        _arquivoRepo = arquivoRepo;
-    }
+        private readonly IEmpreendimentoRepository _empreendimentoRepo;
+        private readonly IImagemRepository _imagemRepo;
 
-    public async Task<IEnumerable<Empreendimento>> ObterTodos()
-    {
-        return await _empreendimentoRepo.ObterTodos();
-    }
-
-    public async Task<Empreendimento?> ObterPorId(Guid id)
-    {
-        return await _empreendimentoRepo.ObterPorId(id);
-    }
-
-    public async Task<Empreendimento?> ObterComDetalhes(Guid id)
-    {
-        return await _empreendimentoRepo.ObterComDetalhesAsync(id);
-    }
-
-    public async Task Adicionar(Empreendimento empreendimento, List<IFormFile> imagens, string webRootPath)
-    {
-
-        if (imagens != null && imagens.Any())
+        public EmpreendimentoService(IEmpreendimentoRepository empreendimentoRepo,
+                                     IImagemRepository imagemRepo)
         {
-            foreach (var img in imagens)
+            _empreendimentoRepo = empreendimentoRepo;
+            _imagemRepo = imagemRepo;
+        }
+
+        public async Task<IEnumerable<Empreendimento>> ObterTodos() => await _empreendimentoRepo.ObterTodos();
+
+        public async Task<Empreendimento?> ObterPorId(Guid id) => await _empreendimentoRepo.ObterPorId(id);
+
+        public async Task<Empreendimento?> ObterComDetalhes(Guid id) => await _empreendimentoRepo.ObterComDetalhesAsync(id);
+
+        public async Task Adicionar(Empreendimento empreendimento, List<Imagem> imagensDoForm)
+        {
+            if (imagensDoForm != null && imagensDoForm.Any())
             {
-                var arquivo = await ProcessarUpload(img, webRootPath, empreendimento.Id);
-                if (arquivo != null)
+                foreach (var img in imagensDoForm)
                 {
-                    empreendimento.Arquivos.Add(arquivo);
+                    empreendimento.Imagens.Add(new Imagem
+                    {
+                        Tipo = img.Tipo,
+                        Base64 = img.Base64,
+                        Legenda = img.Legenda,
+                        Ordem = img.Ordem,
+                        EmpreendimentoId = empreendimento.Id
+                    });
                 }
             }
+
+            await _empreendimentoRepo.Adicionar(empreendimento);
         }
 
-        await _empreendimentoRepo.Adicionar(empreendimento);
-    }
-
-    public async Task Atualizar(Empreendimento empreendimento, List<IFormFile> imagens, string webRootPath)
-    {
-        if (imagens != null && imagens.Any())
+        public async Task Atualizar(Empreendimento empreendimento, List<Imagem> imagensDoForm)
         {
-            foreach (var img in imagens)
+            var atual = await _empreendimentoRepo.ObterComDetalhesAsync(empreendimento.Id);
+            if (atual == null) return;
+
+            atual.Nome = empreendimento.Nome;
+            atual.Sobre = empreendimento.Sobre;
+            atual.Status = empreendimento.Status;
+            atual.Estagio = empreendimento.Estagio;
+            atual.AreaConstruida = empreendimento.AreaConstruida;
+            atual.DormitoriosTotal = empreendimento.DormitoriosTotal;
+            atual.VagasTotal = empreendimento.VagasTotal;
+            atual.SuitesTotal = empreendimento.SuitesTotal;
+            atual.BanheirosTotal = empreendimento.BanheirosTotal;
+            atual.EnderecoId = empreendimento.EnderecoId;
+
+            await _empreendimentoRepo.Atualizar(atual);
+
+            var idsNoForm = imagensDoForm.Select(x => x.Id).ToList();
+            var imagensNoBanco = atual.Imagens.ToList();
+
+            foreach (var imgDb in imagensNoBanco)
             {
-                var arquivo = await ProcessarUpload(img, webRootPath, empreendimento.Id);
-                if (arquivo != null)
+                if (!idsNoForm.Contains(imgDb.Id))
                 {
-                    empreendimento.Arquivos.Add(arquivo);
+                    atual.Imagens.Remove(imgDb);
                 }
             }
-        }
 
-        await _empreendimentoRepo.Atualizar(empreendimento);
-    }
-
-    public async Task Remover(Guid id, string webRootPath)
-    {
-
-        var empreendimento = await _empreendimentoRepo.ObterComDetalhesAsync(id);
-
-        if (empreendimento != null && empreendimento.Arquivos.Any())
-        {
-            foreach (var arquivo in empreendimento.Arquivos)
+            foreach (var imgForm in imagensDoForm)
             {
-                ApagarArquivoDoDisco(arquivo.Caminho, webRootPath);
+                var imgDb = imagensNoBanco.FirstOrDefault(x => x.Id == imgForm.Id);
+
+                if (imgDb == null || imgForm.Id == Guid.Empty)
+                {
+                    var novaImg = new Imagem
+                    {
+                        Id = Guid.Empty,
+                        Base64 = imgForm.Base64,
+                        Legenda = imgForm.Legenda,
+                        Ordem = imgForm.Ordem,
+                        Tipo = imgForm.Tipo,
+                        EmpreendimentoId = atual.Id
+                    };
+                    atual.Imagens.Add(novaImg);
+                }
+                else
+                {
+                    imgDb.Legenda = imgForm.Legenda;
+                    imgDb.Ordem = imgForm.Ordem;
+                    imgDb.Tipo = imgForm.Tipo;
+
+                    if (!string.IsNullOrEmpty(imgForm.Base64) && imgForm.Base64.StartsWith("data:image"))
+                    {
+                        imgDb.Base64 = imgForm.Base64;
+                    }
+                }
             }
+
+            // O EF vai detectar quem saiu da lista 'atual.Imagens' e deletar do banco
+            // E vai detectar quem entrou e fazer o insert.
+            await _empreendimentoRepo.Atualizar(atual);
         }
 
-        await _empreendimentoRepo.Remover(id);
-    }
-
-    public async Task RemoverImagem(Guid arquivoId, string webRootPath)
-    {
-        var arquivo = await _arquivoRepo.ObterPorId(arquivoId);
-        if (arquivo == null) return;
-
-        ApagarArquivoDoDisco(arquivo.Caminho, webRootPath);
-
-        await _arquivoRepo.Remover(arquivoId);
-    }
-
-    private async Task<Arquivo?> ProcessarUpload(IFormFile imagem, string webRootPath, Guid empreendimentoId)
-    {
-        if (imagem.Length == 0) return null;
-
-        var caminhoRelativoPasta = Path.Combine("Imagens", "Empreendimentos", empreendimentoId.ToString());
-        var caminhoFisicoPasta = Path.Combine(webRootPath, caminhoRelativoPasta);
-
-        if (!Directory.Exists(caminhoFisicoPasta))
-            Directory.CreateDirectory(caminhoFisicoPasta);
-
-        var extensao = Path.GetExtension(imagem.FileName);
-        var nomeArquivoNovo = $"{Guid.NewGuid()}{extensao}";
-        var caminhoFisicoArquivo = Path.Combine(caminhoFisicoPasta, nomeArquivoNovo);
-
-        using (var stream = new FileStream(caminhoFisicoArquivo, FileMode.Create))
+        public async Task Remover(Guid id)
         {
-            await imagem.CopyToAsync(stream);
+            await _empreendimentoRepo.Remover(id);
         }
 
-        return new Arquivo
+        public async Task RemoverImagem(Guid imagemId)
         {
-            NomeArquivo = imagem.FileName,
-            Caminho = Path.Combine(caminhoRelativoPasta, nomeArquivoNovo).Replace("\\", "/"),
-            Extensao = extensao,
-            Tipo = TipoArquivoEnum.Imagem,
-            EmpreendimentoId = empreendimentoId
-        };
-    }
-
-    private void ApagarArquivoDoDisco(string caminhoRelativo, string webRootPath)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(caminhoRelativo)) return;
-
-            var caminhoFisico = Path.Combine(webRootPath, caminhoRelativo.Replace("/", Path.DirectorySeparatorChar.ToString()));
-
-            if (File.Exists(caminhoFisico))
-            {
-                File.Delete(caminhoFisico);
-            }
+            await _imagemRepo.Remover(imagemId);
         }
-        catch
+
+        private async Task AtualizarCaracteristicasEmpreendimento(Guid empreendimentoId)
         {
+            var empreendimento = await _empreendimentoRepo.ObterComDetalhesAsync(empreendimentoId);
+            if (empreendimento == null || !empreendimento.Unidades.Any()) return;
 
+            empreendimento.BanheirosTotal = empreendimento.Unidades.Min(u => u.Banheiros);
+            empreendimento.VagasTotal = empreendimento.Unidades.Min(u => u.Vagas);
+            empreendimento.DormitoriosTotal = empreendimento.Unidades.Min(u => u.Dormitorios);
+            empreendimento.SuitesTotal = empreendimento.Unidades.Min(u => u.Suites);
+            empreendimento.AreaConstruida = empreendimento.Unidades.Min(u => u.AreaConstruida);
+
+            await _empreendimentoRepo.Atualizar(empreendimento);
         }
-    }
 
-    public void Dispose()
-    {
-        _empreendimentoRepo?.Dispose();
-        _arquivoRepo?.Dispose();
+        public void Dispose()
+        {
+            _empreendimentoRepo?.Dispose();
+            _imagemRepo?.Dispose();
+        }
     }
 }

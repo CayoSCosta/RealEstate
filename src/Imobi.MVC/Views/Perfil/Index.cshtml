@@ -1,85 +1,8 @@
 ﻿@using Imobi.MVC.Models.ViewModels.MeuPerfil
+@using Imobi.MVC.Models.Components
 @model MeuPerfilViewModel
 @{
     ViewData["Title"] = "Meu Perfil";
-}
-
-@section Styles {
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <style>
-        /* Container da foto de perfil */
-        .profile-avatar-wrapper {
-            width: 150px;
-            height: 150px;
-            position: relative;
-            margin: 0 auto;
-        }
-
-        .profile-avatar {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border: 4px solid #fff;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease;
-        }
-
-        /* Botão flutuante de editar */
-        .btn-edit-avatar {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            border: 2px solid #fff;
-        }
-
-            .btn-edit-avatar:hover {
-                transform: scale(1.1);
-                background-color: #0b5ed7; /* Darker primary */
-            }
-
-        /* Estilo para os avatares selecionáveis no modal */
-        .avatar-option {
-            width: 80px;
-            height: 80px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 3px solid transparent;
-            padding: 5px;
-        }
-
-            .avatar-option:hover {
-                transform: translateY(-5px);
-                background-color: #f8f9fa;
-            }
-
-            .avatar-option.selected {
-                border-color: #0d6efd;
-                background-color: rgba(13, 110, 253, 0.1);
-                border-radius: 50%;
-            }
-
-        /* Container do Cropper */
-        .img-container {
-            max-height: 400px;
-            background-color: #f7f7f7;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            display: flex; /* Centraliza imagem vazia */
-            align-items: center;
-            justify-content: center;
-        }
-
-            .img-container img {
-                max-width: 100%;
-            }
-    </style>
 }
 
 @await Html.PartialAsync("_Loader")
@@ -100,7 +23,7 @@
                      onerror="this.src='https://ui-avatars.com/api/?name=@Model.Nome&background=random'" />
 
                 <button type="button" class="btn btn-primary btn-edit-avatar shadow"
-                        data-bs-toggle="modal" data-bs-target="#modalAvatar" title="Alterar foto">
+                        data-bs-toggle="modal" data-bs-target="#modalPerfil" title="Alterar foto">
                     <i class="bi bi-camera-fill"></i>
                 </button>
             </div>
@@ -113,7 +36,6 @@
             <summary class="card-header bg-light">
                 <span class="summary-title fw-bold text-primary">Dados pessoais</span>
             </summary>
-
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -121,19 +43,16 @@
                         <input asp-for="Nome" class="form-control" />
                         <span asp-validation-for="Nome" class="text-danger"></span>
                     </div>
-
                     <div class="col-md-6">
                         <label asp-for="SobreNome" class="form-label fw-semibold"></label>
                         <input asp-for="SobreNome" class="form-control" />
                         <span asp-validation-for="SobreNome" class="text-danger"></span>
                     </div>
-
                     <div class="col-md-6">
                         <label asp-for="Email" class="form-label fw-semibold"></label>
                         <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
-
                     <div class="col-md-6">
                         <label asp-for="EmailSecundario" class="form-label fw-semibold"></label>
                         <input asp-for="EmailSecundario" class="form-control" />
@@ -148,7 +67,6 @@
             <summary class="card-header bg-light">
                 <span class="summary-title fw-bold text-danger">Segurança</span>
             </summary>
-
             <div class="card-body">
                 <div class="alert alert-light border mb-3">
                     <small class="text-muted"><i class="bi bi-info-circle me-1"></i> Preencha apenas se desejar alterar sua senha.</small>
@@ -158,21 +76,16 @@
                         <label class="form-label">Senha Atual</label>
                         <input name="SenhaAtual" type="password" class="form-control" />
                     </div>
-
                     <div class="col-md-4">
                         <label class="form-label">Nova Senha</label>
                         <input name="NovaSenha" type="password" class="form-control" />
                     </div>
-
                     <div class="col-md-4">
                         <label class="form-label">Confirmar Nova Senha</label>
                         <input name="ConfirmarNovaSenha" type="password" class="form-control" />
                     </div>
                 </div>
-
-                <button formaction="/Perfil/AlterarSenha"
-                        formmethod="post"
-                        class="btn btn-outline-warning mt-3">
+                <button formaction="/Perfil/AlterarSenha" formmethod="post" class="btn btn-outline-warning mt-3">
                     <i class="bi bi-key"></i> Alterar senha
                 </button>
             </div>
@@ -186,227 +99,17 @@
     </div>
 </form>
 
-<div class="modal fade" id="modalAvatar" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Alterar Foto de Perfil</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-
-                <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="pills-upload-tab" data-bs-toggle="pill" data-bs-target="#pills-upload" type="button">
-                            <i class="bi bi-cloud-upload me-2"></i>Fazer Upload
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pills-avatars-tab" data-bs-toggle="pill" data-bs-target="#pills-avatars" type="button">
-                            <i class="bi bi-emoji-smile me-2"></i>Escolher Avatar
-                        </button>
-                    </li>
-                </ul>
-
-                <div class="tab-content" id="pills-tabContent">
-
-                    <div class="tab-pane fade show active" id="pills-upload" role="tabpanel">
-                        <div class="mb-3 text-center">
-                            <label class="btn btn-outline-primary btn-sm" for="fileInput">
-                                <i class="bi bi-folder2-open me-1"></i> Selecionar Imagem
-                            </label>
-                            <input type="file" id="fileInput" accept="image/*" hidden>
-                        </div>
-
-                        <div class="img-container shadow-sm border">
-                            <img id="imageToCrop" src="" alt="Selecione uma imagem" class="d-none">
-                            <div id="placeholderCrop" class="text-muted p-5">
-                                <i class="bi bi-image fs-1 d-block mb-2"></i>
-                                Nenhuma imagem selecionada
-                            </div>
-                        </div>
-
-                        <div class="mt-2 text-center text-muted small">
-                            <i class="bi bi-mouse"></i> Use o mouse para ajustar o recorte e o zoom.
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="pills-avatars" role="tabpanel">
-                        <p class="text-center text-muted mb-3">Escolha um avatar da nossa coleção:</p>
-                        <div class="d-flex flex-wrap justify-content-center gap-3 py-2" id="avatarGrid">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary px-4" id="btnCropConfirm">
-                    <i class="bi bi-check-lg me-1"></i> Confirmar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+@await Html.PartialAsync("_ModalImageCropper", new ModalCropperOptions
+{
+    ModalId = "modalPerfil",
+    Title = "Alterar Foto de Perfil",
+    EnableAvatars = true
+})
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // --- CONFIGURAÇÕES ---
-            // Usaremos a API DiceBear para avatares (Gera SVGs leves)
-            const avatarSeeds = ["Felix", "Aneka", "Zoe", "Jack", "Max", "Bella", "Trouble", "Bandit", "Muffin", "Peanut"];
-            const avatarBaseUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=";
-
-            // --- ELEMENTOS ---
-            const form = document.getElementById("form-perfil");
-            const fileInput = document.getElementById('fileInput');
-            const imageToCrop = document.getElementById('imageToCrop');
-            const placeholderCrop = document.getElementById('placeholderCrop');
-            const btnConfirm = document.getElementById('btnCropConfirm');
-            const avatarPreview = document.getElementById('avatarPreview');
-            const inputBase64 = document.getElementById('inputFotoBase64');
-            const modalEl = document.getElementById('modalAvatar');
-            const modal = new bootstrap.Modal(modalEl);
-            const avatarGrid = document.getElementById('avatarGrid');
-
-            // Variáveis de Estado
-            let cropper = null;
-            let selectedAvatarUrl = null;
-            let activeTab = 'upload'; // 'upload' ou 'avatar'
-
-            // --- DETECÇÃO DE ABA ATIVA ---
-            document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(tab => {
-                tab.addEventListener('shown.bs.tab', function (event) {
-                    if (event.target.id === 'pills-avatars-tab') {
-                        activeTab = 'avatar';
-                    } else {
-                        activeTab = 'upload';
-                    }
-                });
-            });
-
-
-            // --- 1. LÓGICA DE UPLOAD E CROPPER ---
-            fileInput.addEventListener('change', function (e) {
-                const files = e.target.files;
-                if (files && files.length > 0) {
-                    const file = files[0];
-
-                    if (/^image\/\w+/.test(file.type)) {
-                        const reader = new FileReader();
-                        reader.onload = function () {
-                            imageToCrop.src = reader.result;
-                            imageToCrop.classList.remove('d-none');
-                            placeholderCrop.classList.add('d-none');
-
-                            // Reseta cropper se já existir
-                            if (cropper) cropper.destroy();
-
-                            // Inicializa Cropper
-                            cropper = new Cropper(imageToCrop, {
-                                aspectRatio: 1, // Quadrado
-                                viewMode: 1,
-                                dragMode: 'move',
-                                autoCropArea: 1,
-                                background: false
-                            });
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        alert('Por favor, selecione um arquivo de imagem válido.');
-                    }
-                }
-            });
-
-
-            // --- 2. LÓGICA DE GERAÇÃO E SELEÇÃO DE AVATARES ---
-            avatarSeeds.forEach(seed => {
-                const url = `${avatarBaseUrl}${seed}`;
-                const img = document.createElement('img');
-                img.src = url;
-                img.classList.add('avatar-option', 'rounded-circle', 'bg-light');
-                img.alt = `Avatar ${seed}`;
-
-                img.addEventListener('click', function() {
-                    // Remove seleção visual dos outros
-                    document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
-                    // Adiciona neste
-                    this.classList.add('selected');
-                    // Define url
-                    selectedAvatarUrl = url;
-                });
-
-                avatarGrid.appendChild(img);
-            });
-
-
-            // --- 3. BOTÃO CONFIRMAR ---
-            btnConfirm.addEventListener('click', function () {
-                let finalResult = null;
-
-                // Cenário A: Aba Upload está ativa e tem um cropper rodando
-                if (activeTab === 'upload' && cropper) {
-                    // Pega o recorte
-                    const canvas = cropper.getCroppedCanvas({
-                        width: 400, // Tamanho final otimizado
-                        height: 400,
-                        fillColor: '#fff',
-                        imageSmoothingEnabled: true,
-                        imageSmoothingQuality: 'high',
-                    });
-
-                    // Converte para Base64 (JPEG 85%)
-                    finalResult = canvas.toDataURL('image/jpeg', 0.85);
-                }
-                // Cenário B: Aba Avatar está ativa e tem seleção
-                else if (activeTab === 'avatar' && selectedAvatarUrl) {
-                    finalResult = selectedAvatarUrl;
-                }
-                // Cenário C: Aba Upload ativa mas sem imagem nova (ignorar ou alertar)
-                else {
-                    // Se não fez nada, só fecha o modal
-                    modal.hide();
-                    return;
-                }
-
-                if (finalResult) {
-                    // Atualiza a imagem na tela principal
-                    avatarPreview.src = finalResult;
-
-                    // Preenche o input oculto para enviar ao servidor
-                    inputBase64.value = finalResult;
-
-                    // Fecha modal
-                    modal.hide();
-                }
-            });
-
-
-            // --- 4. RESET AO FECHAR ---
-            modalEl.addEventListener('hidden.bs.modal', function () {
-                // Se quiser limpar o upload ao cancelar, descomente:
-                /*
-                if (cropper) {
-                    cropper.destroy();
-                    cropper = null;
-                    imageToCrop.classList.add('d-none');
-                    placeholderCrop.classList.remove('d-none');
-                    fileInput.value = "";
-                }
-                */
-            });
-
-            // Loading no Submit do form
-            form?.addEventListener("submit", function (e) {
-                if ($(this).valid()) { // Verifica validação do ASP.NET
-                    Loading.show("Salvando alterações...");
-                }
-            });
-        });
-    </script>
+    <script src="~/js/components/image-cropper.js"></script>
+    <script src="~/js/pages/meu-perfil.js"></script>
+}
 }

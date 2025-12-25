@@ -15,10 +15,10 @@ namespace Imobi.Data.Repositories
         public async Task<Empreendimento?> ObterComDetalhesAsync(Guid id)
         {
             return await Db.Empreendimentos
-                .AsNoTracking()
                 .Include(e => e.Endereco)
-                .Include(e => e.Unidades)
                 .Include(e => e.Arquivos)
+                .Include(e => e.Imagens)
+                .Include(e => e.Unidades)
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 
@@ -28,6 +28,25 @@ namespace Imobi.Data.Repositories
                 .AsNoTracking()
                 .Include(e => e.Endereco)
                 .ToListAsync();
+        }
+        public async Task Remover(Guid id)
+        {
+            var empreendimento = await Db.Empreendimentos
+                .Include(e => e.Arquivos)
+                .Include(e => e.Imagens)
+                .Include(e => e.Unidades)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (empreendimento != null)
+            {
+                if (empreendimento.Arquivos.Any())
+                    Db.Arquivos.RemoveRange(empreendimento.Arquivos);
+                if (empreendimento.Imagens.Any())
+                    Db.Imagens.RemoveRange(empreendimento.Imagens);
+
+                Db.Empreendimentos.Remove(empreendimento);
+            }
+            await Db.SaveChangesAsync();
         }
     }
 }

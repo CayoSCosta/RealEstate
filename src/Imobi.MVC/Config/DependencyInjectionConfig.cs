@@ -43,6 +43,8 @@ namespace Imobi.MVC.Config
 
             services.AddHttpClient<IEnderecoService, EnderecoService>();
 
+            services.AddScoped<IImagemRepository, ImagemRepository>();
+
             services.AddAutoMapper(typeof(AutoMapperConfig).Assembly);
 
             return services;

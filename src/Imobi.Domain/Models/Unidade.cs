@@ -20,6 +20,9 @@ namespace Imobi.Domain.Models
         public Guid EmpreendimentoId { get; set; }
         public Empreendimento? Empreendimento { get; set; }
 
-        public ICollection<Arquivo>? Arquivos { get; set; }
+
+        [Obsolete("Use a coleção Imagens agora.")]
+        public virtual ICollection<Arquivo> Arquivos { get; set; } = new List<Arquivo>();
+        public virtual ICollection<Imagem> Imagens { get; set; } = new List<Imagem>();
     }
 }

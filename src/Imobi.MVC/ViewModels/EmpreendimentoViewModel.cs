@@ -16,25 +16,43 @@ namespace Imobi.MVC.ViewModels
         [Display(Name = "Sobre o imóvel")]
         public string Sobre { get; set; } = string.Empty;
 
-        [Display(Name = "Área")]
-        public string AreaConstruida { get; set; } = string.Empty;
+        [Display(Name = "Área Construída (m²)")]
+        public double? AreaConstruida { get; set; } // Alterado para double? (opcional)
 
-        [Display(Name = "Estágio")]
+        [Display(Name = "Estágio da Obra")]
         public string Estagio { get; set; } = string.Empty;
 
-        public string BanheirosTotal { get; set; } = string.Empty;
-        public string DormitoriosTotal { get; set; } = string.Empty;
-        public string SuitesTotal { get; set; } = string.Empty;
-        public string VagasTotal { get; set; } = string.Empty;
+        // --- Atributos de Quantidade (Alterados para int? para serem opcionais) ---
 
+        [Display(Name = "Banheiros")]
+        public int? BanheirosTotal { get; set; }
+
+        [Display(Name = "Dormitórios")]
+        public int? DormitoriosTotal { get; set; }
+
+        [Display(Name = "Suítes")]
+        public int? SuitesTotal { get; set; }
+
+        [Display(Name = "Vagas de Garagem")]
+        public int? VagasTotal { get; set; }
+
+        // --- Relacionamentos e Unidades ---
         public Guid EnderecoId { get; set; }
         public EnderecoViewModel Endereco { get; set; } = new();
-
         public List<UnidadeViewModel> Unidades { get; set; } = new();
 
-        [Display(Name = "Imagens do Empreendimento")]
-        public List<IFormFile> ImagensUpload { get; set; } = new();
+        // --- Upload de imagem dinâmica ---
 
-        public List<ArquivoViewModel> Arquivos { get; set; } = new();
+        [Display(Name = "Novas Imagens Recortadas")]
+        public List<string> ImagensBase64 { get; set; } = new List<string>();
+
+        [Display(Name = "Upload de Arquivos Direto")]
+        public List<IFormFile> ImagensUpload { get; set; } = new List<IFormFile>();
+
+        public List<ArquivoViewModel> Arquivos { get; set; } = new List<ArquivoViewModel>();
+
+        public List<ImagemViewModel> Imagens { get; set; } = new List<ImagemViewModel>();
+
+        public int TotalImagens => (Arquivos?.Count ?? 0) + (ImagensBase64?.Count ?? 0);
     }
 }
