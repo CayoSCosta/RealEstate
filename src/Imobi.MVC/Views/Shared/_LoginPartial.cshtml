@@ -63,7 +63,7 @@
             <li><hr class="dropdown-divider my-1"></li>
 
             <li>
-                <form class="w-100" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <form asp-controller="Conta" asp-action="Logout" method="post" class="w-100">
                     <button type="submit" class="dropdown-item py-2 text-danger d-flex align-items-center gap-2">
                         <i class="bi bi-box-arrow-right"></i>
                         <span>Sair</span>
@@ -79,8 +79,8 @@ else
         <a class="btn btn-light text-secondary border fw-medium btn-sm" asp-area="Identity" asp-page="/Account/Login">
             Entrar
         </a>
-        <a class="btn btn-primary fw-medium btn-sm shadow-sm" asp-area="Identity" asp-page="/Account/Register">
+@*         <a class="btn btn-primary fw-medium btn-sm shadow-sm" asp-area="Identity" asp-page="/Account/Register">
             Cadastrar
-        </a>
+        </a> *@
     </div>
 }

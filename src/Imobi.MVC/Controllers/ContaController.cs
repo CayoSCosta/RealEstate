@@ -1,4 +1,5 @@
 ﻿using Imobi.Models.Identity;
+using Imobi.MVC.Models.ViewModels.MeuPerfil;
 using Imobi.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -32,23 +33,39 @@ public class ContaController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _userManager.FindByEmailAsync(model.Email);
+
+        if (user == null)
+        {
+            TempData["Erro"] = "Email ou senha inválidos.";
+            return View(model);
+        }
+
+        // BLOQUEIO POR INATIVIDADE
+        if (!user.Ativo)
+        {
+            TempData["Erro"] = "Usuário inativo. Entre em contato com o administrador.";
+            _logger.LogWarning("Tentativa de login de usuário inativo: {Email}", model.Email);
+            return View(model);
+        }
 
         var result = await _signInManager.PasswordSignInAsync(
-            model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
+            user,
+            model.Password,
+            model.RememberMe,
+            lockoutOnFailure: true
+        );
 
         if (result.Succeeded)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null)
-            {
-                user.UltimoLogin = DateTime.UtcNow;
-                await _userManager.UpdateAsync(user);
+            user.UltimoLogin = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
 
-                TempData["Sucesso"] = $"Bem-vindo de volta, {user.Nome}!";
-            }
-
-            _logger.LogInformation("Usuário logado: {Email}", model.Email);
+            TempData["Sucesso"] = $"Bem-vindo de volta, {user.Nome}!";
+            _logger.LogInformation("Usuário logado: {Email}", user.Email);
 
             if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                 return LocalRedirect(model.ReturnUrl);
@@ -65,6 +82,7 @@ public class ContaController : Controller
         TempData["Erro"] = "Email ou senha inválidos.";
         return View(model);
     }
+
 
     [HttpGet]
     public IActionResult Register(string? returnUrl = null)
@@ -188,4 +206,24 @@ public class ContaController : Controller
     [Authorize]
     [HttpGet]
     public IActionResult AccessDenied() => View();
+
+    [HttpGet]
+    public async Task<IActionResult> Preferencias()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return RedirectToAction("Login", "Account", new { area = "Identity" });
+
+        var model = new PreferenciasViewModel
+        {
+            Ativo = user.Ativo,
+            DataCriacao = user.LockoutEnd?.DateTime ?? DateTime.Now, // ajuste depois se salvar data real
+            UltimoLogin = user.UltimoLogin, // se ainda não existir, pode deixar null
+            Tema = "Claro",
+            Idioma = "pt-BR",
+            ReceberEmails = false
+        };
+
+        return View(model);
+    }
 }
