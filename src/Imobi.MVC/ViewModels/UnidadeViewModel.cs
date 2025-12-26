@@ -7,9 +7,10 @@ namespace Imobi.MVC.ViewModels
         public Guid Id { get; set; }
 
         [Display(Name = "Ativo")]
-        public bool Status { get; set; }
+        public bool Status { get; set; } = true;
 
-        [Required(ErrorMessage = "O tipo é obrigatório")]
+        [Required(ErrorMessage = "O tipo é obrigatório (Ex: Apartamento, Studio)")]
+        [Display(Name = "Tipo da Unidade")]
         public string Tipo { get; set; } = string.Empty;
 
         [Required]
@@ -29,21 +30,21 @@ namespace Imobi.MVC.ViewModels
         public int Vagas { get; set; }
 
         [Required]
-        [Display(Name = "Área (m²)")]
+        [Display(Name = "Área Privativa (m²)")]
         public int AreaConstruida { get; set; }
 
         [DataType(DataType.Currency)]
+        [Display(Name = "Valor de Venda")]
         public decimal? Valor { get; set; }
 
         [Required]
         public Guid EmpreendimentoId { get; set; }
 
-        public EmpreendimentoViewModel Empreendimento { get; set; }
+        public EmpreendimentoViewModel? Empreendimento { get; set; }
 
-        [Display(Name = "Imagens da Unidade")]
-        public List<IFormFile> ImagensUpload { get; set; } = new();
-        public List<ArquivoViewModel> Arquivos { get; set; } = new();
+        [Display(Name = "Galeria")]
+        public List<ImagemViewModel> Imagens { get; set; } = new List<ImagemViewModel>();
 
-        public IEnumerable<ImagemViewModel> Imagens { get; set; } = new List<ImagemViewModel>();
+        public List<string> ImagensBase64 { get; set; } = new List<string>();
     }
 }

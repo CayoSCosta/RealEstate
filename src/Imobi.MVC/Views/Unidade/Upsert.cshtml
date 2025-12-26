@@ -1,0 +1,166 @@
+﻿@using Imobi.MVC.Models.Components
+@using Imobi.Domain.Enum
+@using Imobi.MVC.ViewModels
+@model Imobi.MVC.ViewModels.UnidadeViewModel
+
+@{
+    var isEdicao = Model.Id != Guid.Empty;
+    ViewData["Title"] = isEdicao ? "Editar Unidade" : "Nova Unidade";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var listaOpcoes = Html.GetEnumSelectList<TipoImagemEmpreendimentoEnum>();
+    var opcoesEnumHtml = "";
+    foreach (var item in listaOpcoes)
+    {
+        opcoesEnumHtml += $"<option value='{item.Value}'>{item.Text}</option>";
+    }
+}
+
+@await Html.PartialAsync("_Loader")
+
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-dark fw-bold">@ViewData["Title"]</h3>
+            @if (Model.Empreendimento != null)
+            {
+                <div class="d-flex align-items-center gap-2 mt-1">
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3">
+                        <i class="bi bi-building me-1"></i> @Model.Empreendimento.Nome
+                    </span>
+                </div>
+            }
+        </div>
+
+        <div class="d-flex gap-2">
+            @if (Model.EmpreendimentoId != Guid.Empty)
+            {
+                <a asp-controller="Empreendimento" asp-action="Details" asp-route-id="@Model.EmpreendimentoId" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Voltar ao Empreendimento
+                </a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Voltar para a Lista</a>
+            }
+        </div>
+    </div>
+
+    <form asp-action="Upsert" id="form-upsert" enctype="multipart/form-data" class="needs-validation" novalidate>
+        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.EmpreendimentoId)
+
+        <div class="card shadow-sm mb-4">
+            <details open>
+                <summary class="card-header bg-light fw-bold text-primary d-flex align-items-center justify-content-between" style="cursor:pointer">
+                    <span><i class="bi bi-info-circle me-2"></i> Dados da Unidade</span>
+                    <i class="bi bi-chevron-down text-muted small"></i>
+                </summary>
+                <div class="card-body row g-3">
+                    <div class="col-md-3">
+                        <label asp-for="Status" class="form-label fw-semibold d-block">Disponibilidade</label>
+                        <div class="form-check form-switch custom-switch-lg">
+                            <input class="form-check-input" type="checkbox" role="switch" asp-for="Status" id="chkStatus">
+                            <label class="form-check-label fw-bold ms-2" for="chkStatus" id="labelStatus">
+                                @(Model.Status ? "Disponível" : "Indisponível")
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Tipo" class="form-label fw-semibold"></label>
+                        <input asp-for="Tipo" class="form-control" placeholder="Ex: Apartamento 101, Cobertura..." />
+                        <span asp-validation-for="Tipo" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="Valor" class="form-label fw-semibold"></label>
+                        <input asp-for="Valor" class="form-control" placeholder="0,00" />
+                        <span asp-validation-for="Valor" class="text-danger"></span>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <details open>
+                <summary class="card-header bg-light fw-bold text-primary d-flex align-items-center justify-content-between" style="cursor:pointer">
+                    <span><i class="bi bi-list-check me-2"></i> Características da Unidade</span>
+                    <i class="bi bi-chevron-down text-muted small"></i>
+                </summary>
+                <div class="card-body row g-3">
+                    <div class="col-md-3">
+                        <label asp-for="AreaConstruida" class="form-label fw-semibold">Área Privativa (m²)</label>
+                        <input asp-for="AreaConstruida" class="form-control" type="number" />
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="Dormitorios" class="form-label fw-semibold"></label>
+                        <input asp-for="Dormitorios" class="form-control" type="number" />
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="Suites" class="form-label fw-semibold"></label>
+                        <input asp-for="Suites" class="form-control" type="number" />
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="Banheiros" class="form-label fw-semibold"></label>
+                        <input asp-for="Banheiros" class="form-control" type="number" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Vagas" class="form-label fw-semibold"></label>
+                        <input asp-for="Vagas" class="form-control" type="number" />
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        @await Html.PartialAsync("_GaleriaUpload", new GaleriaConfigViewModel {
+        Titulo = "Galeria de Fotos da Unidade",
+                ContainerId = "galeriaUnidadeContainer",
+                ModalId = "modalUnidade",
+                Imagens = Model.Imagens ?? new List<ImagemViewModel>(),
+                OpcoesTipo = listaOpcoes
+                })
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pb-5">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">Cancelar</a>
+            <button type="submit" class="btn btn-success px-5 fw-bold shadow">
+                <i class="bi bi-check-lg me-1"></i> Salvar Unidade
+            </button>
+        </div>
+    </form>
+</div>
+
+@await Html.PartialAsync("_ModalImageCropper", new Imobi.MVC.Models.Components.ModalCropperOptions {
+    ModalId = "modalUnidade",
+    Title = "Recortar Foto da Unidade",
+    EnableAvatars = false
+})
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="~/js/components/image-cropper.js"></script>
+
+    <script type="module">
+        import { GaleriaManager } from '/js/components/galeria-manager.js';
+
+        $(function () {
+            GaleriaManager.init({
+                containerId: 'galeriaUnidadeContainer',
+                modalId: 'modalUnidade',
+                optionsHtml: `@Html.Raw(opcoesEnumHtml)`,
+                aspectRatio: 4 / 3
+            });
+
+            $('#chkStatus').on('change', function() {
+                const isChecked = $(this).is(':checked');
+                $('#labelStatus').text(isChecked ? 'Disponível' : 'Indisponível')
+                                 .toggleClass('text-success', isChecked)
+                                 .toggleClass('text-danger', !isChecked);
+            });
+        });
+    </script>
+}

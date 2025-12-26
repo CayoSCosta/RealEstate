@@ -1,0 +1,54 @@
+﻿@model Imobi.MVC.ViewModels.GaleriaConfigViewModel
+
+<div class="card shadow-sm mb-4 border-primary">
+    <details open>
+        <summary class="card-header bg-light fw-bold text-primary d-flex justify-content-between align-items-center" style="cursor:pointer">
+            <span><i class="@Model.Icone me-2"></i> @Model.Titulo</span>
+            <i class="bi bi-chevron-down text-muted small"></i>
+        </summary>
+        <div class="card-body">
+            <div class="mb-3">
+                <button type="button" class="btn btn-primary btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#@Model.ModalId">
+                    <i class="bi bi-camera-fill me-1"></i> Adicionar Foto
+                </button>
+            </div>
+
+            <div id="@Model.ContainerId" class="row g-3 container-galeria-reutilizavel">
+                @if (Model.Imagens != null)
+                {
+                    for (int i = 0; i < Model.Imagens.Count; i++)
+                    {
+                        <div class="col-md-3 item-galeria">
+                            <div class="card h-100 shadow-sm border">
+                                <input type="hidden" name="Imagens[@i].Id" value="@Model.Imagens[i].Id" />
+                                <input type="hidden" name="Imagens[@i].Base64" value="@Model.Imagens[i].Base64" />
+
+                                <div class="position-relative">
+                                    <img src="@Model.Imagens[i].Base64" class="card-img-top" style="height: 140px; object-fit: cover;">
+                                    <span class="badge bg-dark position-absolute top-0 start-0 m-2 badge-ordem"># @Model.Imagens[i].Ordem</span>
+                                </div>
+
+                                <div class="card-body p-2">
+                                    <select name="Imagens[@i].Tipo" class="form-select form-select-sm mb-1">
+                                        @foreach (var opcao in Model.OpcoesTipo)
+                                        {
+                                            <!option value="@opcao.Value" @(opcao.Value == ((int)Model.Imagens[i].Tipo).ToString() ? "selected" : "")>
+                                            @opcao.Text
+                                            </!option>
+                                        }
+                                    </select>
+                                    <input type="text" name="Imagens[@i].Legenda" class="form-control form-control-sm mb-1" value="@Model.Imagens[i].Legenda" placeholder="Legenda..." />
+                                    <input type="hidden" name="Imagens[@i].Ordem" class="input-ordem" value="@Model.Imagens[i].Ordem" />
+
+                                    <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-1 btn-remover-galeria">
+                                        <i class="bi bi-trash-fill"></i> Remover
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </details>
+</div>

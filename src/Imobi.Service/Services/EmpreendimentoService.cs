@@ -51,10 +51,6 @@ namespace Imobi.Application.Services
             atual.Status = empreendimento.Status;
             atual.Estagio = empreendimento.Estagio;
             atual.AreaConstruida = empreendimento.AreaConstruida;
-            atual.DormitoriosTotal = empreendimento.DormitoriosTotal;
-            atual.VagasTotal = empreendimento.VagasTotal;
-            atual.SuitesTotal = empreendimento.SuitesTotal;
-            atual.BanheirosTotal = empreendimento.BanheirosTotal;
             atual.EnderecoId = empreendimento.EnderecoId;
 
             await _empreendimentoRepo.Atualizar(atual);
@@ -100,8 +96,6 @@ namespace Imobi.Application.Services
                 }
             }
 
-            // O EF vai detectar quem saiu da lista 'atual.Imagens' e deletar do banco
-            // E vai detectar quem entrou e fazer o insert.
             await _empreendimentoRepo.Atualizar(atual);
         }
 
@@ -120,10 +114,6 @@ namespace Imobi.Application.Services
             var empreendimento = await _empreendimentoRepo.ObterComDetalhesAsync(empreendimentoId);
             if (empreendimento == null || !empreendimento.Unidades.Any()) return;
 
-            empreendimento.BanheirosTotal = empreendimento.Unidades.Min(u => u.Banheiros);
-            empreendimento.VagasTotal = empreendimento.Unidades.Min(u => u.Vagas);
-            empreendimento.DormitoriosTotal = empreendimento.Unidades.Min(u => u.Dormitorios);
-            empreendimento.SuitesTotal = empreendimento.Unidades.Min(u => u.Suites);
             empreendimento.AreaConstruida = empreendimento.Unidades.Min(u => u.AreaConstruida);
 
             await _empreendimentoRepo.Atualizar(empreendimento);

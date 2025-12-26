@@ -39,14 +39,20 @@ namespace Imobi.Data.Context
                 if (entry.State == EntityState.Added)
                 {
                     if (entry.Entity.Id == Guid.Empty)
-                    {
                         entry.Entity.Id = Guid.NewGuid();
-                    }
+
+                    if (entry.Entity.CriadoEm == default)
+                        entry.Entity.CriadoEm = DateTime.UtcNow;
+
+                }
+
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Property(x => x.CriadoEm).IsModified = false;
                 }
             }
 
             return base.SaveChangesAsync(cancellationToken);
         }
-
     }
 }

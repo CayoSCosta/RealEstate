@@ -52,10 +52,6 @@ public class UnidadeService : IUnidadeService
 
         if (emp == null || !unidades.Any()) return;
 
-        emp.BanheirosTotal = unidades.Min(u => u.Banheiros);
-        emp.VagasTotal = unidades.Min(u => u.Vagas);
-        emp.DormitoriosTotal = unidades.Min(u => u.Dormitorios);
-        emp.SuitesTotal = unidades.Min(u => u.Suites);
 
         await _empreendimentoRepo.Atualizar(emp);
     }

@@ -8,7 +8,6 @@ namespace Imobi.Domain.Models
 {
     public class Unidade : Entity
     {
-        public bool Status { get; set; }
         public string? Tipo { get; set; }
         public int Dormitorios { get; set; }
         public int Suites { get; set; }

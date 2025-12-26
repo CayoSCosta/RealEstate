@@ -25,6 +25,7 @@
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">@Html.DisplayNameFor(model => model.Nome)  </th>
+                            <th>Status  </th>
                             <th>Localização (Bairro)  </th>
                             <th>Endereço Completo  </th>
                             <th>@Html.DisplayNameFor(model => model.Estagio)  </th>
@@ -39,6 +40,9 @@
                                 <tr>
                                     <td class="ps-4 fw-bold text-primary">
                                         @Html.DisplayFor(modelItem => item.Nome)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Status)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Endereco.Bairro)
