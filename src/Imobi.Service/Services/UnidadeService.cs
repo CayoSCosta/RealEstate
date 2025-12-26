@@ -1,5 +1,6 @@
 ﻿using Imobi.Domain.Interfaces;
 using Imobi.Domain.Models;
+using Imobi.Domain.Models.Util;
 using Microsoft.AspNetCore.Http;
 
 namespace Imobi.Application.Services;
@@ -18,6 +19,11 @@ public class UnidadeService : IUnidadeService
     public async Task<IEnumerable<Unidade>> ObterTodos()
     {
         return await _unidadeRepo.ObterTodos();
+    }
+
+    public async Task<PagedResult<Unidade>> ObterPaginado(SearchParametersDomain parameters)
+    {
+        return await _unidadeRepo.ObterPaginado(parameters);
     }
 
     public async Task<Unidade?> ObterPorId(Guid id)

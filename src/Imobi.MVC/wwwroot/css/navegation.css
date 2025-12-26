@@ -1,0 +1,110 @@
+﻿
+.main-container {
+    background-color: #f4f7f6;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.table-modern {
+    border-collapse: separate;
+    border-spacing: 0 12px;
+    width: 100%;
+}
+
+    .table-modern thead th {
+        border: none;
+        color: #adb5bd;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        padding: 10px 20px;
+        vertical-align: middle;
+    }
+
+    .table-modern tbody tr {
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .table-modern tbody tr:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+        }
+
+    .table-modern td {
+        padding: 20px;
+        border: none !important;
+    }
+
+        .table-modern td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .table-modern td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+.badge-soft-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 50px;
+}
+
+.badge-soft-secondary {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 50px;
+}
+
+.badge-soft-primary {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 50px;
+}
+
+
+.filter-input-modern {
+    background-color: #f8f9fa;
+    border: 1px solid #eef0f2;
+    border-radius: 8px;
+    color: #495057;
+    font-size: 0.8rem;
+    padding: 8px 10px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+    .filter-input-modern:focus {
+        background-color: #fff;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        outline: none;
+    }
+
+.date-range-container {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+    .date-range-container .filter-input-modern {
+        flex: 1;
+        padding: 6px 4px;
+        font-size: 0.75rem;
+        text-align: center;
+    }
+
+select.filter-input-modern {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    background-size: 10px;
+}

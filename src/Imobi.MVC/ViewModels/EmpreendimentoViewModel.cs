@@ -17,6 +17,9 @@ namespace Imobi.MVC.ViewModels
         [Display(Name = "Sobre o Empreendimento")]
         public string Sobre { get; set; } = string.Empty;
 
+        [Display(Name = "Registro")]
+        public DateTime CriadoEm { get; set; }
+
         [Display(Name = "Estágio da Obra")]
         public EstagioObraEnum Estagio { get; set; }
 

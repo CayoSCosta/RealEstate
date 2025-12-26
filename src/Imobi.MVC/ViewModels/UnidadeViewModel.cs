@@ -37,6 +37,9 @@ namespace Imobi.MVC.ViewModels
         [Display(Name = "Valor de Venda")]
         public decimal? Valor { get; set; }
 
+        [Display(Name = "Registro")]
+        public DateTime CriadoEm { get; set; }
+
         [Required]
         public Guid EmpreendimentoId { get; set; }
 

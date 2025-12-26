@@ -1,0 +1,45 @@
+﻿@using Imobi.MVC.ViewModels.Util
+@model dynamic
+
+@{
+    var hasPrevious = Model.HasPreviousPage;
+    var hasNext = Model.HasNextPage;
+    var totalPages = Model.TotalPages;
+    var currentPage = Model.PageNumber;
+}
+
+<div class="d-flex justify-content-between align-items-center mt-3 px-4 pb-3">
+    <div class="text-muted small">
+        Mostrando página <strong>@currentPage</strong> de <strong>@totalPages</strong>
+        (Total de <strong>@Model.TotalCount</strong> registros)
+    </div>
+    <nav aria-label="Navegação de página">
+        <ul class="pagination pagination-sm mb-0">
+            <li class="page-item @(hasPrevious ? "" : "disabled")">
+                <a class="page-item-link page-link" href="javascript:void(0)" data-page="@(currentPage - 1)">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                if (i == 1 || i == totalPages || (i >= currentPage - 2 && i <= currentPage + 2))
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-item-link page-link" href="javascript:void(0)" data-page="@i">@i</a>
+                    </li>
+                }
+                else if (i == currentPage - 3 || i == currentPage + 3)
+                {
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                }
+            }
+
+            <li class="page-item @(hasNext ? "" : "disabled")">
+                <a class="page-item-link page-link" href="javascript:void(0)" data-page="@(currentPage + 1)">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>

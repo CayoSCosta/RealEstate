@@ -1,4 +1,5 @@
 ﻿using Imobi.Domain.Models;
+using Imobi.Domain.Models.Util;
 using Microsoft.AspNetCore.Http;
 
 namespace Imobi.Domain.Interfaces
@@ -8,6 +9,7 @@ namespace Imobi.Domain.Interfaces
         Task Adicionar(Empreendimento empreendimento, List<Imagem> imagensDoForm);
         Task Atualizar(Empreendimento empreendimento, List<Imagem> imagensDoForm);
         Task<Empreendimento?> ObterComDetalhes(Guid id);
+        Task<PagedResult<Empreendimento>> ObterPaginado(SearchParametersDomain parameters);
         Task<Empreendimento?> ObterPorId(Guid id);
         Task<IEnumerable<Empreendimento>> ObterTodos();
         Task Remover(Guid id);

@@ -1,165 +1,166 @@
-﻿@using Imobi.MVC.Models.Components
+﻿@using Imobi.MVC.ViewModels.Util
 @using Imobi.Domain.Enum
-@using Imobi.MVC.ViewModels
-@model Imobi.MVC.ViewModels.UnidadeViewModel
+@model PagedResultViewModel<Imobi.MVC.ViewModels.UnidadeViewModel>
 
 @{
-    var isEdicao = Model.Id != Guid.Empty;
-    ViewData["Title"] = isEdicao ? "Editar Unidade" : "Nova Unidade";
+    ViewData["Title"] = "Gestão de Unidades";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-    var listaOpcoes = Html.GetEnumSelectList<TipoImagemEmpreendimentoEnum>();
-    var opcoesEnumHtml = "";
-    foreach (var item in listaOpcoes)
-    {
-        opcoesEnumHtml += $"<option value='{item.Value}'>{item.Text}</option>";
-    }
 }
 
 @await Html.PartialAsync("_Loader")
 
-<div class="py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="text-dark fw-bold">@ViewData["Title"]</h3>
-            @if (Model.Empreendimento != null)
-            {
-                <div class="d-flex align-items-center gap-2 mt-1">
-                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3">
-                        <i class="bi bi-building me-1"></i> @Model.Empreendimento.Nome
-                    </span>
-                </div>
-            }
+<div class="main-container">
+    <div class="container-fluid">
+        @* Cabeçalho de Ações *@
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Unidades</h2>
+                <p class="text-muted mb-0">Gerencie o estoque de unidades e disponibilidades.</p>
+            </div>
+            <a asp-action="Create" class="btn btn-dark px-4 py-2 shadow-sm d-flex align-items-center" style="border-radius: 10px;">
+                <i class="bi bi-plus-lg me-2"></i> Nova Unidade
+            </a>
         </div>
 
-        <div class="d-flex gap-2">
-            @if (Model.EmpreendimentoId != Guid.Empty)
-            {
-                <a asp-controller="Empreendimento" asp-action="Details" asp-route-id="@Model.EmpreendimentoId" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-arrow-left me-1"></i> Voltar ao Empreendimento
-                </a>
-            }
-            else
-            {
-                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Voltar para a Lista</a>
-            }
-        </div>
+        <form id="filterForm" method="get" asp-action="Index">
+            <input type="hidden" name="PageNumber" id="pageNumber" value="@Model.PageNumber" />
+            <input type="hidden" name="SortBy" id="sortBy" value="@ViewBag.CurrentSort" />
+
+            <div class="table-responsive">
+                <table class="table table-modern align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%">Status</th>
+                            <th style="width: 15%">Tipo</th>
+                            <th style="width: 10%">Vagas</th>
+                            <th style="width: 15%">Área (m²)</th>
+                            <th style="width: 15%">Valor</th>
+                            <th style="width: 20%">Empreendimento</th>
+                            <th style="width: 15%">Registro</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                        <tr class="filter-row">
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                Index = 0, PropertyName = "Status", Label = "Status",
+                                                                Type = typeof(bool), Operator = FilterOperator.Equals
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 1, PropertyName = "Tipo", Label = "Tipo",
+                                                                Type = typeof(string), Operator = FilterOperator.Contains
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 2, PropertyName = "Vagas", Label = "Mín",
+                                                                Type = typeof(int), Operator = FilterOperator.GreaterThan
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 3, PropertyName = "AreaConstruida", Label = "Min m²",
+                                                                Type = typeof(decimal), Operator = FilterOperator.GreaterThan
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 4, PropertyName = "Valor", Label = "Min R$",
+                                                                Type = typeof(decimal), Operator = FilterOperator.GreaterThan
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 5, PropertyName = "Empreendimento.Nome", Label = "Projeto",
+                                                                Type = typeof(string), Operator = FilterOperator.Contains
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 6, PropertyName = "CriadoEm", Label = "Data",
+                                                                Type = typeof(DateTime), Operator = FilterOperator.Between
+                                                                })
+                            </th>
+                            <th class="text-center">
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                    <a asp-action="Index" class="btn btn-light btn-sm rounded-pill border" id="btnReset">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    </a>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge @(item.Status ? "badge-soft-success" : "badge-soft-secondary") rounded-pill">
+                                            @(item.Status ? "Disponível" : "Vendido")
+                                        </span>
+                                    </td>
+                                    <td class="text-dark fw-medium">@item.Tipo</td>
+                                    <td><i class="bi bi-car-front me-1 text-muted"></i> @item.Vagas</td>
+                                    <td>@item.AreaConstruida.ToString("N2") <span class="text-muted small">m²</span></td>
+                                    <td class="fw-bold text-primary">@item.Valor?.ToString("C")</td>
+                                    <td class="text-muted">@item.Empreendimento.Nome</td>
+                                    <td>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-calendar3 me-1"></i> @item.CriadoEm.ToString("dd/MM/yyyy")
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex gap-3 justify-content-center">
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="text-primary fs-5" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="text-info fs-5" title="Detalhes"><i class="bi bi-eye"></i></a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger fs-5" title="Excluir"><i class="bi bi-trash3"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    Nenhuma unidade encontrada.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </form>
+
+        @await Html.PartialAsync("_Pagination", Model)
     </div>
-
-    <form asp-action="Upsert" id="form-upsert" enctype="multipart/form-data" class="needs-validation" novalidate>
-        @Html.HiddenFor(m => m.Id)
-        @Html.HiddenFor(m => m.EmpreendimentoId)
-
-        <div class="card shadow-sm mb-4">
-            <details open>
-                <summary class="card-header bg-light fw-bold text-primary d-flex align-items-center justify-content-between" style="cursor:pointer">
-                    <span><i class="bi bi-info-circle me-2"></i> Dados da Unidade</span>
-                    <i class="bi bi-chevron-down text-muted small"></i>
-                </summary>
-                <div class="card-body row g-3">
-                    <div class="col-md-3">
-                        <label asp-for="Status" class="form-label fw-semibold d-block">Disponibilidade</label>
-                        <div class="form-check form-switch custom-switch-lg">
-                            <input class="form-check-input" type="checkbox" role="switch" asp-for="Status" id="chkStatus">
-                            <label class="form-check-label fw-bold ms-2" for="chkStatus" id="labelStatus">
-                                @(Model.Status ? "Disponível" : "Indisponível")
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="Tipo" class="form-label fw-semibold"></label>
-                        <input asp-for="Tipo" class="form-control" placeholder="Ex: Apartamento 101, Cobertura..." />
-                        <span asp-validation-for="Tipo" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label asp-for="Valor" class="form-label fw-semibold"></label>
-                        <input asp-for="Valor" class="form-control" placeholder="0,00" />
-                        <span asp-validation-for="Valor" class="text-danger"></span>
-                    </div>
-                </div>
-            </details>
-        </div>
-
-        <div class="card shadow-sm mb-4">
-            <details open>
-                <summary class="card-header bg-light fw-bold text-primary d-flex align-items-center justify-content-between" style="cursor:pointer">
-                    <span><i class="bi bi-list-check me-2"></i> Características da Unidade</span>
-                    <i class="bi bi-chevron-down text-muted small"></i>
-                </summary>
-                <div class="card-body row g-3">
-                    <div class="col-md-3">
-                        <label asp-for="AreaConstruida" class="form-label fw-semibold">Área Privativa (m²)</label>
-                        <input asp-for="AreaConstruida" class="form-control" type="number" />
-                    </div>
-                    <div class="col-md-2">
-                        <label asp-for="Dormitorios" class="form-label fw-semibold"></label>
-                        <input asp-for="Dormitorios" class="form-control" type="number" />
-                    </div>
-                    <div class="col-md-2">
-                        <label asp-for="Suites" class="form-label fw-semibold"></label>
-                        <input asp-for="Suites" class="form-control" type="number" />
-                    </div>
-                    <div class="col-md-2">
-                        <label asp-for="Banheiros" class="form-label fw-semibold"></label>
-                        <input asp-for="Banheiros" class="form-control" type="number" />
-                    </div>
-                    <div class="col-md-3">
-                        <label asp-for="Vagas" class="form-label fw-semibold"></label>
-                        <input asp-for="Vagas" class="form-control" type="number" />
-                    </div>
-                </div>
-            </details>
-        </div>
-
-        @await Html.PartialAsync("_GaleriaUpload", new GaleriaConfigViewModel {
-        Titulo = "Galeria de Fotos da Unidade",
-                ContainerId = "galeriaUnidadeContainer",
-                ModalId = "modalUnidade",
-                Imagens = Model.Imagens ?? new List<ImagemViewModel>(),
-                OpcoesTipo = listaOpcoes
-                })
-
-        <div class="d-flex justify-content-end gap-2 mt-4 pb-5">
-            <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">Cancelar</a>
-            <button type="submit" class="btn btn-success px-5 fw-bold shadow">
-                <i class="bi bi-check-lg me-1"></i> Salvar Unidade
-            </button>
-        </div>
-    </form>
 </div>
 
-@await Html.PartialAsync("_ModalImageCropper", new Imobi.MVC.Models.Components.ModalCropperOptions {
-    ModalId = "modalUnidade",
-    Title = "Recortar Foto da Unidade",
-    EnableAvatars = false
-})
-
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="~/js/components/image-cropper.js"></script>
-
-    <script type="module">
-        import { GaleriaManager } from '/js/components/galeria-manager.js';
-
+    <script>
         $(function () {
-            GaleriaManager.init({
-                containerId: 'galeriaUnidadeContainer',
-                modalId: 'modalUnidade',
-                optionsHtml: `@Html.Raw(opcoesEnumHtml)`,
-                aspectRatio: 4 / 3
+            $('#filterForm').on('submit', function() {
+                if(window.Loading) window.Loading.show("Buscando unidades...");
             });
 
-            $('#chkStatus').on('change', function() {
-                const isChecked = $(this).is(':checked');
-                $('#labelStatus').text(isChecked ? 'Disponível' : 'Indisponível')
-                                 .toggleClass('text-success', isChecked)
-                                 .toggleClass('text-danger', !isChecked);
+            $('#btnReset').on('click', function() {
+                if(window.Loading) window.Loading.show("Limpando filtros...");
+            });
+
+            $('.page-item-link').on('click', function (e) {
+                e.preventDefault();
+                var page = $(this).data('page');
+                if (page) {
+                    $('#pageNumber').val(page);
+                    $('#filterForm').submit();
+                }
             });
         });
     </script>

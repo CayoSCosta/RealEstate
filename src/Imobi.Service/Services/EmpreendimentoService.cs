@@ -1,5 +1,6 @@
 ﻿using Imobi.Domain.Interfaces;
 using Imobi.Domain.Models;
+using Imobi.Domain.Models.Util;
 
 namespace Imobi.Application.Services
 {
@@ -21,6 +22,10 @@ namespace Imobi.Application.Services
 
         public async Task<Empreendimento?> ObterComDetalhes(Guid id) => await _empreendimentoRepo.ObterComDetalhesAsync(id);
 
+        public async Task<PagedResult<Empreendimento>> ObterPaginado(SearchParametersDomain parameters)
+        {
+            return await _empreendimentoRepo.ObterPaginado(parameters, x => x.Endereco);
+        }
         public async Task Adicionar(Empreendimento empreendimento, List<Imagem> imagensDoForm)
         {
             if (imagensDoForm != null && imagensDoForm.Any())

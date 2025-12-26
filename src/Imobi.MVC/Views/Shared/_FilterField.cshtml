@@ -1,0 +1,38 @@
+﻿@using Imobi.MVC.ViewModels.Util
+@model FilterFieldConfig
+
+<input type="hidden" name="Filters[@Model.Index].PropertyName" value="@Model.PropertyName" />
+<input type="hidden" name="Filters[@Model.Index].Operator" value="@Model.Operator" />
+
+@if (Model.Type == typeof(DateTime))
+{
+    <div class="d-flex gap-1">
+        <input type="date" name="Filters[@Model.Index].Value" class="filter-input-modern" />
+        @if (Model.Operator == FilterOperator.Between)
+        {
+            <input type="date" name="Filters[@Model.Index].ValueTo" class="filter-input-modern" />
+        }
+    </div>
+}
+else if (Model.Type.IsEnum || Model.Type == typeof(bool))
+{
+    <select name="Filters[@Model.Index].Value" class="filter-input-modern form-select-sm">
+        <option value="">@Model.Label...</option>
+        @if (Model.Type.IsEnum)
+        {
+            @foreach (var e in Enum.GetValues(Model.Type))
+            {
+                <option value="@((int)e)">@e.ToString()</option>
+            }
+        }
+        else
+        {
+            <option value="true">Ativo</option>
+            <option value="false">Inativo</option>
+        }
+    </select>
+}
+else
+{
+    <input type="text" name="Filters[@Model.Index].Value" class="filter-input-modern" placeholder="@Model.Label..." />
+}

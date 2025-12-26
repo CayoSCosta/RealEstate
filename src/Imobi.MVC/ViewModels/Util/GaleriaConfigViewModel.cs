@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Imobi.MVC.ViewModels
+namespace Imobi.MVC.ViewModels.Util
 {
     public class GaleriaConfigViewModel
     {

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Imobi.Domain.Enum;
 using Imobi.Domain.Models;
+using Imobi.Domain.Models.Util;
 using Imobi.MVC.ViewModels;
+using Imobi.MVC.ViewModels.Util;
 
 namespace Imobi.MVC.Config
 {
@@ -9,19 +11,17 @@ namespace Imobi.MVC.Config
     {
         public AutoMapperConfig()
         {
+            // --- ENTIDADES BÁSICAS ---
             CreateMap<Empreendimento, EmpreendimentoViewModel>().ReverseMap();
-
             CreateMap<Endereco, EnderecoViewModel>().ReverseMap();
-
             CreateMap<Arquivo, ArquivoViewModel>().ReverseMap();
 
-            CreateMap<Unidade, UnidadeViewModel>().ReverseMap();
+            // --- UNIDADES ---
             CreateMap<Unidade, UnidadeViewModel>()
-                    .ForMember(dest => dest.Empreendimento, opt => opt.MapFrom(src => src.Empreendimento))
-                    .ReverseMap();
+                .ForMember(dest => dest.Empreendimento, opt => opt.MapFrom(src => src.Empreendimento))
+                .ReverseMap();
 
-
-            CreateMap<ImagemViewModel, Imagem>();
+            // --- IMAGENS ---
             CreateMap<Imagem, ImagemViewModel>()
                 .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src =>
                     string.IsNullOrEmpty(src.Tipo) || src.Tipo == "Galeria"
@@ -29,6 +29,16 @@ namespace Imobi.MVC.Config
                         : Enum.Parse<TipoImagemEmpreendimentoEnum>(src.Tipo)))
                 .ReverseMap()
                 .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => src.Tipo.ToString()));
+
+            // --- FILTROS E BUSCA (Resolvendo Ambiguidades) ---
+            CreateMap<Imobi.MVC.ViewModels.Util.FilterOperator, Imobi.Domain.Models.Util.FilterOperator>();
+
+            CreateMap<FilterItem, FilterItemDomain>();
+
+            CreateMap<QueryParameters, SearchParametersDomain>();
+
+            // --- PAGINAÇÃO GENÉRICA ---
+            CreateMap(typeof(PagedResult<>), typeof(PagedResultViewModel<>));
         }
     }
 }

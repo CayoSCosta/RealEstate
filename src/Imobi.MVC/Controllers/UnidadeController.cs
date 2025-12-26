@@ -2,7 +2,9 @@
 using Imobi.Application.Services;
 using Imobi.Domain.Interfaces;
 using Imobi.Domain.Models;
+using Imobi.Domain.Models.Util;
 using Imobi.MVC.ViewModels;
+using Imobi.MVC.ViewModels.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,10 +29,19 @@ namespace Imobi.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(QueryParameters query)
         {
-            var unidades = await _unidadeService.ObterTodos();
-            var viewModel = _mapper.Map<IEnumerable<UnidadeViewModel>>(unidades);
+            var searchParams = _mapper.Map<SearchParametersDomain>(query);
+            var pagedResultDomain = await _unidadeService.ObterPaginado(searchParams);
+
+            var viewModel = new PagedResultViewModel<UnidadeViewModel>
+            {
+                Items = _mapper.Map<IEnumerable<UnidadeViewModel>>(pagedResultDomain.Items),
+                TotalCount = pagedResultDomain.TotalCount,
+                PageNumber = pagedResultDomain.PageNumber,
+                PageSize = pagedResultDomain.PageSize
+            };
+
             return View(viewModel);
         }
 

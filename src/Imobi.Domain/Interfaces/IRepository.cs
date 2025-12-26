@@ -1,4 +1,5 @@
 ﻿using Imobi.Domain.Models;
+using Imobi.Domain.Models.Util;
 using System.Linq.Expressions;
 
 namespace Imobi.Domain.Interfaces
@@ -12,5 +13,7 @@ namespace Imobi.Domain.Interfaces
         Task<TEntity?> ObterPorId(Guid id);
         Task<List<TEntity>> ObterTodos();
         Task<int> SaveChanges();
+        Task<PagedResult<TEntity>> ObterPaginado(SearchParametersDomain parameters, params Expression<Func<TEntity, object>>[] includes);
     }
 }
+

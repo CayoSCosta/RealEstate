@@ -1,67 +1,159 @@
-﻿@using Imobi.MVC.ViewModels
-@model IEnumerable<UnidadeViewModel>
+﻿@using Imobi.MVC.ViewModels.Util
+@using Imobi.Domain.Enum
+@model PagedResultViewModel<Imobi.MVC.ViewModels.UnidadeViewModel>
 
 @{
-    ViewData["Title"] = "Unidades";
+    ViewData["Title"] = "Gestão de Unidades";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @await Html.PartialAsync("_Loader")
 
-@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"> *@
+<div class="main-container">
+    <div class="container-fluid">
+        @* Cabeçalho *@
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Unidades</h2>
+                <p class="text-muted mb-0">Gestão de estoque e disponibilidade de imóveis.</p>
+            </div>
+            <a asp-action="Create" class="btn btn-dark px-4 py-2 shadow-sm d-flex align-items-center" style="border-radius: 10px;">
+                <i class="bi bi-plus-lg me-2"></i> Nova Unidade
+            </a>
+        </div>
 
-<h3 class="mb-4">Unidades</h3>
+        <form id="filterForm" method="get" asp-action="Index">
+            <input type="hidden" name="PageNumber" id="pageNumber" value="@Model.PageNumber" />
+            <input type="hidden" name="SortBy" id="sortBy" value="@ViewBag.CurrentSort" />
 
-<p>
-    <a asp-action="Create" class="btn btn-success">Novo</a>
-</p>
+            <div class="table-responsive">
+                <table class="table table-modern align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%">Status</th>
+                            <th style="width: 15%">Tipo</th>
+                            <th style="width: 10%">Vagas</th>
+                            <th style="width: 15%">Área (m²)</th>
+                            <th style="width: 15%">Valor</th>
+                            <th style="width: 20%">Empreendimento</th>
+                            <th style="width: 15%">Registro</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                        @* Linha de Filtros Dinâmicos *@
+                        <tr class="filter-row">
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                Index = 0, PropertyName = "Status", Label = "Status",
+                                                                Type = typeof(bool), Operator = FilterOperator.Equals
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 1, PropertyName = "Tipo", Label = "Tipo",
+                                                                Type = typeof(string), Operator = FilterOperator.Contains
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 2, PropertyName = "Vagas", Label = "Mín",
+                                                                Type = typeof(int), Operator = FilterOperator.GreaterThan
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 3, PropertyName = "AreaConstruida", Label = "Min m²",
+                                                                Type = typeof(decimal), Operator = FilterOperator.GreaterThan
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 4, PropertyName = "Valor", Label = "Min R$",
+                                                                Type = typeof(decimal), Operator = FilterOperator.GreaterThan
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 5, PropertyName = "Empreendimento.Nome", Label = "Projeto",
+                                                                Type = typeof(string), Operator = FilterOperator.Contains
+                                                                })
+                            </th>
+                            <th>
+                                @await Html.PartialAsync("_FilterField", new FilterFieldConfig {
+                                                                Index = 6, PropertyName = "CriadoEm", Label = "Data",
+                                                                Type = typeof(DateTime), Operator = FilterOperator.Between
+                                                                })
+                            </th>
+                            <th class="text-center">
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                    <a asp-action="Index" class="btn btn-light btn-sm rounded-pill border" id="btnReset">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    </a>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge @(item.Status ? "badge-soft-success" : "badge-soft-secondary") rounded-pill">
+                                            @(item.Status ? "Disponível" : "Vendido")
+                                        </span>
+                                    </td>
+                                    <td class="text-dark fw-medium">@item.Tipo</td>
+                                    <td><i class="bi bi-car-front me-1 text-muted"></i> @item.Vagas</td>
+                                    <td>@item.AreaConstruida.ToString("N2") <span class="text-muted small">m²</span></td>
+                                    <td class="fw-bold text-primary">@item.Valor?.ToString("C")</td>
+                                    <td class="text-muted">@(item.Empreendimento?.Nome ?? "N/A")</td>
+                                    <td>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-calendar3 me-1"></i> @item.CriadoEm.ToString("dd/MM/yyyy")
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex gap-3 justify-content-center">
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="text-primary fs-5"><i class="bi bi-pencil-square"></i></a>
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="text-info fs-5"><i class="bi bi-eye"></i></a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger fs-5"><i class="bi bi-trash3"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </form>
 
-<table class="table table-hover shadow-sm">
-    <thead class="table-light">
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Status)</th>
-            <th>@Html.DisplayNameFor(model => model.Tipo)</th>
-            <th>@Html.DisplayNameFor(model => model.Dormitorios)</th>
-            <th>@Html.DisplayNameFor(model => model.Suites)</th>
-            <th>@Html.DisplayNameFor(model => model.Banheiros)</th>
-            <th>@Html.DisplayNameFor(model => model.Vagas)</th>
-            <th>@Html.DisplayNameFor(model => model.AreaConstruida)</th>
-            <th>@Html.DisplayNameFor(model => model.Valor)</th>
-            <th>@Html.DisplayNameFor(model => model.Empreendimento.Nome)</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" disabled @(item.Status ? "checked" : "") />
-                    </div>
-                </td>
-                <td>@Html.DisplayFor(modelItem => item.Tipo)</td>
-                <td>@Html.DisplayFor(modelItem => item.Dormitorios)</td>
-                <td>@Html.DisplayFor(modelItem => item.Suites)</td>
-                <td>@Html.DisplayFor(modelItem => item.Banheiros)</td>
-                <td>@Html.DisplayFor(modelItem => item.Vagas)</td>
-                <td>@item.AreaConstruida.ToString("N2")</td>
-                <td>@item.Valor?.ToString("C")</td>
-                <td>@Html.DisplayFor(modelItem => item.Empreendimento.Nome)</td>
-                <td>
-                    <div class="d-flex gap-1">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Editar">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Detalhes">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Excluir">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        @await Html.PartialAsync("_Pagination", Model)
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#filterForm').on('submit', function() {
+                if(window.Loading) window.Loading.show("Buscando unidades...");
+            });
+
+            $('#btnReset').on('click', function() {
+                if(window.Loading) window.Loading.show("Limpando filtros...");
+            });
+
+            $('.page-item-link').on('click', function (e) {
+                e.preventDefault();
+                var page = $(this).data('page');
+                if (page) {
+                    $('#pageNumber').val(page);
+                    $('#filterForm').submit();
+                }
+            });
+        });
+    </script>
+}

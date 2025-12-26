@@ -1,6 +1,8 @@
 ﻿using Imobi.Data.Context;
 using Imobi.Domain.Interfaces;
 using Imobi.Domain.Models;
+using Imobi.Domain.Models.Util;
+using Imobi.Infra.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -15,6 +17,38 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
     {
         Db = db;
         DbSet = db.Set<TEntity>();
+    }
+
+    public virtual async Task<PagedResult<TEntity>> ObterPaginado(
+        SearchParametersDomain parameters,
+        params Expression<Func<TEntity, object>>[] includes)
+    {
+        IQueryable<TEntity> query = DbSet.AsNoTracking();
+
+        if (includes != null)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+
+        query = query.ApplyFilters(parameters);
+
+        var totalItems = await query.CountAsync();
+
+        var items = await query
+            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<TEntity>
+        {
+            Items = items,
+            TotalCount = totalItems,
+            PageNumber = parameters.PageNumber,
+            PageSize = parameters.PageSize
+        };
     }
 
     public virtual async Task<TEntity?> ObterPorId(Guid id)
