@@ -22,10 +22,6 @@ namespace Imobi.Data.Mappings
 
             builder.Property(e => e.AreaConstruida);
 
-            builder.Property(e => e.BanheirosTotal);
-            builder.Property(e => e.DormitoriosTotal);
-            builder.Property(e => e.SuitesTotal);
-            builder.Property(e => e.VagasTotal);
 
             builder.Property(e => e.Estagio)
                 .HasMaxLength(100);

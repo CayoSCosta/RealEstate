@@ -1,142 +1,62 @@
-﻿@model Imobi.MVC.ViewModels.EmpreendimentoViewModel
+﻿@model Imobi.MVC.ViewModels.UnidadeViewModel
 
 @{
-    ViewData["Title"] = "Excluir Empreendimento";
+    ViewData["Title"] = "Excluir Unidade";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@await Html.PartialAsync("_Loader")
-
-<style>
-    summary::marker {
-        color: #dc3545;
-    }
-</style>
-
 <div class="py-4">
-    <h3 class="mb-4 text-danger">
-        <i class="bi bi-trash"></i> Excluir Empreendimento
-    </h3>
-
-    <div class="alert alert-warning shadow-sm">
-        <strong>Atenção!</strong> Esta ação é irreversível.
-        Tem certeza de que deseja excluir este empreendimento?
+    <div class="alert alert-danger shadow-sm">
+        <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>Atenção!</h4>
+        <p>Você está prestes a excluir a unidade <strong>@Model.Tipo</strong> do empreendimento <strong>@(Model.Empreendimento?.Nome)</strong>.</p>
+        <hr>
+        <p class="mb-0">Esta ação não pode ser desfeita e removerá também as fotos vinculadas.</p>
     </div>
 
     <div class="card shadow-sm mb-4 border-danger">
-        <details open>
-            <summary class="card-header bg-light d-flex justify-content-between align-items-center">
-                <span class="summary-title flex-grow-1" style="color: #dc3545;">Sobre o Empreendimento</span>
-            </summary>
-            <div class="card-body row g-3">
-                <div class="col-md-6">
-                    <strong>Nome:</strong>
-                    <p class="form-control-plaintext">@Model.Nome</p>
-                </div>
-                <div class="col-md-6">
-                    <strong>Status:</strong>
-                    <div class="form-check mt-1">
-                        <input class="form-check-input" type="checkbox" disabled @(Model.Status ? "checked" : "") />
-                        <label class="form-check-label">Ativo</label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <strong>Estágio:</strong>
-                    <p class="form-control-plaintext">@Model.Estagio</p>
-                </div>
-                <div class="col-md-4">
-                    <strong>Área Construída:</strong>
-                    <p class="form-control-plaintext">@Model.AreaConstruida m²</p>
-                </div>
-                <div class="col-md-4">
-                    <strong>Vagas:</strong>
-                    <p class="form-control-plaintext">@Model.VagasTotal</p>
-                </div>
-                <div class="col-md-4">
-                    <strong>Banheiros:</strong>
-                    <p class="form-control-plaintext">@Model.BanheirosTotal</p>
-                </div>
-                <div class="col-md-4">
-                    <strong>Dormitórios:</strong>
-                    <p class="form-control-plaintext">@Model.DormitoriosTotal</p>
-                </div>
-                <div class="col-md-4">
-                    <strong>Suítes:</strong>
-                    <p class="form-control-plaintext">@Model.SuitesTotal</p>
-                </div>
-                <div class="col-12">
-                    <strong>Descrição:</strong>
-                    <p class="form-control-plaintext">@Model.Sobre</p>
-                </div>
-            </div>
-        </details>
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Dados da Unidade</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Tipo</dt>
+                <dd class="col-sm-9">@Model.Tipo</dd>
+
+                <dt class="col-sm-3">Área</dt>
+                <dd class="col-sm-9">@Model.AreaConstruida m²</dd>
+
+                <dt class="col-sm-3">Valor</dt>
+                <dd class="col-sm-9">@Model.Valor?.ToString("C")</dd>
+            </dl>
+        </div>
     </div>
 
-    <div class="card shadow-sm mb-4 border-danger">
-        <details open>
-            <summary class="card-header bg-light d-flex justify-content-between align-items-center">
-                <span class="summary-title flex-grow-1" style="color: #dc3545;">Endereço</span>
-            </summary>
-            <div class="card-body row g-3">
-                <div class="col-md-3">
-                    <strong>CEP:</strong>
-                    <p class="form-control-plaintext">@Model.Endereco?.Cep</p>
-                </div>
-                <div class="col-md-5">
-                    <strong>Logradouro:</strong>
-                    <p class="form-control-plaintext">@Model.Endereco?.Logradouro</p>
-                </div>
-                <div class="col-md-2">
-                    <strong>Número:</strong>
-                    <p class="form-control-plaintext">@Model.Endereco?.Numero</p>
-                </div>
-                <div class="col-md-2">
-                    <strong>Bairro:</strong>
-                    <p class="form-control-plaintext">@Model.Endereco?.Bairro</p>
-                </div>
-                <div class="col-md-6">
-                    <strong>Cidade:</strong>
-                    <p class="form-control-plaintext">@Model.Endereco?.Cidade</p>
-                </div>
-                <div class="col-md-2">
-                    <strong>UF:</strong>
-                    <p class="form-control-plaintext">@Model.Endereco?.Uf</p>
-                </div>
-            </div>
-        </details>
-    </div>
-
-    @if (Model.Arquivos != null && Model.Arquivos.Any())
+    @if (Model.Imagens != null && Model.Imagens.Any())
     {
-        <div class="card shadow-sm mb-4 border-danger">
-            <details open>
-                <summary class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <span class="summary-title flex-grow-1" style="color: #dc3545;">Imagens</span>
-                </summary>
-                <div class="card-body">
-                    <div class="horizontal-carousel d-flex overflow-auto py-2">
-                        @foreach (var arquivo in Model.Arquivos)
-                        {
-                            <div class="card shadow-sm me-3" style="min-width: 180px;">
-                                <div class="card-img-wrapper" style="height: 120px; overflow: hidden;">
-                                    <img src="@Url.Content("~/" + arquivo.Caminho)" class="card-img-top" alt="@arquivo.Tipo" style="object-fit: cover; height: 100%; width: 100%;" />
-                                </div>
-                            </div>
-                        }
-                    </div>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h6 class="mb-0 text-muted">Imagens que serão excluídas</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex overflow-auto gap-3 pb-2">
+                    @foreach (var img in Model.Imagens)
+                    {
+                        <div style="min-width: 150px; width: 150px;">
+                            <img src="@img.Base64" class="rounded shadow-sm border" style="width: 100%; height: 100px; object-fit: cover;" />
+                        </div>
+                    }
                 </div>
-            </details>
+            </div>
         </div>
     }
 
-    <form asp-action="Delete" id="form-delete" class="mt-4">
+    <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
+
         <div class="d-flex justify-content-end gap-2">
-            <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                <i class="bi bi-x-circle"></i> Cancelar
-            </a>
-            <button type="submit" class="btn btn-danger px-4">
-                <i class="bi bi-trash"></i> Excluir
+            <a asp-controller="Empreendimento" asp-action="Details" asp-route-id="@Model.EmpreendimentoId" class="btn btn-outline-secondary px-4">Cancelar</a>
+            <button type="submit" class="btn btn-danger px-4 fw-bold">
+                <i class="bi bi-trash-fill me-1"></i> Confirmar Exclusão
             </button>
         </div>
     </form>

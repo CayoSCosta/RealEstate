@@ -6,189 +6,180 @@ using Imobi.MVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Imobi.Controllers;
-
-[Authorize]
-public class UnidadeController : Controller
+namespace Imobi.Controllers
 {
-    private readonly IUnidadeService _unidadeService;
-    private readonly IEmpreendimentoService _empreendimentoService;
-    private readonly IMapper _mapper;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly ILogger<UnidadeController> _logger;
-
-    public UnidadeController(IUnidadeService unidadeService,
-                             IEmpreendimentoService empreendimentoService,
-                             IMapper mapper,
-                             IWebHostEnvironment webHostEnvironment,
-                             ILogger<UnidadeController> logger)
+    [Authorize]
+    public class UnidadeController : Controller
     {
-        _unidadeService = unidadeService;
-        _empreendimentoService = empreendimentoService;
-        _mapper = mapper;
-        _webHostEnvironment = webHostEnvironment;
-        _logger = logger;
-    }
+        private readonly IUnidadeService _unidadeService;
+        private readonly IEmpreendimentoService _empreendimentoService;
+        private readonly IMapper _mapper;
+        private readonly ILogger<UnidadeController> _logger;
 
-    // GET: Unidade
-    public async Task<IActionResult> Index()
-    {
-        var unidades = await _unidadeService.ObterTodos();
-        var viewModel = _mapper.Map<IEnumerable<UnidadeViewModel>>(unidades);
-        return View(viewModel);
-    }
-
-    // GET: Unidade/Details/5
-    public async Task<IActionResult> Details(Guid id)
-    {
-        var unidade = await _unidadeService.ObterPorId(id);
-
-        if (unidade == null)
+        public UnidadeController(IUnidadeService unidadeService,
+                                 IEmpreendimentoService empreendimentoService,
+                                 IMapper mapper,
+                                 ILogger<UnidadeController> logger)
         {
-            _logger.LogWarning($"Unidade não encontrada: {id}");
-            return NotFound();
+            _unidadeService = unidadeService;
+            _empreendimentoService = empreendimentoService;
+            _mapper = mapper;
+            _logger = logger;
         }
 
-        var viewModel = _mapper.Map<UnidadeViewModel>(unidade);
-        return View(viewModel);
-    }
-
-    // GET: Unidade/Create/{empreendimentoId}
-    [HttpGet("Unidade/Create/{empreendimentoId}")]
-    public async Task<IActionResult> Create(Guid empreendimentoId)
-    {
-        // Buscamos o empreendimento para exibir o nome na tela e garantir que existe
-        var empreendimento = await _empreendimentoService.ObterPorId(empreendimentoId);
-
-        if (empreendimento == null)
+        public async Task<IActionResult> Index()
         {
-            TempData["Erro"] = "Empreendimento não encontrado.";
-            return RedirectToAction("Index", "Empreendimento");
-        }
-
-        // Preparamos a ViewModel com o ID do pai
-        var viewModel = new UnidadeViewModel
-        {
-            EmpreendimentoId = empreendimentoId,
-            Empreendimento = _mapper.Map<EmpreendimentoViewModel>(empreendimento)
-
-        };
-
-        return View(viewModel);
-    }
-
-    // POST: Unidade/Create
-    [HttpPost("Unidade/Create/{empreendimentoId}")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(UnidadeViewModel viewModel)
-    {
-        if (!ModelState.IsValid) return View(viewModel);
-
-        try
-        {
-            var unidade = _mapper.Map<Unidade>(viewModel);
-
-            // O Service cuida de: Salvar Unidade, Upload de Imagens e Recalcular características do prédio
-            await _unidadeService.Adicionar(unidade, viewModel.ImagensUpload, _webHostEnvironment.WebRootPath);
-
-            TempData["Sucesso"] = "Unidade criada com sucesso!";
-
-            // Redireciona para os detalhes do Empreendimento (fluxo mais natural)
-            return RedirectToAction("Details", "Empreendimento", new { id = viewModel.EmpreendimentoId });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Erro ao criar unidade");
-            TempData["Erro"] = "Erro ao salvar unidade.";
+            var unidades = await _unidadeService.ObterTodos();
+            var viewModel = _mapper.Map<IEnumerable<UnidadeViewModel>>(unidades);
             return View(viewModel);
         }
-    }
 
-    // GET: Unidade/Edit/5
-    public async Task<IActionResult> Edit(Guid id)
-    {
-        var unidade = await _unidadeService.ObterPorId(id);
-
-        if (unidade == null) return NotFound();
-
-        var viewModel = _mapper.Map<UnidadeViewModel>(unidade);
-
-        return View(viewModel);
-    }
-
-    // POST: Unidade/Edit/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, UnidadeViewModel viewModel)
-    {
-        if (id != viewModel.Id) return NotFound();
-
-        if (!ModelState.IsValid) return View(viewModel);
-
-        try
+        [HttpGet]
+        public async Task<IActionResult> Upsert(Guid? id, Guid? empreendimentoId)
         {
-            var unidade = _mapper.Map<Unidade>(viewModel);
+            UnidadeViewModel viewModel;
 
-            // O Service atualiza e recalcula o prédio
-            await _unidadeService.Atualizar(unidade, viewModel.ImagensUpload, _webHostEnvironment.WebRootPath);
+            if (id.HasValue && id.Value != Guid.Empty)
+            {
+                var unidade = await _unidadeService.ObterPorId(id.Value);
+                if (unidade == null) return NotFound();
 
-            TempData["Sucesso"] = "Unidade atualizada com sucesso!";
-            return RedirectToAction("Details", "Empreendimento", new { id = viewModel.EmpreendimentoId });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Erro ao editar unidade {id}");
-            TempData["Erro"] = "Erro ao atualizar unidade.";
+                viewModel = _mapper.Map<UnidadeViewModel>(unidade);
+            }
+            else
+            {
+                viewModel = new UnidadeViewModel
+                {
+                    Status = true,
+                    EmpreendimentoId = empreendimentoId ?? Guid.Empty
+                };
+
+                if (empreendimentoId.HasValue)
+                {
+                    var empreendimento = await _empreendimentoService.ObterPorId(empreendimentoId.Value);
+                    if (empreendimento != null)
+                    {
+                        viewModel.Empreendimento = _mapper.Map<EmpreendimentoViewModel>(empreendimento);
+                    }
+                }
+            }
+
             return View(viewModel);
         }
-    }
 
-    // GET: Unidade/Delete/5
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        var unidade = await _unidadeService.ObterPorId(id);
-
-        if (unidade == null) return NotFound();
-
-        var viewModel = _mapper.Map<UnidadeViewModel>(unidade);
-
-        return View(viewModel);
-    }
-
-    // POST: Unidade/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(Guid id)
-    {
-        // Precisamos do ID do empreendimento para redirecionar de volta pra lá
-        var unidade = await _unidadeService.ObterPorId(id);
-        var empId = unidade?.EmpreendimentoId;
-
-        if (unidade != null)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upsert(UnidadeViewModel viewModel)
         {
+            ModelState.Remove("Empreendimento");
+
+            if (!ModelState.IsValid) return View(viewModel);
+
+            try
+            {
+                var unidade = _mapper.Map<Unidade>(viewModel);
+
+                if (viewModel.ImagensBase64 != null && viewModel.ImagensBase64.Any())
+                {
+                    if (unidade.Imagens == null) unidade.Imagens = new List<Imagem>();
+
+                    foreach (var base64 in viewModel.ImagensBase64)
+                    {
+                        unidade.Imagens.Add(new Imagem
+                        {
+                            Base64 = base64,
+                            Tipo = "Comum",
+                            UnidadeId = unidade.Id
+                        });
+                    }
+                }
+
+                if (unidade.Id == Guid.Empty)
+                {
+
+                    await _unidadeService.Adicionar(unidade, null, "");
+                    TempData["Sucesso"] = "Unidade cadastrada com sucesso!";
+                }
+                else
+                {
+                    await _unidadeService.Atualizar(unidade, null, "");
+                    TempData["Sucesso"] = "Unidade atualizada com sucesso!";
+                }
+
+                if (unidade.EmpreendimentoId != Guid.Empty)
+                {
+                    return RedirectToAction("Details", "Empreendimento", new { id = unidade.EmpreendimentoId });
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao salvar unidade");
+                TempData["Erro"] = "Erro: " + ex.Message;
+
+                if (viewModel.EmpreendimentoId != Guid.Empty)
+                {
+                    var emp = await _empreendimentoService.ObterPorId(viewModel.EmpreendimentoId);
+                    viewModel.Empreendimento = _mapper.Map<EmpreendimentoViewModel>(emp);
+                }
+                return View(viewModel);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var unidade = await _unidadeService.ObterPorId(id);
+
+            if (unidade == null)
+            {
+                _logger.LogWarning($"Unidade não encontrada: {id}");
+                return NotFound();
+            }
+
+            var viewModel = _mapper.Map<UnidadeViewModel>(unidade);
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var unidade = await _unidadeService.ObterPorId(id);
+            if (unidade == null) return NotFound();
+            return View(_mapper.Map<UnidadeViewModel>(unidade));
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            var unidade = await _unidadeService.ObterPorId(id);
+            var empId = unidade?.EmpreendimentoId;
+
             await _unidadeService.Remover(id);
-            TempData["Sucesso"] = "Unidade removida com sucesso!";
+
+            TempData["Sucesso"] = "Unidade removida!";
+
+            if (empId != null && empId != Guid.Empty)
+                return RedirectToAction("Details", "Empreendimento", new { id = empId });
+
+            return RedirectToAction(nameof(Index));
         }
 
-        if (empId != null)
-            return RedirectToAction("Details", "Empreendimento", new { id = empId });
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    // AJAX: Remover Imagem da Unidade
-    [HttpPost]
-    public async Task<IActionResult> RemoverImagem(Guid id)
-    {
-        try
+        [HttpPost]
+        public async Task<IActionResult> RemoverImagem(Guid id)
         {
-            //await _unidadeService.RemoverImagem(id);
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Erro ao remover imagem da unidade via AJAX");
-            return BadRequest();
+            try
+            {
+                await _empreendimentoService.RemoverImagem(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao remover imagem da unidade");
+                return BadRequest();
+            }
         }
     }
 }

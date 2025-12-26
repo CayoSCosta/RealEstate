@@ -19,10 +19,10 @@
     </h3>
 
     <div class="alert alert-warning shadow-sm">
-        <strong>Atenção!</strong> Esta ação é irreversível. Tem certeza de que deseja excluir este empreendimento?
+        <strong>Atenção!</strong> Esta ação é irreversível.
+        Tem certeza de que deseja excluir este empreendimento?
     </div>
 
-    <!-- CARD: Sobre o Empreendimento -->
     <div class="card shadow-sm mb-4 border-danger">
         <details open>
             <summary class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -44,35 +44,10 @@
                     <strong>Estágio:</strong>
                     <p class="form-control-plaintext">@Model.Estagio</p>
                 </div>
-                <div class="col-md-4">
-                    <strong>Área Construída:</strong>
-                    <p class="form-control-plaintext">@Model.AreaConstruida m²</p>
-                </div>
-                <div class="col-md-4">
-                    <strong>Vagas:</strong>
-                    <p class="form-control-plaintext">@Model.VagasTotal</p>
-                </div>
-                <div class="col-md-4">
-                    <strong>Banheiros:</strong>
-                    <p class="form-control-plaintext">@Model.BanheirosTotal</p>
-                </div>
-                <div class="col-md-4">
-                    <strong>Dormitórios:</strong>
-                    <p class="form-control-plaintext">@Model.DormitoriosTotal</p>
-                </div>
-                <div class="col-md-4">
-                    <strong>Suítes:</strong>
-                    <p class="form-control-plaintext">@Model.SuitesTotal</p>
-                </div>
-                <div class="col-12">
-                    <strong>Descrição:</strong>
-                    <p class="form-control-plaintext">@Model.Sobre</p>
-                </div>
             </div>
         </details>
     </div>
 
-    <!-- CARD: Endereço -->
     <div class="card shadow-sm mb-4 border-danger">
         <details open>
             <summary class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -107,7 +82,6 @@
         </details>
     </div>
 
-    <!-- CARD: Imagens (se houver) -->
     @if (Model.Imagens != null && Model.Imagens.Any())
     {
         <div class="card shadow-sm mb-4 border-danger">
@@ -121,7 +95,6 @@
                         {
                             <div class="card shadow-sm me-3" style="min-width: 180px;">
                                 <div class="card-img-wrapper" style="height: 120px; overflow: hidden;">
-                                    @* Ajustado para ler o Base64 direto do banco *@
                                     <img src="@imagem.Base64" class="card-img-top" alt="Imagem" style="object-fit: cover; height: 100%; width: 100%;" />
                                 </div>
                             </div>
@@ -132,7 +105,34 @@
         </div>
     }
 
-    <!-- BOTÕES -->
+    @if (Model.Unidades != null && Model.Unidades.Any())
+    {
+        <div class="card shadow-sm mb-4 border-danger">
+            <details open>
+                <summary class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <span class="summary-title flex-grow-1" style="color: #dc3545;">Unidades Vinculadas (Serão Excluídas)</span>
+                </summary>
+                <div class="card-body p-0">
+                    @await Html.PartialAsync("_tabelaUnidade", Model.Unidades)
+                </div>
+            </details>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm mb-4 border-danger">
+            <details open>
+                <summary class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <span class="summary-title flex-grow-1" style="color: #dc3545;">Unidades Vinculadas</span>
+                </summary>
+                <div class="card-body text-center text-muted py-4">
+                    <i class="bi bi-info-circle fs-2 d-block mb-2"></i>
+                    Nenhuma unidade vinculada a este empreendimento.
+                </div>
+            </details>
+        </div>
+    }
+
     <form asp-action="Delete" id="form-delete" class="mt-4">
         <input type="hidden" asp-for="Id" />
         <div class="d-flex justify-content-end gap-2">

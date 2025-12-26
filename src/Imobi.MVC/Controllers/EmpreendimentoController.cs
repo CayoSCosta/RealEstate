@@ -60,6 +60,8 @@ public class EmpreendimentoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Upsert(EmpreendimentoViewModel viewModel)
     {
+        ModelState.Remove("Endereco.Id");
+
         if (!ModelState.IsValid) return View(viewModel);
 
         try
@@ -100,7 +102,7 @@ public class EmpreendimentoController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro no Upsert");
-            TempData["Erro"] = ex.Message;
+            TempData["Erro"] = "Erro ao salvar: " + ex.Message;
             return View(viewModel);
         }
     }

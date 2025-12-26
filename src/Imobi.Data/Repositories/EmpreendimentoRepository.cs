@@ -14,12 +14,21 @@ namespace Imobi.Data.Repositories
 
         public async Task<Empreendimento?> ObterComDetalhesAsync(Guid id)
         {
-            return await Db.Empreendimentos
+            var empreendimento = await Db.Empreendimentos
                 .Include(e => e.Endereco)
                 .Include(e => e.Arquivos)
                 .Include(e => e.Imagens)
                 .Include(e => e.Unidades)
                 .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (empreendimento != null && empreendimento.Imagens.Any())
+            {
+                empreendimento.Imagens = empreendimento.Imagens
+                    .OrderBy(i => i.Ordem)
+                    .ToList();
+            }
+
+            return empreendimento;
         }
 
         public async Task<IEnumerable<Empreendimento>> ObterTodos()
