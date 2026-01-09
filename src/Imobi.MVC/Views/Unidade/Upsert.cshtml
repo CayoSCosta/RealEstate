@@ -8,14 +8,7 @@
     var isEdicao = Model.Id != Guid.Empty;
     ViewData["Title"] = isEdicao ? "Editar Unidade" : "Nova Unidade";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-    // Preparação dos tipos de imagem para o componente de Galeria
     var listaOpcoes = Html.GetEnumSelectList<TipoImagemEmpreendimentoEnum>();
-    var opcoesEnumHtml = "";
-    foreach (var item in listaOpcoes)
-    {
-        opcoesEnumHtml += $"<option value='{item.Value}'>{item.Text}</option>";
-    }
 }
 
 @await Html.PartialAsync("_Loader")
@@ -33,17 +26,16 @@
                 </div>
             }
         </div>
-
         <div class="d-flex gap-2">
             @if (Model.EmpreendimentoId != Guid.Empty)
             {
                 <a asp-controller="Empreendimento" asp-action="Details" asp-route-id="@Model.EmpreendimentoId" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-arrow-left me-1"></i> Voltar ao Empreendimento
+                    <i class="bi bi-arrow-left me-1"></i> Voltar
                 </a>
             }
             else
             {
-                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Voltar para a Lista</a>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Voltar</a>
             }
         </div>
     </div>
@@ -52,7 +44,6 @@
         @Html.HiddenFor(m => m.Id)
         @Html.HiddenFor(m => m.EmpreendimentoId)
 
-        @* Informações Básicas *@
         <div class="card shadow-sm mb-4 border-0">
             <details open>
                 <summary class="card-header bg-light fw-bold text-primary d-flex align-items-center justify-content-between" style="cursor:pointer">
@@ -69,63 +60,41 @@
                             </label>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <label asp-for="Tipo" class="form-label fw-semibold"></label>
-                        <input asp-for="Tipo" class="form-control" placeholder="Ex: Apartamento 101, Cobertura..." />
-                        <span asp-validation-for="Tipo" class="text-danger"></span>
+                        <input asp-for="Tipo" class="form-control" data-validate="title" placeholder="Ex: Apartamento 101..." />
+                        <span asp-validation-for="Tipo" class="text-danger small"></span>
                     </div>
-
                     <div class="col-md-3">
                         <label asp-for="Valor" class="form-label fw-semibold"></label>
                         <div class="input-group">
                             <span class="input-group-text">R$</span>
-                            <input asp-for="Valor" class="form-control" placeholder="0,00" />
+                            <input asp-for="Valor" type="text" class="form-control" data-validate="currency" />
                         </div>
-                        <span asp-validation-for="Valor" class="text-danger"></span>
+                        <span asp-validation-for="Valor" class="text-danger small"></span>
                     </div>
                 </div>
             </details>
         </div>
 
-        @* Características Técnicas *@
         <div class="card shadow-sm mb-4 border-0">
             <details open>
                 <summary class="card-header bg-light fw-bold text-primary d-flex align-items-center justify-content-between" style="cursor:pointer">
-                    <span><i class="bi bi-list-check me-2"></i> Características da Unidade</span>
+                    <span><i class="bi bi-list-check me-2"></i> Características</span>
                     <i class="bi bi-chevron-down text-muted small"></i>
                 </summary>
                 <div class="card-body row g-3">
-                    <div class="col-md-3">
-                        <label asp-for="AreaConstruida" class="form-label fw-semibold"></label>
-                        <div class="input-group">
-                            <input asp-for="AreaConstruida" class="form-control" type="number" />
-                            <span class="input-group-text">m²</span>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <label asp-for="Dormitorios" class="form-label fw-semibold"></label>
-                        <input asp-for="Dormitorios" class="form-control" type="number" />
-                    </div>
-                    <div class="col-md-2">
-                        <label asp-for="Suites" class="form-label fw-semibold"></label>
-                        <input asp-for="Suites" class="form-control" type="number" />
-                    </div>
-                    <div class="col-md-2">
-                        <label asp-for="Banheiros" class="form-label fw-semibold"></label>
-                        <input asp-for="Banheiros" class="form-control" type="number" />
-                    </div>
-                    <div class="col-md-3">
-                        <label asp-for="Vagas" class="form-label fw-semibold"></label>
-                        <input asp-for="Vagas" class="form-control" type="number" />
-                    </div>
+                    <div class="col-md-3"><label asp-for="AreaConstruida" class="form-label fw-semibold"></label><input asp-for="AreaConstruida" class="form-control" type="text" data-validate="number" /></div>
+                    <div class="col-md-2"><label asp-for="Dormitorios" class="form-label fw-semibold"></label><input asp-for="Dormitorios" class="form-control" type="text" data-validate="number" /></div>
+                    <div class="col-md-2"><label asp-for="Suites" class="form-label fw-semibold"></label><input asp-for="Suites" class="form-control" type="text" data-validate="number" /></div>
+                    <div class="col-md-2"><label asp-for="Banheiros" class="form-label fw-semibold"></label><input asp-for="Banheiros" class="form-control" type="text" data-validate="number" /></div>
+                    <div class="col-md-3"><label asp-for="Vagas" class="form-label fw-semibold"></label><input asp-for="Vagas" class="form-control" type="text" data-validate="number" /></div>
                 </div>
             </details>
         </div>
 
-        @* Galeria de Imagens *@
         @await Html.PartialAsync("_GaleriaUpload", new GaleriaConfigViewModel {
-        Titulo = "Galeria de Fotos da Unidade",
+        Titulo = "Galeria de Fotos",
                 ContainerId = "galeriaUnidadeContainer",
                 ModalId = "modalUnidade",
                 Imagens = Model.Imagens ?? new List<ImagemViewModel>(),
@@ -133,45 +102,9 @@
                 })
 
         <div class="d-flex justify-content-end gap-2 mt-4 pb-5">
-            <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">Cancelar</a>
-            <button type="submit" class="btn btn-success px-5 fw-bold shadow">
-                <i class="bi bi-check-lg me-1"></i> Salvar Unidade
-            </button>
+            <button type="submit" class="btn btn-success px-5 fw-bold shadow">Salvar Unidade</button>
         </div>
     </form>
 </div>
 
-@await Html.PartialAsync("_ModalImageCropper", new Imobi.MVC.Models.Components.ModalCropperOptions {
-    ModalId = "modalUnidade",
-    Title = "Recortar Foto da Unidade",
-    EnableAvatars = false
-})
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="~/js/components/image-cropper.js"></script>
-
-    <script type="module">
-        import { GaleriaManager } from '/js/components/galeria-manager.js';
-
-        $(function () {
-            GaleriaManager.init({
-                containerId: 'galeriaUnidadeContainer',
-                modalId: 'modalUnidade',
-                optionsHtml: `@Html.Raw(opcoesEnumHtml)`,
-                aspectRatio: 4 / 3
-            });
-
-            $('#chkStatus').on('change', function() {
-                const isChecked = $(this).is(':checked');
-                $('#labelStatus').text(isChecked ? 'Disponível' : 'Vendido')
-                                 .toggleClass('text-success', isChecked)
-                                 .toggleClass('text-danger', !isChecked);
-            });
-        });
-    </script>
-}
+@await Html.PartialAsync("_ModalImageCropper", new ModalCropperOptions { ModalId = "modalUnidade", Title = "Recortar Foto", EnableAvatars = false })

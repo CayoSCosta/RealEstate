@@ -1,11 +1,16 @@
-﻿using Imobi.Application.Services;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Imobi.Application.Services;
 using Imobi.Data.Context;
 using Imobi.Data.Identity;
 using Imobi.Data.Repositories;
 using Imobi.Domain.Interfaces;
+using Imobi.MVC.ViewModels.Validator;
 using Imobi.Service.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
+
 
 namespace Imobi.MVC.Config
 {
@@ -46,6 +51,13 @@ namespace Imobi.MVC.Config
             services.AddScoped<IImagemRepository, ImagemRepository>();
 
             services.AddAutoMapper(typeof(AutoMapperConfig).Assembly);
+
+            //VALIDATION
+            services.AddValidatorsFromAssemblyContaining<EmpreendimentoValidator>();
+            services.AddValidatorsFromAssemblyContaining<EnderecoValidator>();
+            services.AddValidatorsFromAssemblyContaining<UnidadeValidator>();
+            services.AddFluentValidationAutoValidation();
+            services.AddFluentValidationClientsideAdapters();
 
             return services;
         }

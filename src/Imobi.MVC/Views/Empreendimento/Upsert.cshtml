@@ -1,6 +1,7 @@
 ﻿@using Imobi.MVC.Models.Components
 @using Imobi.Domain.Enum
 @using Imobi.MVC.ViewModels.Util
+@using Imobi.MVC.ViewModels.Validator.Base
 @model Imobi.MVC.ViewModels.EmpreendimentoViewModel
 
 @{
@@ -9,11 +10,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var listaOpcoes = Html.GetEnumSelectList<TipoImagemEmpreendimentoEnum>();
-    var opcoesEnumHtml = "";
-    foreach (var item in listaOpcoes)
-    {
-        opcoesEnumHtml += $"<option value='{item.Value}'>{item.Text}</option>";
-    }
 }
 
 @await Html.PartialAsync("_Loader")
@@ -29,7 +25,7 @@
         <input type="hidden" asp-for="EnderecoId" />
         <input type="hidden" asp-for="Endereco.Id" />
 
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4 border-0">
             <details open>
                 <summary class="card-header bg-light fw-bold text-primary d-flex align-items-center justify-content-between" style="cursor:pointer">
                     <span><i class="bi bi-info-circle me-2"></i> Informações do Empreendimento</span>
@@ -38,15 +34,18 @@
                 <div class="card-body row g-3">
                     <div class="col-md-9">
                         <label asp-for="Nome" class="form-label fw-semibold"></label>
-                        <input asp-for="Nome" class="form-control" />
-                        <span asp-validation-for="Nome" class="text-danger"></span>
+                        <input asp-for="Nome" class="form-control"
+                               data-validate="title"
+                               data-min="@ValidationLimits.TitleMin"
+                               data-max="@ValidationLimits.TitleMax" required />
+                        <span asp-validation-for="Nome" class="text-danger small" data-valmsg-for="Nome"></span>
                     </div>
 
                     <div class="col-md-3">
                         <label asp-for="Status" class="form-label fw-semibold d-block">Situação</label>
                         <div class="form-check form-switch custom-switch-lg">
-                            <input asp-for="Status" class="form-check-input" type="checkbox" />
-                            <label class="form-check-label fw-bold ms-2" asp-for="Status">
+                            <input asp-for="Status" class="form-check-input" type="checkbox" role="switch" id="chkStatus" />
+                            <label class="form-check-label fw-bold ms-2" for="chkStatus" id="labelStatus">
                                 @(Model.Status ? "Ativo" : "Inativo")
                             </label>
                         </div>
@@ -54,22 +53,25 @@
 
                     <div class="col-md-4">
                         <label asp-for="Estagio" class="form-label fw-semibold"></label>
-                        <select asp-for="Estagio" class="form-select" asp-items="Html.GetEnumSelectList<EstagioObraEnum>()">
+                        <select asp-for="Estagio" class="form-select" asp-items="Html.GetEnumSelectList<EstagioObraEnum>()" required>
                             <option value="">Selecione...</option>
                         </select>
-                        <span asp-validation-for="Estagio" class="text-danger"></span>
+                        <span asp-validation-for="Estagio" class="text-danger small" data-valmsg-for="Estagio"></span>
                     </div>
 
                     <div class="col-12">
                         <label asp-for="Sobre" class="form-label fw-semibold"></label>
-                        <textarea asp-for="Sobre" class="form-control" rows="3"></textarea>
+                        <textarea asp-for="Sobre" class="form-control" rows="3"
+                                  data-validate="textbox"
+                                  data-max="@ValidationLimits.TextBoxMax"></textarea>
+                        <span asp-validation-for="Sobre" class="text-danger small" data-valmsg-for="Sobre"></span>
                     </div>
                 </div>
             </details>
         </div>
 
-        <div class="card shadow-sm mb-4">
-            <details>
+        <div class="card shadow-sm mb-4 border-0">
+            <details open>
                 <summary class="card-header bg-light fw-bold text-primary d-flex align-items-center justify-content-between" style="cursor:pointer">
                     <span><i class="bi bi-geo-alt me-2"></i> Localização</span>
                     <i class="bi bi-chevron-down text-muted small"></i>
@@ -77,8 +79,8 @@
                 <div class="card-body row g-3">
                     <div class="col-md-3">
                         <label asp-for="Endereco.Cep" class="form-label fw-semibold"></label>
-                        <input asp-for="Endereco.Cep" class="form-control" id="Endereco_Cep" maxlength="9" />
-                        <span asp-validation-for="Endereco.Cep" class="text-danger"></span>
+                        <input asp-for="Endereco.Cep" class="form-control" id="Endereco_Cep" data-validate="cep" required />
+                        <span asp-validation-for="Endereco.Cep" class="text-danger small" data-valmsg-for="Endereco.Cep"></span>
                     </div>
                     <div class="col-md-6">
                         <label asp-for="Endereco.Logradouro" class="form-label fw-semibold"></label>
@@ -86,7 +88,10 @@
                     </div>
                     <div class="col-md-3">
                         <label asp-for="Endereco.Numero" class="form-label fw-semibold"></label>
-                        <input asp-for="Endereco.Numero" class="form-control" id="Endereco_Numero" />
+                        <input asp-for="Endereco.Numero" class="form-control" id="Endereco_Numero"
+                               data-validate="number"
+                               data-max="@ValidationLimits.NumberMaxDigits" required />
+                        <span asp-validation-for="Endereco.Numero" class="text-danger small" data-valmsg-for="Endereco.Numero"></span>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="Endereco.Bairro" class="form-label fw-semibold"></label>
@@ -102,7 +107,10 @@
                     </div>
                     <div class="col-12">
                         <label asp-for="Endereco.Complemento" class="form-label fw-semibold"></label>
-                        <input asp-for="Endereco.Complemento" class="form-control" />
+                        <input asp-for="Endereco.Complemento" class="form-control"
+                               data-validate="text"
+                               data-max="@ValidationLimits.TextMax" required />
+                        <span asp-validation-for="Endereco.Complemento" class="text-danger small" data-valmsg-for="Endereco.Complemento"></span>
                     </div>
                 </div>
             </details>
@@ -118,9 +126,8 @@
 
         @if (isEdicao)
         {
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm mb-4 border-0">
                 <details open>
-                    @* Adicionado atributo open para carregar sempre aberto *@
                     <summary class="card-header bg-light fw-bold text-primary d-flex align-items-center justify-content-between" style="cursor:pointer">
                         <span><i class="bi bi-houses me-2"></i> Unidades Vinculadas</span>
                         <i class="bi bi-chevron-down text-muted small"></i>
@@ -135,13 +142,6 @@
                         {
                             @await Html.PartialAsync("_tabelaUnidade", Model.Unidades)
                         }
-                        else
-                        {
-                            <div class="p-4 text-center text-muted">
-                                <i class="bi bi-info-circle fs-2 d-block mb-2"></i>
-                                Nenhuma unidade cadastrada para este empreendimento.
-                            </div>
-                        }
                     </div>
                 </details>
             </div>
@@ -154,30 +154,8 @@
     </form>
 </div>
 
-@await Html.PartialAsync("_ModalImageCropper", new Imobi.MVC.Models.Components.ModalCropperOptions {
+@await Html.PartialAsync("_ModalImageCropper", new ModalCropperOptions {
 ModalId = "modalEmpreendimento",
     Title = "Recortar Foto",
     EnableAvatars = false
 })
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="~/js/components/image-cropper.js"></script>
-
-    <script type="module">
-        import { GaleriaManager } from '/js/components/galeria-manager.js';
-
-        $(function () {
-            GaleriaManager.init({
-                containerId: 'imagensExistentesContainer',
-                modalId: 'modalEmpreendimento',
-                optionsHtml: `@Html.Raw(opcoesEnumHtml)`,
-                aspectRatio: 16 / 9
-            });
-        });
-    </script>
-}

@@ -70,12 +70,21 @@ public class EmpreendimentoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Upsert(EmpreendimentoViewModel viewModel)
     {
+        //Ajuste
         ModelState.Remove("Endereco.Id");
+        //Ajuste 
 
-        if (!ModelState.IsValid) return View(viewModel);
+        if (!ModelState.IsValid)
+        {
+            var erros = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            TempData["Erro"] = "Verifique os campos: " + string.Join(" | ", erros);
+            return View(viewModel);
+        }
 
         try
         {
+
+
             var empreendimento = _mapper.Map<Empreendimento>(viewModel);
             var isNovo = viewModel.Id == Guid.Empty;
 
