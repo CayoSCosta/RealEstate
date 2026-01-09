@@ -12,7 +12,7 @@
 <div class="main-container">
     <div class="container-fluid">
         @* Cabeçalho *@
-        <div class="d-flex justify-content-between align-items-end mb-5">
+@*         <div class="d-flex justify-content-between align-items-end mb-5">
             <div>
                 <h2 class="fw-bold text-dark mb-1">Unidades</h2>
                 <p class="text-muted mb-0">Gestão de estoque e disponibilidade de imóveis.</p>
@@ -20,7 +20,7 @@
             <a asp-action="Create" class="btn btn-dark px-4 py-2 shadow-sm d-flex align-items-center" style="border-radius: 10px;">
                 <i class="bi bi-plus-lg me-2"></i> Nova Unidade
             </a>
-        </div>
+        </div> *@
 
         <form id="filterForm" method="get" asp-action="Index">
             <input type="hidden" name="PageNumber" id="pageNumber" value="@Model.PageNumber" />

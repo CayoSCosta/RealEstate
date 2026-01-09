@@ -54,7 +54,6 @@ namespace Imobi.Controllers
             {
                 var unidade = await _unidadeService.ObterPorId(id.Value);
                 if (unidade == null) return NotFound();
-
                 viewModel = _mapper.Map<UnidadeViewModel>(unidade);
             }
             else
