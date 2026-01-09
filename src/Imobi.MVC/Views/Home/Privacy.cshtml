@@ -1,6 +1,64 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Termos de Privacidade";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <div class="bg-primary bg-opacity-10 text-primary d-inline-block p-3 rounded-circle mb-3">
+                    <i class="bi bi-shield-check fs-1"></i>
+                </div>
+                <h1 class="fw-bold">@ViewData["Title"]</h1>
+                <p class="text-muted">A sua segurança e a proteção dos seus dados imobiliários são nossa prioridade.</p>
+            </div>
+
+            <div class="accordion accordion-flush shadow-sm rounded-4 overflow-hidden" id="privacyAccordion">
+                <div class="accordion-item border-0">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button fw-bold py-4" type="button" data-bs-toggle="collapse" data-bs-target="#item1">
+                            <i class="bi bi-database-lock me-3 text-primary"></i> Como tratamos seus dados?
+                        </button>
+                    </h2>
+                    <div id="item1" class="accordion-collapse collapse show" data-bs-parent="#privacyAccordion">
+                        <div class="accordion-body text-muted lh-lg">
+                            Utilizamos seus dados exclusivamente para a gestão de leads, contratos e listagem de empreendimentos. Não compartilhamos informações confidenciais de negociação com terceiros fora do seu ambiente corporativo.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-0">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold py-4" type="button" data-bs-toggle="collapse" data-bs-target="#item2">
+                            <i class="bi bi-cloud-check me-3 text-primary"></i> Armazenamento e Segurança
+                        </button>
+                    </h2>
+                    <div id="item2" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+                        <div class="accordion-body text-muted lh-lg">
+                            Todos os registros de unidades e vendas são criptografados e armazenados em infraestrutura de alta disponibilidade, garantindo que as tabelas de preços estejam sempre acessíveis aos corretores.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-0">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold py-4" type="button" data-bs-toggle="collapse" data-bs-target="#item3">
+                            <i class="bi bi-envelope-at me-3 text-primary"></i> Contato com o DPO
+                        </button>
+                    </h2>
+                    <div id="item3" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+                        <div class="accordion-body text-muted lh-lg">
+                            Dúvidas sobre a LGPD no setor imobiliário? Entre em contato com nosso encarregado de dados através do e-mail: <span class="text-primary">suporte@imobi.com.br</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <button onclick="window.print()" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+                    <i class="bi bi-printer me-2"></i>Imprimir cópia PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,401 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Imobi Command Center";
+    var userName = "USER";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="dashboard-wrapper">
+    <div class="container-fluid py-4">
+
+        <div class="row mb-4 animate-fade-in">
+            <div class="col-md-8">
+                <h6 class="text-primary fw-bold text-uppercase tracking-wider">Painel de Performance</h6>
+                <h1 class="display-5 fw-bold text-dark mt-1">Bem-vindo ao topo, <span class="text-gradient">@userName</span>! 🚀</h1>
+                <p class="lead text-muted">Seu ecossistema imobiliário está operando com <span class="badge bg-success pulse-green">98% de eficiência</span> hoje.</p>
+            </div>
+            <div class="col-md-4 d-flex align-items-center justify-content-md-end gap-3">
+                <div class="quick-action-orbit">
+                    <button class="btn-orbit" title="Notificações"><i class="bi bi-bell-fill"></i><span class="orbit-badge">3</span></button>
+                    <button class="btn-orbit" title="Configurações"><i class="bi bi-gear-wide-connected"></i></button>
+                </div>
+                <a asp-controller="Empreendimento" asp-action="Upsert" class="btn btn-primary shadow-lg px-4 py-3 rounded-pill btn-glow">
+                    <i class="bi bi-plus-circle-fill me-2"></i> Lançar Empreendimento
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card p-4 h-100 border-0 shadow-sm" style="--accent-color: #4e73df;">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="icon-shape bg-primary-soft"><i class="bi bi-building"></i></div>
+                        <span class="text-success small fw-bold"><i class="bi bi-arrow-up"></i> 12%</span>
+                    </div>
+                    <h3 class="fw-bold mb-0">24</h3>
+                    <p class="text-muted small mb-0">Empreendimentos Ativos</p>
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar" role="progressbar" style="width: 70%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card p-4 h-100 border-0 shadow-sm" style="--accent-color: #1cc88a;">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="icon-shape bg-success-soft"><i class="bi bi-house-door"></i></div>
+                        <span class="text-success small fw-bold"><i class="bi bi-arrow-up"></i> 5.2%</span>
+                    </div>
+                    <h3 class="fw-bold mb-0">1.420</h3>
+                    <p class="text-muted small mb-0">Unidades em Inventário</p>
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card p-4 h-100 border-0 shadow-sm" style="--accent-color: #f6c23e;">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="icon-shape bg-warning-soft"><i class="bi bi-people"></i></div>
+                        <span class="text-danger small fw-bold"><i class="bi bi-arrow-down"></i> 2.1%</span>
+                    </div>
+                    <h3 class="fw-bold mb-0">892</h3>
+                    <p class="text-muted small mb-0">Leads Qualificados</p>
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card p-4 h-100 border-0 shadow-sm" style="--accent-color: #e74a3b;">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="icon-shape bg-danger-soft"><i class="bi bi-graph-up"></i></div>
+                        <span class="text-success small fw-bold"><i class="bi bi-arrow-up"></i> 24%</span>
+                    </div>
+                    <h3 class="fw-bold mb-0">R$ 42.8M</h3>
+                    <p class="text-muted small mb-0">VGV sob Gestão</p>
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 45%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-lg-8">
+                <div class="section-card shadow-sm border-0 h-100 bg-white">
+                    <div class="p-4 d-flex justify-content-between align-items-center border-bottom border-light">
+                        <h5 class="fw-bold m-0"><i class="bi bi-stars text-warning me-2"></i>Status de Empreendimentos</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm rounded-pill" type="button">Filtrar por Status <i class="bi bi-chevron-down ms-1"></i></button>
+                        </div>
+                    </div>
+                    <div class="p-0 scroll-y-custom" style="max-height: 500px;">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item p-4 border-light hover-accent transition-all">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <div class="building-avatar bg-primary text-white">RJ</div>
+                                    </div>
+                                    <div class="col">
+                                        <h6 class="fw-bold mb-1">Residencial Jardins</h6>
+                                        <span class="text-muted small"><i class="bi bi-geo-alt me-1"></i>São Paulo, SP - Jardins</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="flex-grow-1">
+                                                <div class="progress" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" style="width: 75%"></div>
+                                                </div>
+                                            </div>
+                                            <span class="small fw-bold text-success">75%</span>
+                                        </div>
+                                        <div class="text-muted extra-small">Unidades Vendidas</div>
+                                    </div>
+                                    <div class="col-auto text-end">
+                                        <span class="badge bg-success-soft text-success mb-2 d-block">Lançamento</span>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Detalhes</button>
+                                            <button class="btn btn-sm btn-light rounded-circle ms-1"><i class="bi bi-three-dots-vertical"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list-group-item p-4 border-light hover-accent transition-all">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <div class="building-avatar bg-warning text-dark">SV</div>
+                                    </div>
+                                    <div class="col">
+                                        <h6 class="fw-bold mb-1">Solar do Vale</h6>
+                                        <span class="text-muted small"><i class="bi bi-geo-alt me-1"></i>Curitiba, PR - Batel</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="flex-grow-1">
+                                                <div class="progress" style="height: 6px;">
+                                                    <div class="progress-bar bg-warning" style="width: 32%"></div>
+                                                </div>
+                                            </div>
+                                            <span class="small fw-bold text-warning">32%</span>
+                                        </div>
+                                        <div class="text-muted extra-small">Unidades Vendidas</div>
+                                    </div>
+                                    <div class="col-auto text-end">
+                                        <span class="badge bg-warning-soft text-warning mb-2 d-block">Em Obras</span>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Detalhes</button>
+                                            <button class="btn btn-sm btn-light rounded-circle ms-1"><i class="bi bi-three-dots-vertical"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="section-card shadow-sm border-0 h-100 bg-dark text-white p-4">
+                    <h5 class="fw-bold mb-4">Radar de Leads <span class="badge bg-danger ms-2 animate-pulse">Live</span></h5>
+                    <div class="lead-timeline">
+                        <div class="lead-item d-flex gap-3 mb-4">
+                            <div class="lead-avatar border-primary">JS</div>
+                            <div class="lead-info">
+                                <h6 class="fw-bold mb-0">João Silva <span class="badge bg-primary extra-small ms-1">HOT</span></h6>
+                                <p class="text-white-50 extra-small">Interesse: Residencial Jardins - Apto 402</p>
+                                <span class="text-muted extra-small"><i class="bi bi-clock me-1"></i>há 5 min</span>
+                            </div>
+                        </div>
+                        <div class="lead-item d-flex gap-3 mb-4 opacity-75">
+                            <div class="lead-avatar border-info">MC</div>
+                            <div class="lead-info">
+                                <h6 class="fw-bold mb-0">Maria Clara</h6>
+                                <p class="text-white-50 extra-small">Interesse: Solar do Vale</p>
+                                <span class="text-muted extra-small"><i class="bi bi-clock me-1"></i>há 1 hora</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-white opacity-10 my-4">
+
+                    <h5 class="fw-bold mb-3">Nível de Acesso</h5>
+                    <div class="d-flex align-items-center gap-3 bg-white bg-opacity-10 p-3 rounded-4">
+                        <div class="access-hex bg-gradient-gold"><i class="bi bi-trophy-fill text-dark"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-0">Administrador Master</h6>
+                            <p class="text-white-50 extra-small mb-0">Acesso Total a Relatórios e Vendas</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-top border-white border-opacity-10">
+                        <div class="row g-2 text-center">
+                            <div class="col-6">
+                                <button class="btn btn-outline-light w-100 btn-sm rounded-4 py-3 border-opacity-25 h-100">
+                                    <i class="bi bi-headset fs-4 d-block mb-1"></i>
+                                    Suporte
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-outline-light w-100 btn-sm rounded-4 py-3 border-opacity-25 h-100">
+                                    <i class="bi bi-journal-text fs-4 d-block mb-1"></i>
+                                    Relatórios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
+
+<style>
+    /* RESET E BASE */
+    :root {
+        --primary: #4e73df;
+        --success: #1cc88a;
+        --info: #36b9cc;
+        --warning: #f6c23e;
+        --danger: #e74a3b;
+    }
+
+    .dashboard-wrapper {
+        background-color: #f8f9fc;
+        min-height: 100vh;
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .text-gradient {
+        background: linear-gradient(45deg, var(--primary), var(--info));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* CARDS DE ESTATÍSTICA */
+    .stat-card {
+        border-radius: 20px;
+        background: #ffffff;
+        border-left: 5px solid var(--accent-color) !important;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+        }
+
+    .icon-shape {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.5rem;
+    }
+
+    .bg-primary-soft {
+        background: rgba(78, 115, 223, 0.1);
+        color: var(--primary);
+    }
+
+    .bg-success-soft {
+        background: rgba(28, 200, 138, 0.1);
+        color: var(--success);
+    }
+
+    .bg-warning-soft {
+        background: rgba(246, 194, 62, 0.1);
+        color: var(--warning);
+    }
+
+    .bg-danger-soft {
+        background: rgba(231, 74, 59, 0.1);
+        color: var(--danger);
+    }
+
+    /* EMPREENDIMENTOS LISTA */
+    .section-card {
+        border-radius: 24px;
+        overflow: hidden;
+    }
+
+    .building-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .hover-accent:hover {
+        background-color: #fbfcfe;
+        transform: translateX(10px);
+    }
+
+    /* LEADS E ACESSO */
+    .lead-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
+
+    .access-hex {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #ffd700, #ff8c00);
+    }
+
+    /* BOTÕES ORBIT */
+    .btn-orbit {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: 1px solid #e3e6f0;
+        background: white;
+        color: #858796;
+        position: relative;
+        transition: all 0.2s;
+        margin-left: 10px;
+    }
+
+        .btn-orbit:hover {
+            background: var(--primary);
+            color: white;
+            transform: rotate(15deg);
+        }
+
+    .orbit-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--danger);
+        color: white;
+        font-size: 0.6rem;
+        padding: 2px 6px;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+
+    /* ANIMAÇÕES */
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(231, 74, 59, 0.7);
+        }
+
+        70% {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 10px rgba(231, 74, 59, 0);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(231, 74, 59, 0);
+        }
+    }
+
+    .btn-glow:hover {
+        box-shadow: 0 0 20px rgba(78, 115, 223, 0.4) !important;
+    }
+
+    .extra-small {
+        font-size: 0.75rem;
+    }
+
+    .tracking-wider {
+        letter-spacing: 0.1em;
+    }
+</style>
